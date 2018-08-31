@@ -1,0 +1,21 @@
+{
+  "name": "dost",
+  "version": "0.0.1",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start:client": "npm start --prefix ./client",
+    "start:server": "npm start --prefix ./server",
+    "install:all": "npm install --cwd ./client && npm install --cwd ./server",
+    "dist:all": "npm run dist:client && npm run dist:server",
+    "dist": "npm run install:all && npm run dist:all",
+    "dist:client": "npm run dist --prefix ./client",
+    "dist:server": "npm run dist --prefix ./server",
+    "debug:server": "npm run debug --prefix ./server"
+  },
+  "dependencies": {
+    "dost-client": "file:client",
+    "dost-server": "file:server"
+  },
+  "devDependencies": {}
+}
