@@ -1,6 +1,6 @@
 # editor config
 .idea
-.vsc
+.vscode
 
 # dependency & build folders
 node_modules
@@ -9,5 +9,9 @@ dist
 # config files
 .env
 
-# others
+# tests
+coverage
+
+# misc
+npm-debug.log
 .DS_Store
