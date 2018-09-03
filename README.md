@@ -36,6 +36,13 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Configuration
+
+You can setup some backend options in your .env file
+
+```
+PORT=<listening port. By default: 3000>
+```
 ## Contributing
 
 You can read the guide of how to contribute at [Contributing](https://github.com/axa-group/dost/blob/master/CONTRIBUTING.md).

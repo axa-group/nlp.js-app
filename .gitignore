@@ -1,4 +1,13 @@
+# editor config
 .idea
-.DS_Store
+.vsc
 
+# dependency & build folders
 node_modules
+dist
+
+# config files
+.env
+
+# others
+.DS_Store
