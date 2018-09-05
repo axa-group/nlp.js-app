@@ -41,7 +41,10 @@ $ npm run test:cov
 You can setup some backend options in your .env file
 
 ```
-PORT=<listening port. By default: 3000>
+PORT=<Listening port. Default: 3000>
+DB_HOST=<Default: 'localhost' (optional)>
+DB_PORT=<Default: 27017 (optional)>
+DB_NAME=<Default: 'dost' (optional)>
 ```
 ## Contributing
 

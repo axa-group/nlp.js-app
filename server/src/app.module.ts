@@ -4,10 +4,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './modules/users/users.module';
+import { settings } from './settings';
 
 @Module({
   imports: [
-      TypeOrmModule.forRoot(),
+      TypeOrmModule.forRoot(settings.db),
       UsersModule
   ],
   controllers: [

@@ -1,9 +1,0 @@
-{
-  "type": "mongodb",
-  "host": "localhost",
-  "database": "dost",
-  "entities": [
-    "server/src/**/**.entity{.ts,.js}"
-  ],
-  "synchronize": true
-}
