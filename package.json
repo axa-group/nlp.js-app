@@ -9,8 +9,10 @@
     "install:all": "npm install --cwd ./client && npm install",
     "start": "ts-node -r tsconfig-paths/register -r dotenv/config server/src/main.ts",
     "start:dev": "nodemon",
-    "prestart:prod": "rimraf -rf dist && tsc",
+    "build": "rimraf -rf dist && tsc",
+    "prestart:prod": "npm run build",
     "start:prod": "node -r dotenv/config dist/server/main.js",
+    "prestart:hmr": "npm run build",
     "start:hmr": "node -r dotenv/config dist/server/main.hmr.js",
     "test": "jest",
     "test:cov": "jest --coverage",
@@ -20,11 +22,14 @@
   "dependencies": {
     "@nestjs/common": "^5.0.0",
     "@nestjs/core": "^5.0.0",
+    "@nestjs/typeorm": "^5.2.0",
     "dotenv": "^6.0.0",
     "fastify-formbody": "^2.0.0",
+    "mongodb": "^3.1.4",
     "reflect-metadata": "^0.1.12",
     "rimraf": "^2.6.2",
     "rxjs": "^6.0.0",
+    "typeorm": "^0.2.7",
     "typescript": "^2.6.2"
   },
   "devDependencies": {
