@@ -7,15 +7,8 @@ import { UsersModule } from './modules/users/users.module';
 import { settings } from './settings';
 
 @Module({
-  imports: [
-      TypeOrmModule.forRoot(settings.db),
-      UsersModule
-  ],
-  controllers: [
-      AppController
-  ],
-  providers: [
-      AppService
-  ]
+  imports: [TypeOrmModule.forRoot(settings.db), UsersModule],
+  controllers: [AppController],
+  providers: [AppService]
 })
 export class AppModule {}

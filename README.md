@@ -41,6 +41,7 @@ $ npm run test:cov
 You can setup some backend options in your .env file
 
 ```
+NODE_ENV=<Default: 'development' (optional)>
 PORT=<Listening port. Default: 3000>
 DB_HOST=<Default: 'localhost' (optional)>
 DB_PORT=<Default: 27017 (optional)>
