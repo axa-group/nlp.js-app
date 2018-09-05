@@ -15,11 +15,10 @@
     "start:hmr": "node -r dotenv/config dist/server/main.hmr.js",
     "test": "jest",
     "test:cov": "jest --coverage",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:e2e": "jest --config ./server/test/jest-e2e.json",
     "lint": "tslint -p tsconfig.json -c tslint.json",
     "security": "nsp check",
     "format": "prettier --write \"server/src/**/*.ts\""
-
   },
   "dependencies": {
     "@nestjs/common": "^5.3.5",
@@ -57,7 +56,7 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "rootDir": "server/src",
     "testRegex": ".spec.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
