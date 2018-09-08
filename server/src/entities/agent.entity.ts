@@ -13,7 +13,7 @@ export class Agent {
   @Column()
   name: string;
   @Column()
-    // ready | training | ...
+  // ready | training | ...
   status: string;
   @Column()
   description: string;
@@ -38,6 +38,6 @@ export class Agent {
   updatedAt: Date;
   @Column()
   trainedAt: Date;
-  @Column({ default: utc})
+  @Column({ default: utc })
   defaultTimeZone: string;
 }
