@@ -61,6 +61,12 @@ private readonly logger: LoggerService = new LoggerService(MyCurrentController.n
 this.logger.log('logging message! %j', items);
 ```
 
+Output format:
+
+```
+[{date time in utc}]-{level} ({context}): {your message}
+```
+
 ## Contributing
 
 You can read the guide of how to contribute at [Contributing](https://github.com/axa-group/dost/blob/master/CONTRIBUTING.md).
