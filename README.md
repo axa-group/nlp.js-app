@@ -48,6 +48,19 @@ DB_HOST=<Default: 'localhost' (optional)>
 DB_PORT=<Default: 27017 (optional)>
 DB_NAME=<Default: 'dost' (optional)>
 ```
+
+## Logging
+
+We're using a custom logger located in modules/shared/services. It provides string interpolation using util.format. Example:
+
+```
+private readonly logger: LoggerService = new LoggerService(MyCurrentController.name);
+
+...
+
+this.logger.log('logging message! %j', items);
+```
+
 ## Contributing
 
 You can read the guide of how to contribute at [Contributing](https://github.com/axa-group/dost/blob/master/CONTRIBUTING.md).
