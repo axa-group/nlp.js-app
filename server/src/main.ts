@@ -1,10 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 
-import { AppModule } from './app.module';
 import { settings } from './settings';
+import { AppModule } from './app.module';
+import { LoggerService } from './modules/shared/services/logger.service';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: new LoggerService('Main')
+  });
 
   app.setGlobalPrefix(settings.apiPrefix);
 

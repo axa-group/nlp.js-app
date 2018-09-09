@@ -43,6 +43,7 @@ You can setup some backend options in your .env file
 ```
 NODE_ENV=<Default: 'development' (optional)>
 PORT=<Listening port. Default: 3000>
+LOG_LEVEL=<Default value depends on NODE_ENV info or warn. (optional)>
 DB_HOST=<Default: 'localhost' (optional)>
 DB_PORT=<Default: 27017 (optional)>
 DB_NAME=<Default: 'dost' (optional)>
