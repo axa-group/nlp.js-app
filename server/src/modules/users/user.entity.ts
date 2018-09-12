@@ -10,4 +10,8 @@ export class User {
   username: string;
   @Column()
   email: string;
+  @Column({
+    default: 'guest'
+  })
+  role: string;
 }

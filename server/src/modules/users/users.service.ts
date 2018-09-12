@@ -21,6 +21,10 @@ export class UsersService {
     return await this.userRepository.findOne(id);
   }
 
+  public async findOneByQuery(query): Promise<User> {
+    return await this.userRepository.findOne(query);
+  }
+
   public async updateOne(criteria, partialEntity): Promise<UpdateResult> {
     return await this.userRepository.update(criteria, partialEntity);
   }

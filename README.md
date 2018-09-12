@@ -46,7 +46,10 @@ PORT=<Listening port. Default: 3000>
 DB_HOST=<Default: 'localhost' (optional)>
 DB_PORT=<Default: 27017 (optional)>
 DB_NAME=<Default: 'dost' (optional)>
+SECRET=<Secret to generate tokens>
+EXPIRY_TIME_SECONDS=<Toke lifetime in seconds. Default: 3600>
 ```
+
 ## Contributing
 
 You can read the guide of how to contribute at [Contributing](https://github.com/axa-group/dost/blob/master/CONTRIBUTING.md).
