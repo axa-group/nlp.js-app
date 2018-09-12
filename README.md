@@ -43,10 +43,30 @@ You can setup some backend options in your .env file
 ```
 NODE_ENV=<Default: 'development' (optional)>
 PORT=<Listening port. Default: 3000>
+LOG_LEVEL=<Default value depends on NODE_ENV info or warn. (optional)>
 DB_HOST=<Default: 'localhost' (optional)>
 DB_PORT=<Default: 27017 (optional)>
 DB_NAME=<Default: 'dost' (optional)>
 ```
+
+## Logging
+
+We're using a custom logger located in modules/shared/services. It provides string interpolation using util.format. Example:
+
+```
+private readonly logger: LoggerService = new LoggerService(MyCurrentController.name);
+
+...
+
+this.logger.log('logging message! %j', items);
+```
+
+Output format:
+
+```
+[{date time in utc}]-{level} ({context}): {your message}
+```
+
 ## Contributing
 
 You can read the guide of how to contribute at [Contributing](https://github.com/axa-group/dost/blob/master/CONTRIBUTING.md).

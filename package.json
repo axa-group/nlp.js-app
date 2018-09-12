@@ -27,11 +27,13 @@
     "dotenv": "^6.0.0",
     "fastify-formbody": "^2.0.0",
     "mongodb": "^3.1.4",
+    "pretty-error": "^2.1.1",
     "reflect-metadata": "^0.1.12",
     "rimraf": "^2.6.2",
     "rxjs": "^6.0.0",
     "typeorm": "^0.2.7",
-    "typescript": "^2.6.2"
+    "typescript": "^2.6.2",
+    "winston": "^3.1.0"
   },
   "devDependencies": {
     "@nestjs/testing": "^5.0.0",
@@ -50,7 +52,8 @@
     "ts-node": "^4.1.0",
     "tsconfig-paths": "^3.1.1",
     "tslint": "^5.11.0",
-    "tslint-config-airbnb": "^5.11.0"
+    "tslint-config-airbnb": "^5.11.0",
+    "tslint-config-prettier": "^1.15.0"
   },
   "husky": {
     "hooks": {
