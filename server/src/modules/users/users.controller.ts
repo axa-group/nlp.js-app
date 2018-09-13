@@ -1,14 +1,21 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { LoggerService } from '../shared/services/logger.service';
 
 import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
+  private readonly logger: LoggerService = new LoggerService(UsersController.name);
+
   constructor(private readonly service: UsersService) {}
 
   @Get()
   public async get() {
-    return await this.service.findAll();
+    const items = await this.service.findAll();
+
+    this.logger.log('get request received! %j', items);
+
+    return items;
   }
 
   @Get(':id')
