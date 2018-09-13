@@ -5,6 +5,7 @@
 # dependency & build folders
 node_modules
 dist
+documentation
 
 # config files
 .env
