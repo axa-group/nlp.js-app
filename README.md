@@ -36,6 +36,12 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Generate technical documentation
+
+```
+npm run docs
+```
+
 ## Configuration
 
 You can setup some backend options in your .env file
