@@ -1,6 +1,6 @@
 import { ExecutionContext, Injectable } from '@nestjs/common';
 
-import { role } from '../constants/index';
+import { role } from '../constants';
 import { UsersService } from '../modules/users/users.service';
 import { JwtAuthGuard } from './auth.guard';
 
@@ -15,13 +15,8 @@ export class RegisterGuard extends JwtAuthGuard {
 
   public async canActivate(context: ExecutionContext) {
     const alreadyExistsAdmin = await this.alreadyExistsAdmin();
-    console.log('RegisterGuard > canActivate > alreadyExistsAdmin: ', alreadyExistsAdmin);
 
-    if(alreadyExistsAdmin) {
-      return await super.canActivate(context);
-    }
-
-    return true;
+    return (alreadyExistsAdmin) ? await super.canActivate(context) : true;
   }
 
   private async alreadyExistsAdmin() {

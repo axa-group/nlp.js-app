@@ -12,11 +12,8 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
   public async canActivate(context: ExecutionContext) {
     const canPass = await super.canActivate(context);
-    console.log('JwtAuthGuard > canActivate > canPass', canPass);
     const request = context.switchToHttp().getRequest();
     const { user } = request;
-
-    console.log('JwtAuthGuard > canActivate > user.role -> ', user.role);
 
     return this.allowedRoles.includes(user.role);
   }
