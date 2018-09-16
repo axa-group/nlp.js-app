@@ -19,12 +19,10 @@ export class AuthService {
     const user = await this.validateUser(payload);
 
     if (user) {
-      if(await this.cryptoService.checkPasswords(user.password, payload.password)) {
+      if (await this.cryptoService.checkPasswords(user.password, payload.password)) {
         const jwtPayload = pick(user, settings.userJwtPayloadFields);
 
-        return {
-          access_token: this.jwtService.sign(jwtPayload)
-        };
+        return { access_token: this.jwtService.sign(jwtPayload) };
       }
       throw new BadRequestException();
     }

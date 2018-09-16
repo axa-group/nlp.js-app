@@ -1,6 +1,4 @@
-import {
-  Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 
 import { role } from '../../constants';
 import { AdminOrMeGuard } from '../../guards/admin-or-me.guard';

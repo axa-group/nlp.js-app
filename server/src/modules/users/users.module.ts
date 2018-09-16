@@ -8,10 +8,7 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User]), PassportModule.register({ defaultStrategy: 'jwt' }),
-    CryptoModule
-  ],
+  imports: [TypeOrmModule.forFeature([User]), PassportModule.register({ defaultStrategy: 'jwt' }), CryptoModule],
   exports: [UsersService],
   providers: [UsersService],
   controllers: [UsersController]

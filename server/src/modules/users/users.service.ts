@@ -20,9 +20,7 @@ export class UsersService {
 
     const existingUser = await this.userRepository.find(options);
 
-    console.log('existingUser ?', existingUser);
-
-    if(existingUser && existingUser.length) {
+    if (existingUser && existingUser.length) {
       throw new UserAlreadyExistsException();
     }
 

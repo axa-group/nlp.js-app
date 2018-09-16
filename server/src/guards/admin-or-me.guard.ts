@@ -7,10 +7,7 @@ import { thrower } from '../helpers';
 
 @Injectable()
 export class AdminOrMeGuard extends AuthGuard('jwt') {
-
-  constructor(
-    private readonly usersService: UsersService
-  ) {
+  constructor(private readonly usersService: UsersService) {
     super([role.admin]);
   }
 
@@ -24,6 +21,6 @@ export class AdminOrMeGuard extends AuthGuard('jwt') {
   }
 
   private allowAdminsOrYourself(loggedUser, requestedUser) {
-    return loggedUser.role === role.admin || (loggedUser.username === requestedUser.username);
+    return loggedUser.role === role.admin || loggedUser.username === requestedUser.username;
   }
 }
