@@ -1,10 +1,17 @@
+import * as helmet from 'helmet';
+import * as express from 'express';
+import * as compression from 'compression';
 import { NestFactory } from '@nestjs/core';
 
-import { AppModule } from './app.module';
 import { settings } from './settings';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const instance: express.Application = express();
+  const app = await NestFactory.create(AppModule, instance);
+
+  instance.use(helmet());
+  instance.use(compression());
 
   app.setGlobalPrefix(settings.apiPrefix);
 

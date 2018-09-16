@@ -1,5 +1,7 @@
 import { Entity, Column, ObjectIdColumn, ObjectID } from 'typeorm';
 
+import { role } from '../../constants';
+
 @Entity()
 export class User {
   @ObjectIdColumn()
@@ -10,8 +12,10 @@ export class User {
   username: string;
   @Column()
   email: string;
+  @Column()
+  password: string;
   @Column({
-    default: 'guest'
+    default: role.guest
   })
   role: string;
 }

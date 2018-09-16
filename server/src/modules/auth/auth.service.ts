@@ -1,35 +1,39 @@
 import * as pick from 'lodash.pick';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
+import { CryptoService } from '../crypto/crypto.service';
 import { UsersService } from '../users/users.service';
-import { JwtPayload } from './jwt-payload.interface';
+import { LoginPayload } from './login-payload.interface';
+import { settings } from './settings';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
+    private readonly cryptoService: CryptoService
   ) {}
 
-  async signIn(payload: JwtPayload): Promise<object> {
-    // TODO: encrypt and compare password
+  public async login(payload: LoginPayload): Promise<object> {
     const user = await this.validateUser(payload);
 
     if (user) {
-      const jwtPayload = pick(user, ['username', 'role']);
+      if(await this.cryptoService.checkPasswords(user.password, payload.password)) {
+        const jwtPayload = pick(user, settings.userJwtPayloadFields);
 
-      return {
-        access_token: this.jwtService.sign(jwtPayload)
-      };
+        return {
+          access_token: this.jwtService.sign(jwtPayload)
+        };
+      }
+      throw new BadRequestException();
     }
     throw new NotFoundException();
   }
 
-  async validateUser(payload: JwtPayload): Promise<any> {
+  public async validateUser(payload: LoginPayload): Promise<any> {
     const query = { where: { username: payload.username } };
-    const user = await this.usersService.findOneByQuery(query);
 
-    return user;
+    return await this.usersService.findOneByQuery(query);
   }
 }

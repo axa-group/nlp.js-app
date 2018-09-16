@@ -46,7 +46,8 @@ PORT=<Listening port. Default: 3000>
 DB_HOST=<Default: 'localhost' (optional)>
 DB_PORT=<Default: 27017 (optional)>
 DB_NAME=<Default: 'dost' (optional)>
-SECRET=<Secret to generate tokens>
+JWT_SECRET_KEY=<Secret to generate tokens>
+SALT_FACTOR_INT=<Default: 100 (optional)>
 EXPIRY_TIME_SECONDS=<Toke lifetime in seconds. Default: 3600>
 ```
 

@@ -3,18 +3,36 @@ import { DeleteResult } from 'typeorm/query-builder/result/DeleteResult';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
+import { UserAlreadyExistsException } from '../../exceptions/user-already-exists.exception';
+import { CryptoService } from '../crypto/crypto.service';
 import { User } from './user.entity';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectRepository(User) private readonly userRepository: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    private readonly cryptoService: CryptoService
+  ) {}
 
   public async create(newEntity): Promise<User> {
+    const { username, email } = newEntity;
+    const options = { where: { $or: [{ email }, { username }] } };
+
+    const existingUser = await this.userRepository.find(options);
+
+    console.log('existingUser ?', existingUser);
+
+    if(existingUser && existingUser.length) {
+      throw new UserAlreadyExistsException();
+    }
+
+    newEntity.password = await this.cryptoService.generateHash(newEntity.password);
+
     return await this.userRepository.save(newEntity);
   }
 
-  public async findAll(): Promise<User[]> {
-    return await this.userRepository.find();
+  public async findAll(query: object): Promise<User[]> {
+    return await this.userRepository.find(query);
   }
 
   public async findById(id: string): Promise<User> {

@@ -1,10 +1,11 @@
 import {
-  Body, Controller, Delete, Get, Param, Patch, Post, Req, UnauthorizedException, UseGuards
+  Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UnauthorizedException, UseGuards
 } from '@nestjs/common';
 
 import { role } from '../../constants';
 import { thrower } from '../../helpers';
-import { JwtAuthGuard } from '../auth/auth.guard';
+import { JwtAuthGuard } from '../../guards/auth.guard';
+import { RegisterGuard } from '../../guards/register.guard';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -13,8 +14,10 @@ export class UsersController {
 
   @Get()
   @UseGuards(new JwtAuthGuard([role.admin]))
-  public async get(@Req() req) {
-    return await this.service.findAll();
+  public async get(@Query('q') q) {
+    const query = q && q !== '' ? JSON.parse(q) : q;
+
+    return await this.service.findAll(query);
   }
 
   @Get(':id')
@@ -23,17 +26,14 @@ export class UsersController {
     const loggedUser = req.user;
     const user = await this.service.findById(id);
 
-    // INFO: Test of "allow only admins or yourself"
-    return (loggedUser.role === role.admin || (loggedUser.username === user.username)) ?
-              user : thrower(UnauthorizedException);
+    // INFO: example of custom case
+
+    return this.allowAdminsOrYourself(loggedUser, user) ? user : thrower(UnauthorizedException);
   }
 
   @Post()
-  @UseGuards(new JwtAuthGuard([role.admin]))
+  @UseGuards(RegisterGuard)
   public async post(@Body() entityDto) {
-
-    // TODO: encrypt password before saving
-
     return await this.service.create(entityDto);
   }
 
@@ -47,5 +47,9 @@ export class UsersController {
   @UseGuards(new JwtAuthGuard([role.admin]))
   public async delete(@Param('id') id: string) {
     return await this.service.deleteOne(id);
+  }
+
+  private allowAdminsOrYourself(loggedUser, requestedUser) {
+    return loggedUser.role === role.admin || (loggedUser.username === requestedUser.username);
   }
 }
