@@ -1,9 +1,9 @@
 import {
-  Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UnauthorizedException, UseGuards
+  Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards
 } from '@nestjs/common';
 
 import { role } from '../../constants';
-import { thrower } from '../../helpers';
+import { AdminOrMeGuard } from '../../guards/admin-or-me.guard';
 import { JwtAuthGuard } from '../../guards/auth.guard';
 import { RegisterGuard } from '../../guards/register.guard';
 import { UsersService } from './users.service';
@@ -21,20 +21,21 @@ export class UsersController {
   }
 
   @Get(':id')
-  @UseGuards(new JwtAuthGuard([role.contributor, role.admin]))
+  @UseGuards(new JwtAuthGuard([role.contributor, role.admin]), AdminOrMeGuard)
   public async getById(@Param('id') id: string, @Req() req) {
-    const loggedUser = req.user;
-    const user = await this.service.findById(id);
-
-    // INFO: example of custom case
-
-    return this.allowAdminsOrYourself(loggedUser, user) ? user : thrower(UnauthorizedException);
+    return await this.service.findById(id);
   }
 
   @Post()
   @UseGuards(RegisterGuard)
   public async post(@Body() entityDto) {
     return await this.service.create(entityDto);
+  }
+
+  @Patch(':id/change-password')
+  @UseGuards(new JwtAuthGuard([role.contributor, role.admin]), AdminOrMeGuard)
+  public async changePassword(@Param('id') id: string, @Body() partialEntity, @Req() req) {
+    return await this.service.changePassword(id, partialEntity.password);
   }
 
   @Patch(':id')
@@ -47,9 +48,5 @@ export class UsersController {
   @UseGuards(new JwtAuthGuard([role.admin]))
   public async delete(@Param('id') id: string) {
     return await this.service.deleteOne(id);
-  }
-
-  private allowAdminsOrYourself(loggedUser, requestedUser) {
-    return loggedUser.role === role.admin || (loggedUser.username === requestedUser.username);
   }
 }

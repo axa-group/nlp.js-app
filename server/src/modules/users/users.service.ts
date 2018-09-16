@@ -43,6 +43,12 @@ export class UsersService {
     return await this.userRepository.findOne(query);
   }
 
+  public async changePassword(id, plainPassword) {
+    const password = await this.cryptoService.generateHash(plainPassword);
+
+    return await this.updateOne(id, { password });
+  }
+
   public async updateOne(criteria, partialEntity): Promise<UpdateResult> {
     return await this.userRepository.update(criteria, partialEntity);
   }
