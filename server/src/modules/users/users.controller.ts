@@ -8,7 +8,6 @@ import {
   Patch,
   Post,
   Query,
-  Req,
   Res,
   UseGuards
 } from '@nestjs/common';
@@ -33,7 +32,7 @@ export class UsersController {
 
   @Get(':id')
   @UseGuards(new JwtAuthGuard([role.contributor, role.admin]), AdminOrMeGuard)
-  public async getById(@Param('id') id: string, @Req() req) {
+  public async getById(@Param('id') id: string) {
     return await this.service.findById(id);
   }
 
@@ -45,8 +44,8 @@ export class UsersController {
 
   @Patch(':id/change-password')
   @UseGuards(new JwtAuthGuard([role.contributor, role.admin]), AdminOrMeGuard)
-  public async changePassword(@Param('id') id: string, @Body() partialEntity, @Req() req, @Res() res) {
-    await this.service.changePassword(id, partialEntity.password);
+  public async changePassword(@Param('id') id: string, @Body() { password }, @Res() res) {
+    await this.service.changePassword(id, password);
 
     return res.status(HttpStatus.NO_CONTENT).json();
   }
