@@ -40,7 +40,7 @@ export class AuthService {
   public async refreshAccessToken(refreshToken) {
     const tokenPayload = await this.getRefreshTokenPayload(refreshToken);
 
-    if(tokenPayload && moment().toDate().getTime() < tokenPayload.expiresAt.getTime()) {
+    if (this.hasValidExpiryTime(tokenPayload)) {
       const user = await this.usersService.findOneByUsername(tokenPayload.username);
 
       return this.generateAccessToken(user);
@@ -57,10 +57,18 @@ export class AuthService {
     return await this.repository.delete(query);
   }
 
+  public async getRefreshTokenPayload(refreshToken) {
+    return await this.findOneByQuery({ where: { refreshToken } });
+  }
+
   private generateAccessToken(payload) {
     const jwtPayload = pick(payload, settings.userJwtPayloadFields);
 
     return this.jwtService.sign(jwtPayload);
+  }
+
+  private hasValidExpiryTime(tokenPayload) {
+    return tokenPayload && moment().toDate().getTime() < tokenPayload.expiresAt.getTime();
   }
 
   private generateRefreshTokenPayload(username) {
@@ -72,10 +80,6 @@ export class AuthService {
       refreshToken,
       expiresAt: nextExpiryTime.toDate()
     };
-  }
-
-  private async getRefreshTokenPayload(refreshToken) {
-    return await this.findOneByQuery({ where: { refreshToken } });
   }
 
   private async findOneByQuery(query): Promise<Auth> {

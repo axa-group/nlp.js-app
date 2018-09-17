@@ -1,16 +1,16 @@
 import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    HttpStatus,
-    Param,
-    Patch,
-    Post,
-    Query,
-    Req,
-    Res,
-    UseGuards
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  Res,
+  UseGuards
 } from '@nestjs/common';
 
 import { role } from '../../constants';

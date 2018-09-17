@@ -12,14 +12,12 @@ export class AdminOrMineRefreshTokenGuard extends AuthGuard('jwt') {
   }
 
   public async canActivate(context: ExecutionContext) {
-    console.log('AdminOrMineRefreshTokenGuard > llegooooooo');
     const req = context.switchToHttp().getRequest();
     const loggedUser = req.user;
     const { refresh_token } = req.body;
     const tokenPayload = await this.authService.getRefreshTokenPayload(refresh_token);
 
-    if(tokenPayload) {
-      console.log('AdminOrMineRefreshTokenGuard > admin or mine refresh GUARD ',tokenPayload);
+    if (tokenPayload) {
       return this.allowAdminsOrYourself(loggedUser, tokenPayload) || thrower(UnauthorizedException);
     }
 
@@ -27,7 +25,6 @@ export class AdminOrMineRefreshTokenGuard extends AuthGuard('jwt') {
   }
 
   private allowAdminsOrYourself(loggedUser, tokenPayload) {
-    console.log('AdminOrMineRefreshTokenGuard > allowAdminsOrYourself > loggedUser',loggedUser,' tokenPayload: ',tokenPayload);
     return loggedUser.role === role.admin || loggedUser.username === tokenPayload.username;
   }
 }
