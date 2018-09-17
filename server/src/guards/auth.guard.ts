@@ -3,16 +3,16 @@ import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
-  constructor(protected readonly allowedRoles: string[]) {
+  constructor(protected readonly allowedRoles: string[] = []) {
     super();
   }
 
   public async canActivate(context: ExecutionContext) {
-    const canPass = await super.canActivate(context);
+    await super.canActivate(context);
     const request = context.switchToHttp().getRequest();
     const { user } = request;
 
-    return this.allowedRoles.includes(user.role);
+    return !this.allowedRoles.length || this.allowedRoles.includes(user.role);
   }
 
   public handleRequest(err, tokenPayload) {

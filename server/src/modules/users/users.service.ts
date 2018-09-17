@@ -41,6 +41,12 @@ export class UsersService {
     return await this.userRepository.findOne(query);
   }
 
+  public async findOneByUsername(username): Promise<User> {
+    const query = { where: { username } };
+
+    return await this.findOneByQuery(query);
+  }
+
   public async changePassword(id, plainPassword) {
     const password = await this.cryptoService.generateHash(plainPassword);
 

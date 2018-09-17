@@ -1,4 +1,17 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpStatus,
+    Param,
+    Patch,
+    Post,
+    Query,
+    Req,
+    Res,
+    UseGuards
+} from '@nestjs/common';
 
 import { role } from '../../constants';
 import { AdminOrMeGuard } from '../../guards/admin-or-me.guard';
@@ -32,8 +45,10 @@ export class UsersController {
 
   @Patch(':id/change-password')
   @UseGuards(new JwtAuthGuard([role.contributor, role.admin]), AdminOrMeGuard)
-  public async changePassword(@Param('id') id: string, @Body() partialEntity, @Req() req) {
-    return await this.service.changePassword(id, partialEntity.password);
+  public async changePassword(@Param('id') id: string, @Body() partialEntity, @Req() req, @Res() res) {
+    await this.service.changePassword(id, partialEntity.password);
+
+    return res.status(HttpStatus.NO_CONTENT).json();
   }
 
   @Patch(':id')
