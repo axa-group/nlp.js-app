@@ -1,6 +1,7 @@
 import { MongoConnectionOptions } from 'typeorm/driver/mongodb/MongoConnectionOptions';
 
 import { decimal } from '../constants';
+import { Auth } from '../entities/auth.entity';
 import { Agent } from '../entities/agent.entity';
 import { User } from '../entities/user.entity';
 
@@ -12,7 +13,7 @@ const dbSettings: MongoConnectionOptions = {
   host: DB_HOST || 'localhost',
   port: Number.isInteger(portNumber) ? portNumber : 27017,
   database: DB_NAME || 'dost',
-  entities: [User, Agent]
+  entities: [User, Auth, Agent]
 };
 
 export const settings = {

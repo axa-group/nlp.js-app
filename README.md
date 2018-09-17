@@ -53,6 +53,10 @@ LOG_LEVEL=<Default value depends on NODE_ENV info or warn. (optional)>
 DB_HOST=<Default: 'localhost' (optional)>
 DB_PORT=<Default: 27017 (optional)>
 DB_NAME=<Default: 'dost' (optional)>
+JWT_SECRET_KEY=<Secret to generate tokens>
+SALT_FACTOR_INT=<Default: 10 (optional)>
+EXPIRY_TIME_SECONDS=<Token lifetime. Default: 300>
+REFRESH_EXPIRY_TIME_SECONDS=<Refresh token lifetime. Default: 7200>
 ```
 
 ## Logging
