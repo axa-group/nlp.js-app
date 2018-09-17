@@ -9,7 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { CryptoService } from '../crypto/crypto.service';
 import { UsersService } from '../users/users.service';
 import { settings } from './settings';
-import { Auth } from './auth.entity';
+import { Auth } from '../../entities/auth.entity';
 import { LoginPayload } from './login-payload.interface';
 
 @Injectable()

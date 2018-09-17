@@ -1,6 +1,6 @@
 import { Entity, Column, ObjectIdColumn, ObjectID } from 'typeorm';
 
-import { role } from '../../constants';
+import { role } from '../constants';
 
 @Entity()
 export class User {

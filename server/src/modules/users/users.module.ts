@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { User } from '../../entities/user.entity';
 import { CryptoModule } from '../crypto/crypto.module';
-import { User } from './user.entity';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 

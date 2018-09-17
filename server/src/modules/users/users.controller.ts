@@ -16,18 +16,24 @@ import { role } from '../../constants';
 import { AdminOrMeGuard } from '../../guards/admin-or-me.guard';
 import { JwtAuthGuard } from '../../guards/auth.guard';
 import { RegisterGuard } from '../../guards/register.guard';
+import { LoggerService } from '../shared/services/logger.service';
 import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
+  private readonly logger: LoggerService = new LoggerService(UsersController.name);
+
   constructor(private readonly service: UsersService) {}
 
   @Get()
   @UseGuards(new JwtAuthGuard([role.admin]))
   public async get(@Query('q') q) {
     const query = q && q !== '' ? JSON.parse(q) : q;
+    const items = await this.service.findAll(query);
 
-    return await this.service.findAll(query);
+    this.logger.log('get request received! %j', items);
+
+    return items;
   }
 
   @Get(':id')

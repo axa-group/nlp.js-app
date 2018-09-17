@@ -18,7 +18,8 @@
     "test:e2e": "jest --config ./server/test/jest-e2e.json",
     "lint": "tslint -p tsconfig.json -c tslint.json",
     "security": "nsp check",
-    "format": "prettier --write \"server/src/**/*.ts\""
+    "format": "prettier --write \"server/src/**/*.ts\"",
+    "docs": "compodoc -p tsconfig.json"
   },
   "dependencies": {
     "@nestjs/common": "^5.3.5",
@@ -37,13 +38,16 @@
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "rand-token": "^0.4.0",
+    "pretty-error": "^2.1.1",
     "reflect-metadata": "^0.1.12",
     "rimraf": "^2.6.2",
     "rxjs": "^6.0.0",
     "typeorm": "^0.2.7",
-    "typescript": "^2.6.2"
+    "typescript": "^2.6.2",
+    "winston": "^3.1.0"
   },
   "devDependencies": {
+    "@compodoc/compodoc": "^1.1.5",
     "@nestjs/testing": "^5.0.0",
     "@types/express": "^4.0.39",
     "@types/jest": "^21.1.8",
@@ -60,7 +64,8 @@
     "ts-node": "^4.1.0",
     "tsconfig-paths": "^3.1.1",
     "tslint": "^5.11.0",
-    "tslint-config-airbnb": "^5.11.0"
+    "tslint-config-airbnb": "^5.11.0",
+    "tslint-config-prettier": "^1.15.0"
   },
   "husky": {
     "hooks": {
