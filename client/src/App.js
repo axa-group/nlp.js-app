@@ -1,21 +1,36 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Switch, Route } from 'react-router-dom';
+import PropTypes from 'prop-types';
+
+import Login from './pages/Login';
+import Home from './pages/Home';
+import { PrivateRoute } from './components/common';
+
+import GlobalContextProvider from './GlobalContextProvider';
+import { media, colors } from './theme';
 
 class App extends Component {
+  getChildContext() {
+    return {
+      media,
+      colors
+    };
+  }
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+      <div>
+        <Switch>
+          <Route path="/login" component={Login} />
+          <PrivateRoute path="/" component={Home} />
+        </Switch>
       </div>
     );
   }
 }
 
-export default App;
+App.childContextTypes = {
+  media: PropTypes.object,
+  colors: PropTypes.object
+};
+
+export default GlobalContextProvider(App);
