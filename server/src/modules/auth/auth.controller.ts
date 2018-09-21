@@ -1,7 +1,9 @@
 import { Body, Controller, HttpStatus, Post, Res, UseGuards } from '@nestjs/common';
 
-import { AdminOrMineRefreshTokenGuard } from '../../guards/admin-or-mine-refresh-token.guard';
 import { JwtAuthGuard } from '../../guards/auth.guard';
+import { AdminOrMineRefreshTokenGuard } from '../../guards/admin-or-mine-refresh-token.guard';
+import { RawTokensResponse } from './interfaces/raw-tokens-response.interface';
+import { ITokenResponse } from './interfaces/token-response.interface';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -31,7 +33,7 @@ export class AuthController {
     return res.status(HttpStatus.NO_CONTENT).json();
   }
 
-  private formatTokensResponse({ accessToken, refreshToken }) {
+  private formatTokensResponse({ accessToken, refreshToken }: RawTokensResponse): ITokenResponse {
     return {
       access_token: accessToken,
       refresh_token: refreshToken

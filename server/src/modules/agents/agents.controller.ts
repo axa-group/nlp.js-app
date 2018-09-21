@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 
+import { NewAgentDto } from './dtos/new-agent.dto';
 import { AgentsService } from './agents.service';
 
 @Controller('agents')
@@ -12,8 +13,13 @@ export class AgentsController {
   }
 
   @Post()
-  public async post(@Body() entityDto) {
+  public async post(@Body() entityDto: NewAgentDto) {
     return await this.service.create(entityDto);
+  }
+
+  @Post()
+  public async startTraining() {
+    // TODO:
   }
 
   @Get(':id')

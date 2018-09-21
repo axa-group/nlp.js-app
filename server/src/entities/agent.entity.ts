@@ -26,7 +26,7 @@ export class Agent {
   @Column()
   domainThreshold: number;
   @Column()
-  domains: DomainAgent;
+  domains: DomainAgent[];
   @Column()
   // to define a global webhook that will be called each time the user talks with your agent then you can do it here
   webhookSettings: WebhookSettings;

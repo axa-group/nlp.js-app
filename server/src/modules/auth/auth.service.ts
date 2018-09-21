@@ -6,11 +6,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
+import { Auth } from '../../entities/auth.entity';
 import { CryptoService } from '../crypto/crypto.service';
 import { UsersService } from '../users/users.service';
+import { LoginPayload } from './interfaces/login-payload.interface';
+import { RawTokensResponse } from './interfaces/raw-tokens-response.interface';
 import { settings } from './settings';
-import { Auth } from '../../entities/auth.entity';
-import { LoginPayload } from './login-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +22,7 @@ export class AuthService {
     private readonly cryptoService: CryptoService
   ) {}
 
-  public async login(payload: LoginPayload): Promise<object> {
+  public async login(payload: LoginPayload): Promise<RawTokensResponse> {
     const user = await this.usersService.findOneByUsername(payload.username);
 
     if (user) {

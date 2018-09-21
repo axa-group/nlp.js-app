@@ -1,8 +1,8 @@
-import { Entity, Column, ObjectIdColumn } from 'typeorm';
+import { Entity, Column } from 'typeorm';
 
 @Entity()
 export class WebhookSettings {
-  @ObjectIdColumn()
+  @Column()
   isEnabled: boolean;
   @Column()
   verb: string;
