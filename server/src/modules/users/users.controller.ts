@@ -17,6 +17,8 @@ import { AdminOrMeGuard } from '../../guards/admin-or-me.guard';
 import { JwtAuthGuard } from '../../guards/auth.guard';
 import { RegisterGuard } from '../../guards/register.guard';
 import { LoggerService } from '../shared/services/logger.service';
+import { ChangePasswordDto } from './dtos/change-password.dto';
+import { NewUserDto } from './dtos/new-user.dto';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -44,13 +46,13 @@ export class UsersController {
 
   @Post()
   @UseGuards(RegisterGuard)
-  public async post(@Body() entityDto) {
+  public async post(@Body() entityDto: NewUserDto) {
     return await this.service.create(entityDto);
   }
 
   @Patch(':id/change-password')
   @UseGuards(new JwtAuthGuard([role.contributor, role.admin]), AdminOrMeGuard)
-  public async changePassword(@Param('id') id: string, @Body() { password }, @Res() res) {
+  public async changePassword(@Param('id') id: string, @Body() { password }: ChangePasswordDto, @Res() res) {
     await this.service.changePassword(id, password);
 
     return res.status(HttpStatus.NO_CONTENT).json();

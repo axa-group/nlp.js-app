@@ -12,7 +12,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     const request = context.switchToHttp().getRequest();
     const { user } = request;
 
-    return !this.allowedRoles.length || this.allowedRoles.includes(user.role);
+    return !this.allowedRoles || !this.allowedRoles.length || this.allowedRoles.includes(user.role);
   }
 
   public handleRequest(err, tokenPayload) {

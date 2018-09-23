@@ -9,7 +9,6 @@ import { JwtService } from '@nestjs/jwt';
 import { Auth } from '../../entities/auth.entity';
 import { CryptoService } from '../crypto/crypto.service';
 import { UsersService } from '../users/users.service';
-import { LoginPayload } from './interfaces/login-payload.interface';
 import { RawTokensResponse } from './interfaces/raw-tokens-response.interface';
 import { settings } from './settings';
 
@@ -22,7 +21,7 @@ export class AuthService {
     private readonly cryptoService: CryptoService
   ) {}
 
-  public async login(payload: LoginPayload): Promise<RawTokensResponse> {
+  public async login(payload): Promise<RawTokensResponse> {
     const user = await this.usersService.findOneByUsername(payload.username);
 
     if (user) {

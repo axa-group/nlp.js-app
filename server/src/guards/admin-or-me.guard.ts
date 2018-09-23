@@ -15,12 +15,12 @@ export class AdminOrMeGuard extends AuthGuard('jwt') {
     const req = context.switchToHttp().getRequest();
     const loggedUser = req.user;
     const { id } = req.params;
-    const user = await this.usersService.findById(id);
+    const user = id && await this.usersService.findById(id);
 
     return this.allowAdminsOrYourself(loggedUser, user) || thrower(UnauthorizedException);
   }
 
   private allowAdminsOrYourself(loggedUser, requestedUser) {
-    return loggedUser.role === role.admin || loggedUser.username === requestedUser.username;
+    return loggedUser.role === role.admin || (loggedUser && requestedUser && loggedUser.username === requestedUser.username);
   }
 }

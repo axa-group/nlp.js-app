@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { Agent } from '../../entities/agent.entity';
 import { UsersService } from '../users/users.service';
+import { PartialAgentDto } from './dtos/partial-agent.dto';
 
 @Injectable()
 export class AgentsService {
@@ -12,7 +13,10 @@ export class AgentsService {
     private usersService: UsersService
   ) {}
 
-  public async create(newEntity): Promise<Agent> {
+  public async create(newEntity, owner): Promise<Agent> {
+
+    (newEntity as PartialAgentDto).owner = owner.id;
+
     return await this.agentRepository.save(newEntity);
   }
 
@@ -26,7 +30,7 @@ export class AgentsService {
 
     return {
       ...agent,
-      owner
+      owner: owner.id
     };
   }
 }

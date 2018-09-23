@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 
+import { JwtAuthGuard } from '../../guards/auth.guard';
 import { NewAgentDto } from './dtos/new-agent.dto';
 import { AgentsService } from './agents.service';
 
@@ -13,8 +14,9 @@ export class AgentsController {
   }
 
   @Post()
-  public async post(@Body() entityDto: NewAgentDto) {
-    return await this.service.create(entityDto);
+  @UseGuards(JwtAuthGuard)
+  public async post(@Body() entityDto: NewAgentDto, @Req() req) {
+    return await this.service.create(entityDto, req.user);
   }
 
   @Post()
