@@ -8,18 +8,18 @@ import { AppModule } from './app.module';
 import { LoggerService } from './modules/shared/services/logger.service';
 
 async function bootstrap() {
+  const logger = new LoggerService('Main');
   const instance: express.Application = express();
 
   instance.use(helmet());
   instance.use(compression());
 
-  const app = await NestFactory.create(AppModule, instance, {
-    logger: new LoggerService('Main')
-  });
+  const app = await NestFactory.create(AppModule, instance, { logger });
 
   app.setGlobalPrefix(settings.apiPrefix);
 
   await app.listen(settings.port);
+  logger.log(`Server running at http://localhost:${settings.port}/${settings.apiPrefix}`);
 }
 
 bootstrap();
