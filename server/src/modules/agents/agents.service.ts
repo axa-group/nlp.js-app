@@ -9,7 +9,7 @@ import { NlpService } from '../nlp/nlp.service';
 import { LoggerService } from '../shared/services/logger.service';
 import { UsersService } from '../users/users.service';
 import { PartialAgentDto } from './dtos/partial-agent.dto';
-import { status } from './settings';
+import { modelsPath, status } from './settings';
 
 @Injectable()
 export class AgentsService {
@@ -83,6 +83,6 @@ export class AgentsService {
   }
 
   private getModelPath(id) {
-    return path.join(__dirname, '..','..', '..', '..', 'nlp-models',`modelnlp-${id}.nlp`);
+    return path.join(modelsPath,`modelnlp-${id}.nlp`);
   }
 }
