@@ -11,8 +11,6 @@
     "build": "rimraf -rf dist && tsc",
     "prestart:prod": "npm run build",
     "start:prod": "node -r dotenv/config dist/server/main.js",
-    "prestart:hmr": "npm run build",
-    "start:hmr": "node -r dotenv/config dist/server/main.hmr.js",
     "test": "jest",
     "test:cov": "jest --coverage",
     "test:e2e": "jest --config ./server/test/jest-e2e.json",

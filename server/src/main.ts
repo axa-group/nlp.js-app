@@ -4,6 +4,7 @@ import * as compression from 'compression';
 import { NestFactory } from '@nestjs/core';
 
 import { settings } from './settings';
+import { production } from './constants';
 import { AppModule } from './app.module';
 import { DocsHelper } from './helpers/docs';
 import { LoggerService } from './modules/shared/services/logger.service';
@@ -20,7 +21,7 @@ async function bootstrap() {
 
   app.setGlobalPrefix(settings.apiPrefix);
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== production) {
     docsPath = DocsHelper.setup(app);
   }
 
