@@ -1,3 +1,3 @@
-export const thrower = (exceptionName) => {
+export const thrower = exceptionName => {
   throw new exceptionName();
 };

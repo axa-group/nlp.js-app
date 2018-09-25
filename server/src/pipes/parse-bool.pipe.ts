@@ -3,11 +3,11 @@ import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from
 @Injectable()
 export class ParseBoolPipe implements PipeTransform<string, boolean> {
   transform(value: string, metadata: ArgumentMetadata): boolean {
-    if(!value || value === '') {
+    if (!value || value === '') {
       return;
     }
     const allowedValues = ['true', 'false'];
-    const boolValue = (value === 'true');
+    const boolValue = value === 'true';
 
     if (!allowedValues.includes(value)) {
       throw new BadRequestException('Invalid value');

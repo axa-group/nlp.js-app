@@ -1,12 +1,12 @@
 import * as PrettyError from 'pretty-error';
-import { createLogger, format, LoggerInstance, LoggerOptions, transports } from 'winston';
+import { createLogger, format, LoggerOptions, transports } from 'winston';
 
 import { settings } from '../settings';
 
 const { combine, timestamp, splat, colorize, label } = format;
 
 export class LoggerService {
-  private readonly logger: LoggerInstance;
+  private readonly logger;
   private readonly prettyError = new PrettyError();
 
   constructor(private context: string, transport?) {
@@ -28,19 +28,14 @@ export class LoggerService {
       label({ label: this.context }),
       timestamp(),
       splat(),
-      // eslint-disable arrow-parens
       format.printf(info => {
         return `[${info.timestamp}]-${info.level} (${info.label}): ${info.message}`;
       })
     );
   }
 
-  get Logger(): LoggerInstance {
+  get Logger() {
     return this.logger;
-  }
-
-  static configGlobal(options?: LoggerOptions) {
-    this.loggerOptions = options;
   }
 
   log(...message): void {

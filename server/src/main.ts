@@ -20,14 +20,14 @@ async function bootstrap() {
 
   app.setGlobalPrefix(settings.apiPrefix);
 
-  if(process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== 'production') {
     docsPath = DocsHelper.setup(app);
   }
 
   await app.listen(settings.port);
   logger.log(`Server running at http://localhost:${settings.port}/${settings.apiPrefix}`);
 
-  if(docsPath) {
+  if (docsPath) {
     logger.log(`Documentation at http://localhost:${settings.port}/${docsPath}`);
   }
 }
