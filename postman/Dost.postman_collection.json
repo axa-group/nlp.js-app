@@ -1,0 +1,730 @@
+{
+	"info": {
+		"_postman_id": "3c0e24ab-f066-4cf3-adf6-b8f323c1b34e",
+		"name": "Dost",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"description": "",
+			"item": [
+				{
+					"name": "Auth login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"ericzon\",\n\t\"password\": \"test1235\"\n}"
+						},
+						"url": {
+							"raw": "{{host}}{{port}}/api/auth/login",
+							"host": [
+								"{{host}}{{port}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh access token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"refresh_token\": \"4K1c9o4NgiosG7JINn07aggwz6U0IPHX57zFkQi3O6PPLRQZr2bTLE4HAYtXNZcFeVE4fW9LkYyGTepCpMpw1CeBXKxbZwbmjpWmP6ZvoywKUAjPuIzeV50P6z02g6GSmw5uV2bqWZECb2Kq2jEt9eRpAaGQFhFcG7IOtYdYwC0CKOVlZCOFlVOtqBsmpzeO3XvUYrEVZWDhrswOv2hwE6Tp0No5SumBU0mAh1rdTLhT2Hh26zBhhAfbEll5SxBi\"\n}"
+						},
+						"url": {
+							"raw": "{{host}}{{port}}/api/auth/token/refresh",
+							"host": [
+								"{{host}}{{port}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"token",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Auth refresh token reject",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imd1ZXN0OCIsInJvbGUiOiJjb250cmlidXRvciIsImlhdCI6MTUzNzEyMDM0OCwiZXhwIjoxNTM3MTIzOTQ4fQ.7oK8-X4TERDi3Z03mO3dM5zcot7KLubMCxPSXmEfQn4"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"refresh_token\" : \"1YpXL0VSyipKdPLfOPM2RbwtX1mv7ZVH1BPYNboCTiNVQ54s8xTH80RDPO4XnuIDo7phADUAZ90DFVYXw8mDCtwbFEJlrQRnkBcHJa0VMDW4vM1xLXi6MBHdbmDZppkoWDUvI0sQEQD41b3BmtV23P6BH5c5joA3LrWqLrxm5FkQpqwtquVpQ0hmMqczT6gT4cffucWjIuY7oRdRCmNOD9WNrTtu124oZ6cB4HFjgn2q2npjho5gJh5BqIR59jHB\"\n}"
+						},
+						"url": {
+							"raw": "{{host}}{{port}}/api/auth/token/reject",
+							"host": [
+								"{{host}}{{port}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"token",
+								"reject"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"description": "",
+			"item": [
+				{
+					"name": "Get all users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6ImFkbWluIiwiaWQiOiI1YjllMjI0ZWQyMGM2NzU2NDI0NzRlOTEiLCJpYXQiOjE1Mzc4ODE3NjgsImV4cCI6MTUzNzg4MjA2OH0.Jp9d3E5vGbiC2jJJQFP-NXKcI21KF2BEzf5Esqtg9Qw"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{host}}{{port}}/api/users?q={\"where\": { \"$or\": [{ \"email\":  \"ericzon@gmail.com\"}, { \"username\":  \"ericzon\"} ] }}",
+							"host": [
+								"{{host}}{{port}}"
+							],
+							"path": [
+								"api",
+								"users"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "{\"where\": { \"$or\": [{ \"email\":  \"ericzon@gmail.com\"}, { \"username\":  \"ericzon\"} ] }}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get users filtered by query",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNTM3MjIwOTg1LCJleHAiOjE1MzcyMjEyODV9.JDm7NfdhPlp96H4KalyFPU0j1v7pFG-8jEWkfxva8lE"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{host}}{{port}}/api/users?q={\"where\":{\"username\":\"ericzon\"}}",
+							"host": [
+								"{{host}}{{port}}"
+							],
+							"path": [
+								"api",
+								"users"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "{\"where\":{\"username\":\"ericzon\"}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create user",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNTM3MDkwMzY1LCJleHAiOjE1MzcwOTM5NjV9.wNb5jjBCfA2E2feanVg2RiDaa4pNI8B84F3p8L0fwRc"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"otherguest\",\n    \"username\": \"otherguest\",\n    \"password\": \"test1234\",\n    \"email\": \"otherguest.dost@gmail.com\",\n    \"role\": \"contributor\"\n}\n"
+						},
+						"url": {
+							"raw": "{{host}}{{port}}/api/users",
+							"host": [
+								"{{host}}{{port}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user by id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNTM3MjIwMDA0LCJleHAiOjE1MzcyMjAzMDR9.w-aPsxAFK7TQo0YOSUaTTfsmpUpd1ixnlUKVuJWzpnA"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{host}}{{port}}/api/users/5b990816368146f5873d71fa",
+							"host": [
+								"{{host}}{{port}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"5b990816368146f5873d71fa"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch single user by id",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"ericzon3\"\n}"
+						},
+						"url": {
+							"raw": "{{host}}{{port}}/api/users/5b8cf35a096271644a39f9ac",
+							"host": [
+								"{{host}}{{port}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"5b8cf35a096271644a39f9ac"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change user password",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNTM3MjIxMzkxLCJleHAiOjE1MzcyMjE2OTF9.jAL3KVVHSlejSoXIkI_PDl8CANgBL1WMsLR1uIEAJcY"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"password\": \"test1234\"\n}"
+						},
+						"url": {
+							"raw": "{{host}}{{port}}/api/users/5b9e2214d20c675642474e90/change-password",
+							"host": [
+								"{{host}}{{port}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"5b9e2214d20c675642474e90",
+								"change-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user by id",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNTM3MDkwMzY1LCJleHAiOjE1MzcwOTM5NjV9.wNb5jjBCfA2E2feanVg2RiDaa4pNI8B84F3p8L0fwRc"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{host}}{{port}}/api/users/5b9e23725654b457777a5008",
+							"host": [
+								"{{host}}{{port}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"5b9e23725654b457777a5008"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Agents",
+			"description": "",
+			"item": [
+				{
+					"name": "Create new agent",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImVyaWN6b24iLCJyb2xlIjoiY29udHJpYnV0b3IiLCJpZCI6IjViOGNkYzllODlhMmJhNTdmOWJjMWRiMiIsImlhdCI6MTUzNzgxMzUwNSwiZXhwIjoxNTM3ODEzODA1fQ.5ceLJMsufQKG-V--uKXQCaGHTRVWD-KpFILFpTE3QUU"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"agent1\",\n\t\"description\": \"agent description\",\n\t\"languages\": [{\n        \"id\": \"es_ES\",\n        \"code\": \"es\",\n        \"text\": \"ES\"\n    }, {\n        \"id\": \"en_US\",\n        \"code\": \"en\",\n        \"text\": \"EN\",\n        \"isDefault\": true\n    }, {\n        \"id\": \"es_CA\",\n        \"code\": \"ca\",\n        \"text\": \"CA\"\n    }],\n\t\"fallbackResponses\": [{\n        \"text\": \"Perdona, no te he entendido\",\n        \"lang\": \"es\"\n    }, {\n        \"text\": \"Sorry, I didn't understand\",\n        \"lang\": \"en\"\n    }],\n\t\"intents\": [{\n\t\t\"domainId\": \"1\",\n\t\t\"code\": \"food\",\n\t\t\"lang\": \"en\",\n\t\t\"name\": \"Food\",\n\t\t\"says\": [{\n\t\t\t\"text\": \"Say 1\",\n\t\t\t\"entities\": []\n\t\t}],\n\t\t\"slots\": [{\n\t\t\t\"name\": \"slot name 1\",\n\t\t\t\"entityCode\": \"entity.code.1\",\n\t\t\t\"isList\": false,\n\t\t\t\"isRequired\": false,\n\t\t\t\"textPrompt\": \"text prompt 1\"\n\t\t}],\n\t\t\"responses\": [\n\t\t\t\"response 1\",\n\t\t\t\"response 2\"\n\t\t],\n\t\t\"webhookSettings\": {\n\t\t\t\"isEnabled\": false\n\t\t}\n\t}],\n\t\"domainThreshold\": 0.7,\n\t\"webhookSettings\": {\n\t\t\"isEnabled\": true,\n\t\t\"verb\": \"post\",\n\t\t\"url\": \"http://myurl.com/api/webhook\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{host}}{{port}}/api/agents",
+							"host": [
+								"{{host}}{{port}}"
+							],
+							"path": [
+								"api",
+								"agents"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create new agent Example 2",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImVyaWN6b24iLCJyb2xlIjoiY29udHJpYnV0b3IiLCJpZCI6IjViOGNkYzllODlhMmJhNTdmOWJjMWRiMiIsImlhdCI6MTUzNzgyNDcyMiwiZXhwIjoxNTM3ODI1MDIyfQ.D-BCJCPuPpPEYfjV-BJBBfcwC55nY9AYyTl_ZA9gJiQ"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"My car agent\",\n\t\"description\": \"Agent in charge of serve cars\",\n\t\"languages\": [{\n        \"id\": \"en_US\",\n        \"code\": \"en\",\n        \"text\": \"EN\",\n        \"isDefault\": true\n    }],\n\t\"fallbackResponses\": [{\n        \"text\": \"Sorry, I didn't understand\",\n        \"lang\": \"en\"\n    }],\n\t\"intents\": [],\n\t\"entities\": [],\n\t\"domainThreshold\": 0.7,\n\t\"webhookSettings\": {\n\t\t\"isEnabled\": true,\n\t\t\"verb\": \"post\",\n\t\t\"url\": \"http://myurl.com/api/webhook\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{host}}{{port}}/api/agents",
+							"host": [
+								"{{host}}{{port}}"
+							],
+							"path": [
+								"api",
+								"agents"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all agents",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}{{port}}/api/agents/5ba957e1c2a1ae657ace0db8",
+							"host": [
+								"{{host}}{{port}}"
+							],
+							"path": [
+								"api",
+								"agents",
+								"5ba957e1c2a1ae657ace0db8"
+							]
+						}
+					},
+					"response": [
+						{
+							"id": "13fbc543-ec75-4acf-bab9-4695374dac18",
+							"name": "Get all agents",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "localhost:3333/api/agents",
+									"host": [
+										"localhost"
+									],
+									"port": "3333",
+									"path": [
+										"api",
+										"agents"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Connection",
+									"value": "keep-alive",
+									"name": "Connection",
+									"description": "Options that are desired for the connection"
+								},
+								{
+									"key": "Content-Length",
+									"value": "636",
+									"name": "Content-Length",
+									"description": "The length of the response body in octets (8-bit bytes)"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8",
+									"name": "Content-Type",
+									"description": "The mime type of this content"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 08 Sep 2018 17:23:25 GMT",
+									"name": "Date",
+									"description": "The date and time that the message was sent"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"27c-txYSdyaLbFBfzHdMp9xXTlNY8dE\"",
+									"name": "ETag",
+									"description": "An identifier for a specific version of a resource, often a message digest"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "Express",
+									"name": "X-Powered-By",
+									"description": "Specifies the technology (ASP.NET, PHP, JBoss, e.g.) supporting the web application (version details are often in X-Runtime, X-Version, or X-AspNet-Version)"
+								}
+							],
+							"cookie": [
+								{
+									"expires": "Tue Jan 19 2038 04:14:07 GMT+0100 (CET)",
+									"httpOnly": true,
+									"domain": "localhost",
+									"path": "/",
+									"secure": true,
+									"value": "f49e16d8eb7869c8d4db625ba29a197e",
+									"key": "4eb0da3613c75b59829a906b37bf7e08"
+								},
+								{
+									"expires": "Tue Jan 19 2038 04:14:07 GMT+0100 (CET)",
+									"httpOnly": true,
+									"domain": "localhost",
+									"path": "/",
+									"secure": true,
+									"value": "992b6886fe4ac2dd2d3c7d6a30ab05a1",
+									"key": "38b24b70ccb130b6414667cbe397c20a"
+								},
+								{
+									"expires": "Tue Jan 19 2038 04:14:07 GMT+0100 (CET)",
+									"httpOnly": true,
+									"domain": "localhost",
+									"path": "/",
+									"secure": true,
+									"value": "4fd60bd96ec43f1b0db4129f4166e45e",
+									"key": "5a5021e3be3db6da511f69c285eb884a"
+								}
+							],
+							"body": "[{\"id\":\"5b9403bfc9b6fb660882759d\",\"name\":\"agent1\",\"description\":\"agent description\",\"languages\":[{\"id\":\"es_ES\",\"text\":\"ES\"},{\"id\":\"es_CA\",\"text\":\"CA\"}],\"fallbackResponses\":[\"perdona, no te he entendido\"],\"intents\":[{\"domainId\":\"1\",\"code\":\"food\",\"name\":\"Food\",\"says\":[{\"text\":\"Say 1\"}],\"slots\":[{\"name\":\"slot name 1\",\"entityCode\":\"entity.code.1\",\"isList\":false,\"isRequired\":false,\"textPrompt\":\"text prompt 1\"}],\"responses\":[\"response 1\",\"response 2\"],\"webhookSettings\":{\"isEnabled\":false}}],\"domainThreshold\":0.7,\"webhookSettings\":{\"isEnabled\":true,\"verb\":\"post\",\"url\":\"http://myurl.com/api/webhook\"},\"owner\":\"5b8cdc9e89a2ba57f9bc1db2\"}]"
+						}
+					]
+				},
+				{
+					"name": "Get agent by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}{{port}}/api/agents/5b9403bfc9b6fb660882759d",
+							"host": [
+								"{{host}}{{port}}"
+							],
+							"path": [
+								"api",
+								"agents",
+								"5b9403bfc9b6fb660882759d"
+							]
+						}
+					},
+					"response": [
+						{
+							"id": "546c8219-fe42-490a-810e-d33747d6289a",
+							"name": "Get agent by id",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "localhost:3333/api/agents/5b9403bfc9b6fb660882759d",
+									"host": [
+										"localhost"
+									],
+									"port": "3333",
+									"path": [
+										"api",
+										"agents",
+										"5b9403bfc9b6fb660882759d"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Connection",
+									"value": "keep-alive",
+									"name": "Connection",
+									"description": "Options that are desired for the connection"
+								},
+								{
+									"key": "Content-Length",
+									"value": "704",
+									"name": "Content-Length",
+									"description": "The length of the response body in octets (8-bit bytes)"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8",
+									"name": "Content-Type",
+									"description": "The mime type of this content"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 08 Sep 2018 17:29:51 GMT",
+									"name": "Date",
+									"description": "The date and time that the message was sent"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2c0-wvEEPpTF47YVkQLwd9zyZabcbYU\"",
+									"name": "ETag",
+									"description": "An identifier for a specific version of a resource, often a message digest"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "Express",
+									"name": "X-Powered-By",
+									"description": "Specifies the technology (ASP.NET, PHP, JBoss, e.g.) supporting the web application (version details are often in X-Runtime, X-Version, or X-AspNet-Version)"
+								}
+							],
+							"cookie": [
+								{
+									"expires": "Tue Jan 19 2038 04:14:07 GMT+0100 (CET)",
+									"httpOnly": true,
+									"domain": "localhost",
+									"path": "/",
+									"secure": true,
+									"value": "f49e16d8eb7869c8d4db625ba29a197e",
+									"key": "4eb0da3613c75b59829a906b37bf7e08"
+								},
+								{
+									"expires": "Tue Jan 19 2038 04:14:07 GMT+0100 (CET)",
+									"httpOnly": true,
+									"domain": "localhost",
+									"path": "/",
+									"secure": true,
+									"value": "992b6886fe4ac2dd2d3c7d6a30ab05a1",
+									"key": "38b24b70ccb130b6414667cbe397c20a"
+								},
+								{
+									"expires": "Tue Jan 19 2038 04:14:07 GMT+0100 (CET)",
+									"httpOnly": true,
+									"domain": "localhost",
+									"path": "/",
+									"secure": true,
+									"value": "4fd60bd96ec43f1b0db4129f4166e45e",
+									"key": "5a5021e3be3db6da511f69c285eb884a"
+								}
+							],
+							"body": "{\"id\":\"5b9403bfc9b6fb660882759d\",\"name\":\"agent1\",\"description\":\"agent description\",\"languages\":[{\"id\":\"es_ES\",\"text\":\"ES\"},{\"id\":\"es_CA\",\"text\":\"CA\"}],\"fallbackResponses\":[\"perdona, no te he entendido\"],\"intents\":[{\"domainId\":\"1\",\"code\":\"food\",\"name\":\"Food\",\"says\":[{\"text\":\"Say 1\"}],\"slots\":[{\"name\":\"slot name 1\",\"entityCode\":\"entity.code.1\",\"isList\":false,\"isRequired\":false,\"textPrompt\":\"text prompt 1\"}],\"responses\":[\"response 1\",\"response 2\"],\"webhookSettings\":{\"isEnabled\":false}}],\"domainThreshold\":0.7,\"webhookSettings\":{\"isEnabled\":true,\"verb\":\"post\",\"url\":\"http://myurl.com/api/webhook\"},\"owner\":{\"id\":\"5b8cdc9e89a2ba57f9bc1db2\",\"name\":\"Eric\",\"username\":\"ericzon\",\"email\":\"ericzon@gmail.com\"}}"
+						}
+					]
+				},
+				{
+					"name": "Train agent",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}{{port}}/api/agents/5ba957e1c2a1ae657ace0db8/train?forceUpdate=true",
+							"host": [
+								"{{host}}{{port}}"
+							],
+							"path": [
+								"api",
+								"agents",
+								"5ba957e1c2a1ae657ace0db8",
+								"train"
+							],
+							"query": [
+								{
+									"key": "forceUpdate",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Process line",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"line\": \"I have a red car\"\n}"
+						},
+						"url": {
+							"raw": "{{host}}{{port}}/api/agents/5ba957e1c2a1ae657ace0db8/process",
+							"host": [
+								"{{host}}{{port}}"
+							],
+							"path": [
+								"api",
+								"agents",
+								"5ba957e1c2a1ae657ace0db8",
+								"process"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update agent entities & intents",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"intents\": [{\n        \"domainId\": \"motor\",\n        \"code\": \"car.motor\",\n        \"lang\": \"en\",\n        \"name\": \"motorname\",\n        \"says\": [\n            {\n                \"text\": \"I have a %motorType% motor\",\n                \"entities\": []\n            }\n        ],\n        \"slots\": [],\n        \"responses\": [\n            \"ok, we took note of your motor\",\n            \"nice! we have your kind of motor saved\"\n        ],\n        \"webhookSettings\": {\n            \"isEnabled\": false\n        }\n    }, {\n        \"domainId\": \"motor\",\n        \"code\": \"car.color\",\n        \"lang\": \"en\",\n        \"name\": \"colorname\",\n        \"says\": [\n            {\n                \"text\": \"I have a %color% car\",\n                \"entities\": []\n            }, {\n                \"text\": \"My car is color %color%\",\n                \"entities\": []\n            }\n        ],\n        \"slots\": [],\n        \"responses\": [\n            \"ok, we took note of your color\",\n            \"nice! we have your color of car saved\"\n        ],\n        \"webhookSettings\": {\n            \"isEnabled\": false\n        }\n    }],\n\t\"entities\": [{\n\t\t\"code\": \"motorType\",\n\t\t\"domainCode\": \"cars\",\n\t\t\"type\": \"learned\",\n\t\t\"color\": \"blue\",\n\t\t\"examples\": [{\n\t\t\t\"synonyms\": [\"gasoline\", \"fuel\", \"petrol\", \"diesel\"],\n\t\t\t\"validLangs\": [\"en\"]\n\t\t}]\n\t}, {\n\t\t\"code\": \"color\",\n\t\t\"domainCode\": \"general\",\n\t\t\"type\": \"learned\",\n\t\t\"color\": \"green\",\n\t\t\"examples\": [{\n\t\t\t\"synonyms\": [\"red\", \"green\", \"blue\", \"yellow\", \"black\", \"white\", \"pink\", \"orange\", \"gray\"],\n\t\t\t\"validLangs\": [\"en\"]\n\t\t}]\n\t}]\n}"
+						},
+						"url": {
+							"raw": "{{host}}{{port}}/api/agents/5ba957e1c2a1ae657ace0db8",
+							"host": [
+								"{{host}}{{port}}"
+							],
+							"path": [
+								"api",
+								"agents",
+								"5ba957e1c2a1ae657ace0db8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get agent status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}{{port}}/api/agents/5ba7a187cc2cf77b35fa94d8/status",
+							"host": [
+								"{{host}}{{port}}"
+							],
+							"path": [
+								"api",
+								"agents",
+								"5ba7a187cc2cf77b35fa94d8",
+								"status"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get ui-settings",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{host}}{{port}}/api/ui-settings",
+					"host": [
+						"{{host}}{{port}}"
+					],
+					"path": [
+						"api",
+						"ui-settings"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
