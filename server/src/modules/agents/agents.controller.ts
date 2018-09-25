@@ -44,6 +44,9 @@ export class AgentsController {
 
   @Patch(':id')
   public async patch(@Param('id') id: string, @Body() partialEntity) {
-    return await this.service.updateOne(id, partialEntity);
+    const forceUpdate = partialEntity.entities || partialEntity.intents;
+
+    await this.service.updateOne(id, partialEntity);
+    this.service.trainNlp(id, forceUpdate);
   }
 }
