@@ -7,4 +7,4 @@ export const status = {
   training: 'training',
   default: defaultStatus
 };
-export const modelsPath = process.env.MODELS_PATH ||  path.join(__dirname, '..','..','..', '..', '..', 'nlp-models');
+export const modelsPath = process.env.MODELS_PATH || path.join(__dirname, '..', '..', '..', '..', '..', 'nlp-models');

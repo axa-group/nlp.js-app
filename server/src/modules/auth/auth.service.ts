@@ -68,7 +68,12 @@ export class AuthService {
   }
 
   private hasValidExpiryTime(tokenPayload) {
-    return tokenPayload && moment().toDate().getTime() < tokenPayload.expiresAt.getTime();
+    return (
+      tokenPayload &&
+      moment()
+        .toDate()
+        .getTime() < tokenPayload.expiresAt.getTime()
+    );
   }
 
   private generateRefreshTokenPayload(username) {

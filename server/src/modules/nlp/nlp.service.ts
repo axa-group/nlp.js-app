@@ -13,7 +13,7 @@ export class NlpService {
   private readonly logger: LoggerService = new LoggerService(NlpService.name);
 
   initManager(options) {
-    this.logger.log('Initializing manager with: %j',options);
+    this.logger.log('Initializing manager with: %j', options);
 
     return new NlpManager(options);
   }
@@ -26,20 +26,20 @@ export class NlpService {
     }
     const { intents, entities } = agent;
     const documents: Document[] = [];
-    const answers: Document[]  = [];
+    const answers: Document[] = [];
 
     intents.forEach(intent => {
       intent.says.forEach((say: Say) => documents.push(this.adaptDoc(intent, say.text)));
       intent.responses.forEach((response: string) => answers.push(this.adaptDoc(intent, response)));
     });
 
-    for(const entity of entities) {
-      for(const entityExample of entity.examples) {
+    for (const entity of entities) {
+      for (const entityExample of entity.examples) {
         manager.addNamedEntityText(entity.domainCode, entity.code, entityExample.validLangs, entityExample.synonyms);
       }
     }
 
-    for(const doc of documents) {
+    for (const doc of documents) {
       manager.addDocument(doc.lang, doc.text, doc.intent);
     }
 
@@ -51,7 +51,7 @@ export class NlpService {
 
     this.logger.log('Trained (hr): %ds %dms', hrend[0], hrend[1] / 1000000);
 
-    for(const answer of answers) {
+    for (const answer of answers) {
       manager.addAnswer(answer.lang, answer.intent, answer.text);
     }
 
@@ -61,12 +61,12 @@ export class NlpService {
   }
 
   async processLine(line, manager, { threshold = 0.7 } = {}) {
-    if(!manager) {
+    if (!manager) {
       throw new NoTrainedAgentException();
     }
     const result = await manager.process(line);
 
-    this.logger.log('result -> %j',result);
+    this.logger.log('result -> %j', result);
 
     return {
       answer: this.getAnswerOutput(result, threshold),

@@ -67,7 +67,7 @@ export class AgentsService {
   public async processLine(id: string, line: string) {
     const agent = await this.agentRepository.findOne(id);
 
-    if(agent.status === status.dumb) {
+    if (agent.status === status.dumb) {
       throw new NoTrainedAgentException();
     }
 
@@ -83,6 +83,6 @@ export class AgentsService {
   }
 
   private getModelPath(id) {
-    return path.join(modelsPath,`modelnlp-${id}.nlp`);
+    return path.join(modelsPath, `modelnlp-${id}.nlp`);
   }
 }
