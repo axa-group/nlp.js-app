@@ -1,18 +1,21 @@
-import { Entity, Column, ObjectIdColumn, ObjectID, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity as EntityTypeOrm, Column, ObjectIdColumn, ObjectID, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 import { utc } from '../constants';
+import { defaultStatus } from '../modules/agents/settings';
+import { Fallback } from './fallback.entity';
 import { Intent } from './intent.entity';
 import { DomainAgent } from './domain-agent.entity';
 import { Language } from './language.entity';
 import { WebhookSettings } from './webhook-settings.entity';
+import { Entity } from './entity.entity';
 
-@Entity()
+@EntityTypeOrm()
 export class Agent {
   @ObjectIdColumn()
   id: ObjectID;
   @Column()
   name: string;
-  @Column()
+  @Column({ default: defaultStatus })
   // ready | training | ...
   status: string;
   @Column()
@@ -20,13 +23,15 @@ export class Agent {
   @Column()
   languages: Language[];
   @Column()
-  fallbackResponses: string[];
+  fallbackResponses: Fallback[];
   @Column()
   intents: Intent[];
   @Column()
   domainThreshold: number;
   @Column()
-  domains: DomainAgent;
+  domains: DomainAgent[];
+  @Column()
+  entities: Entity[];
   @Column()
   // to define a global webhook that will be called each time the user talks with your agent then you can do it here
   webhookSettings: WebhookSettings;

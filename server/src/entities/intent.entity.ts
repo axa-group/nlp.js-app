@@ -11,8 +11,9 @@ export class Intent {
   @Column()
   domainId: ObjectID;
   @Column()
-  // standardized version of name
-  code: string;
+  code: string; // standardized version of name
+  @Column()
+  lang: string; // en, es, ca
   @Column()
   name: string;
   @Column()

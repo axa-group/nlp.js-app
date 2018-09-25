@@ -57,6 +57,7 @@ JWT_SECRET_KEY=<Secret to generate tokens>
 SALT_FACTOR_INT=<Default: 10 (optional)>
 EXPIRY_TIME_SECONDS=<Token lifetime. Default: 300>
 REFRESH_EXPIRY_TIME_SECONDS=<Refresh token lifetime. Default: 7200>
+MODELS_PATH=<Default: '{dost-folder}/nlp-models'>
 ```
 
 ## Logging
