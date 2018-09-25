@@ -1,11 +1,11 @@
-import { Entity, Column, ObjectIdColumn, ObjectID } from 'typeorm';
+import { Entity, Column } from 'typeorm';
 
 @Entity()
 export class EntityExample {
-  @ObjectIdColumn()
-  id: ObjectID;
   @Column()
   value: string;
   @Column()
   synonyms: string[];
+  @Column()
+  validLangs: string[];
 }
