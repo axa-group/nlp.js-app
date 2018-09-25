@@ -5,3 +5,5 @@ export const role = {
   contributor: 'contributor',
   admin: 'admin'
 };
+
+export const roleList = Object.keys(role).map(key => role[key]);

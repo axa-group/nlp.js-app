@@ -1,4 +1,5 @@
 import { Body, Controller, HttpStatus, Post, Res, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiUseTags } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '../../guards/auth.guard';
 import { AdminOrMineRefreshTokenGuard } from '../../guards/admin-or-mine-refresh-token.guard';
@@ -8,6 +9,7 @@ import { RawTokensResponse } from './interfaces/raw-tokens-response.interface';
 import { ITokenResponse } from './interfaces/token-response.interface';
 import { AuthService } from './auth.service';
 
+@ApiUseTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private service: AuthService) {}
@@ -28,6 +30,7 @@ export class AuthController {
   }
 
   @Post('token/reject')
+  @ApiBearerAuth()
   @UseGuards(new JwtAuthGuard([]), AdminOrMineRefreshTokenGuard)
   public async rejectToken(@Body() body: RefreshDto, @Res() res) {
     await this.service.rejectToken(body.refresh_token);

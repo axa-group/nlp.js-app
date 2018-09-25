@@ -1,14 +1,21 @@
 import { Entity, Column } from 'typeorm';
+import { ApiModelProperty } from '@nestjs/swagger';
 
 @Entity()
 export class Language {
-  // en_US, en, 'English', true
   @Column()
+  @ApiModelProperty({ example: 'en_US' })
   id: string;
+
   @Column()
+  @ApiModelProperty({ example: 'en' })
   code: string;
+
   @Column()
+  @ApiModelProperty({ example: 'English' })
   text: string;
+
   @Column()
+  @ApiModelProperty({ example: true, default: true })
   isDefault?: boolean;
 }

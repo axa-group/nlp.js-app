@@ -1,10 +1,14 @@
 import { Body, Controller, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiImplicitQuery, ApiUseTags } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '../../guards/auth.guard';
 import { ParseBoolPipe } from '../../pipes/parse-bool.pipe';
+import { InputDto } from './dtos/input.dto';
 import { NewAgentDto } from './dtos/new-agent.dto';
 import { AgentsService } from './agents.service';
 
+@ApiUseTags('agents')
+@ApiBearerAuth()
 @Controller('agents')
 export class AgentsController {
   constructor(private service: AgentsService) {}
@@ -27,12 +31,13 @@ export class AgentsController {
   }
 
   @Post(':id/train')
+  @ApiImplicitQuery({ name: 'forceUpdate', type: Boolean, required: false })
   public async startTraining(@Param('id') id: string, @Query('forceUpdate', new ParseBoolPipe()) forceUpdate: boolean) {
     this.service.trainNlp(id, forceUpdate);
   }
 
   @Post(':id/process')
-  public async processLine(@Param('id') id: string, @Body() body) {
+  public async processLine(@Param('id') id: string, @Body() body: InputDto) {
     return await this.service.processLine(id, body.line);
   }
 

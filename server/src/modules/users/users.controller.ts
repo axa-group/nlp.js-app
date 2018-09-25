@@ -11,6 +11,7 @@ import {
   Res,
   UseGuards
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiUseTags } from '@nestjs/swagger';
 
 import { role } from '../../constants';
 import { AdminOrMeGuard } from '../../guards/admin-or-me.guard';
@@ -21,6 +22,8 @@ import { ChangePasswordDto } from './dtos/change-password.dto';
 import { NewUserDto } from './dtos/new-user.dto';
 import { UsersService } from './users.service';
 
+@ApiUseTags('users')
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
   private readonly logger: LoggerService = new LoggerService(UsersController.name);
