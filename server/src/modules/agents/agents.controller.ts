@@ -18,7 +18,7 @@ export class AgentsController {
   public async getStatus(@Param('id') id: string) {
     const { status } = await this.service.findById(id);
 
-    return status;
+    return { status };
   }
 
   @Get(':id')
