@@ -1,6 +1,6 @@
 {
   "name": "dost-server",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Server part for the DOST project",
   "author": "jesus.seijas@axa-groupsolutions.com",
   "license": "MIT",
