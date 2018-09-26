@@ -13,7 +13,7 @@ import { modelsPath, status } from './settings';
 
 @Injectable()
 export class AgentsService {
-  private readonly logger: LoggerService = new LoggerService(NlpService.name);
+  private readonly logger: LoggerService = new LoggerService(AgentsService.name);
   private manager;
 
   constructor(

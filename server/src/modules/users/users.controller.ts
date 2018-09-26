@@ -1,18 +1,36 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Query, Res, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiUseTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Res,
+  UseGuards, UsePipes,
+  ValidationPipe
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiImplicitQuery, ApiUseTags } from '@nestjs/swagger';
 
 import { role } from '../../constants';
+import { ParseJsonPipe } from '../../pipes/parse-json.pipe';
+import { validationLevel } from '../../settings';
 import { AdminOrMeGuard } from '../../guards/admin-or-me.guard';
 import { JwtAuthGuard } from '../../guards/auth.guard';
 import { RegisterGuard } from '../../guards/register.guard';
 import { LoggerService } from '../shared/services/logger.service';
 import { ChangePasswordDto } from './dtos/change-password.dto';
 import { NewUserDto } from './dtos/new-user.dto';
+import { PatchUserDto } from './dtos/patch-user.dto';
+import { FindQueryDto } from './dtos/find-query.dto';
 import { UsersService } from './users.service';
 
-@ApiUseTags('users')
 @ApiBearerAuth()
+@ApiUseTags('users')
 @Controller('users')
+@UsePipes(new ValidationPipe(validationLevel.strict))
 export class UsersController {
   private readonly logger: LoggerService = new LoggerService(UsersController.name);
 
@@ -20,8 +38,8 @@ export class UsersController {
 
   @Get()
   @UseGuards(new JwtAuthGuard([role.admin]))
-  public async get(@Query('q') q) {
-    const query = q && q !== '' ? JSON.parse(q) : q;
+  @ApiImplicitQuery({ name: 'q', type: Object, required: false })
+  public async get(@Query('q', new ParseJsonPipe()) query?: FindQueryDto) {
     const items = await this.service.findAll(query);
 
     this.logger.log('get request received! %j', items);
@@ -51,7 +69,7 @@ export class UsersController {
 
   @Patch(':id')
   @UseGuards(new JwtAuthGuard([role.contributor, role.admin]))
-  public async patch(@Param('id') id: string, @Body() partialEntity) {
+  public async patch(@Param('id') id: string, @Body() partialEntity: PatchUserDto) {
     return await this.service.updateOne(id, partialEntity);
   }
 

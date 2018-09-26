@@ -27,6 +27,8 @@
     "@nestjs/swagger": "^2.5.1",
     "@nestjs/typeorm": "^5.2.0",
     "bcrypt": "^3.0.0",
+    "class-transformer": "^0.1.9",
+    "class-validator": "^0.9.1",
     "compression": "^1.7.3",
     "dotenv": "^6.0.0",
     "fastify-formbody": "^2.0.0",

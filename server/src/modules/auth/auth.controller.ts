@@ -1,8 +1,9 @@
-import { Body, Controller, HttpStatus, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiUseTags } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '../../guards/auth.guard';
 import { AdminOrMineRefreshTokenGuard } from '../../guards/admin-or-mine-refresh-token.guard';
+import { validationLevel } from '../../settings';
 import { LoginDto } from './dtos/login.dto';
 import { RefreshDto } from './dtos/refresh.dto';
 import { RawTokensResponse } from './interfaces/raw-tokens-response.interface';
@@ -11,6 +12,7 @@ import { AuthService } from './auth.service';
 
 @ApiUseTags('auth')
 @Controller('auth')
+@UsePipes(new ValidationPipe(validationLevel.strict))
 export class AuthController {
   constructor(private service: AuthService) {}
 

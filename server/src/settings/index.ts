@@ -21,3 +21,7 @@ export const settings = {
   apiPrefix: API_PREFIX || 'api',
   db: dbSettings
 };
+
+export const validationLevel = {
+  strict: { forbidNonWhitelisted: true, whitelist: true }
+};

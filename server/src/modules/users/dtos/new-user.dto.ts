@@ -1,20 +1,20 @@
+import { IsIn, IsString, MinLength } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
 
 import { roleList } from '../../../constants';
+import { PatchUserDto } from './patch-user.dto';
 
-export class NewUserDto {
+export class NewUserDto extends PatchUserDto {
   @ApiModelProperty()
-  name: string;
-
-  @ApiModelProperty()
+  @IsString()
   username: string;
 
   @ApiModelProperty()
+  @IsString()
+  @MinLength(8)
   password: string;
 
-  @ApiModelProperty()
-  email: string;
-
   @ApiModelProperty({ enum: roleList })
+  @IsIn(roleList)
   role: string;
 }
