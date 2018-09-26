@@ -7,7 +7,7 @@ export class ParseJsonPipe implements PipeTransform<string, object> {
       return;
     }
 
-    try{
+    try {
       return typeof value === 'object' || JSON.parse(value);
     } catch (e) {
       throw new BadRequestException('Invalid json');

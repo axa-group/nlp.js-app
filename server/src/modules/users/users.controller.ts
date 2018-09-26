@@ -9,7 +9,8 @@ import {
   Post,
   Query,
   Res,
-  UseGuards, UsePipes,
+  UseGuards,
+  UsePipes,
   ValidationPipe
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiImplicitQuery, ApiUseTags } from '@nestjs/swagger';
