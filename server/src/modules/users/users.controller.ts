@@ -10,8 +10,8 @@ import { ChangePasswordDto } from './dtos/change-password.dto';
 import { NewUserDto } from './dtos/new-user.dto';
 import { UsersService } from './users.service';
 
-@ApiUseTags('users')
 @ApiBearerAuth()
+@ApiUseTags('users')
 @Controller('users')
 export class UsersController {
   private readonly logger: LoggerService = new LoggerService(UsersController.name);

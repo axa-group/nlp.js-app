@@ -1,5 +1,6 @@
-import * as PrettyError from 'pretty-error';
 import { createLogger, format, LoggerOptions, transports } from 'winston';
+// tslint:disable-next-line
+const PrettyError = require('pretty-error');
 
 import { settings } from '../settings';
 

@@ -1,14 +1,14 @@
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { settings } from '../settings';
-import packageJson = require('../../../package.json');
+import * as data from '../../../package.json';
 
 export class DocsHelper {
   public static setup(app) {
     const options = new DocumentBuilder()
       .setTitle('Dost API docs')
       .setDescription('Dost backend documentation')
-      .setVersion(packageJson.version)
+      .setVersion(data.version)
       .setBasePath(settings.apiPrefix)
       .addBearerAuth()
       .build();
