@@ -4,6 +4,8 @@
 
 # NLP.js App
 
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
 Application to train and use NLP.js.
 
 "NLP.js" is a general natural language utilities for nodejs. Currently supporting:
