@@ -1,0 +1,34 @@
+{
+  "name": "nlp.js",
+  "description": "Set up a NLP.js instance on Heroku with ease",
+  "keywords": [
+    "NLP",
+    "chatbot",
+    "machine learning",
+    "artificial intelligence"
+  ],
+  "website": "https://github.com/axa-group/nlp.js-app",
+  "repository": "https://github.com/axa-group/nlp.js-app",
+  "logo": "https://github.com/axa-group/nlp.js-app/raw/master/screenshots/nlplogo.gif",
+  "success_url": "/",
+  "env": {
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "free"
+    }
+  },
+  "image": "heroku/nodejs",
+  "addons": [
+    {
+      "plan": "mongolab:sandbox",
+      "as": "MONGO_URL"
+    }
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}
