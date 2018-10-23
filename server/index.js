@@ -29,8 +29,10 @@ const app = require('./app');
 const registerFeats = require('./boot/register-feats');
 const startDatabase = require('./boot/start-database');
 
+const port = process.env.PORT || 3000;
+
 const server = new Hapi.Server({
-  port: 3000,
+  port,
   routes: {
     cors: true,
     files: {

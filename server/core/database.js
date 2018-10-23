@@ -26,7 +26,7 @@ const Joigoose = require('joigoose');
 
 class Database {
   constructor(url) {
-    this.url = url || process.env.MONGO_URL;
+    this.url = url || process.env.MONGO_URL_URI || process.env.MONGO_URL;
     mongoose.set('useFindAndModify', false);
     this.joigoose = Joigoose(mongoose);
     this.schemas = {};
