@@ -1,96 +1,41 @@
-# Dost
+<div align="center">
+<img src="https://github.com/axa-group/nlp.js-app/raw/master/screenshots/nlplogo.gif" width="925" height="auto"/>
+</div>
 
-## Description
+# NLP.js App
 
-Server part for the DOST project
+Application to train and use NLP.js.
+
+"NLP.js" is a general natural language utilities for nodejs. Currently supporting:
+
+### TABLE OF CONTENTS
+
+<!--ts-->
+
+- [Installation](#installation)
+- [Contributing](#contributing)
+- [Code of Conduct](#code-of-conduct)
+- [Who is behind it](#who-is-behind-it)
+- [License](#license.md)
+  <!--te-->
 
 ## Installation
 
-```bash
-$ npm install
-```
-
-## Running the app
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-npm run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Generate technical documentation
-
-```
-npm run docs
-```
-
-## Configuration
-
-You can setup some backend options in your .env file
-
-```
-NODE_ENV=<Default: 'development' (optional)>
-PORT=<Listening port. Default: 3000>
-LOG_LEVEL=<Default value depends on NODE_ENV info or warn. (optional)>
-DB_HOST=<Default: 'localhost' (optional)>
-DB_PORT=<Default: 27017 (optional)>
-DB_NAME=<Default: 'dost' (optional)>
-JWT_SECRET_KEY=<Secret to generate tokens>
-SALT_FACTOR_INT=<Default: 10 (optional)>
-EXPIRY_TIME_SECONDS=<Token lifetime. Default: 300>
-REFRESH_EXPIRY_TIME_SECONDS=<Refresh token lifetime. Default: 7200>
-MODELS_PATH=<Default: '{dost-folder}/nlp-models'>
-```
-
-## Logging
-
-We're using a custom logger located in modules/shared/services. It provides string interpolation using util.format. Example:
-
-```
-private readonly logger: LoggerService = new LoggerService(MyCurrentController.name);
-
-...
-
-this.logger.log('logging message! %j', items);
-```
-
-Output format:
-
-```
-[{date time in utc}]-{level} ({context}): {your message}
-```
+## Example of use
 
 ## Contributing
 
-You can read the guide of how to contribute at [Contributing](https://github.com/axa-group/dost/blob/master/CONTRIBUTING.md).
+You can read the guide of how to contribute at [Contributing](https://github.com/axa-group/nlp.js-app/blob/master/CONTRIBUTING.md).
 
 ## Code of Conduct
 
-You can read the Code of Conduct at [Code of Conduct](https://github.com/axa-group/dost/blob/master/CODE_OF_CONDUCT.md).
+You can read the Code of Conduct at [Code of Conduct](https://github.com/axa-group/nlp.js-app/blob/master/CODE_OF_CONDUCT.md).
 
 ## Who is behind it?
 
 This project is developed by AXA Shared Services Spain S.A.
 
-If you need to contact us, you can do it at the email jesus.seijas@axa-groupsolutions.com
+If you need to contact us, you can do it at the email jesus.seijas@axa.com
 
 ## License
 

@@ -1,0 +1,1 @@
+webpackJsonp([35],{"./app/containers/GlobalSettingsPage/reducer.js":function(e,t,s){"use strict";function n(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:o;return arguments[1].type,e}Object.defineProperty(t,"__esModule",{value:!0});var a=s("./node_modules/seamless-immutable/seamless-immutable.development.js"),l=s.n(a),o=l()({});t.default=n}});

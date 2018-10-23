@@ -1,18 +1,7 @@
-# editor config
-.idea
-.vscode
-
-# dependency & build folders
+/coverage
 node_modules
-dist
-documentation
+/client/build
 
-# config files
 .env
-
-# tests
-coverage
-
-# misc
-npm-debug.log
-.DS_Store
+.vscode
+.idea
