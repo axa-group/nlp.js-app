@@ -12,6 +12,10 @@
   "logo": "https://github.com/axa-group/nlp.js-app/raw/master/screenshots/nlplogo2.png",
   "success_url": "/",
   "env": {
+    "HEROKU_APP_NAME": {
+      "description": "Copy here the name that you put to the application",
+      "value": ""
+    }
   },
   "formation": {
     "web": {
