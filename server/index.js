@@ -26,14 +26,12 @@ const Hapi = require('hapi');
 const inert = require('inert');
 const path = require('path');
 const Vision = require('vision');
-const HapiSwagger = require('hapi-swagger');
+const HapiSwagger = require('./hapi-swagger');
 const app = require('./app');
 const registerFeats = require('./boot/register-feats');
 const startDatabase = require('./boot/start-database');
 
 const port = process.env.PORT || 3000;
-
-console.log(HapiSwagger);
 
 const server = new Hapi.Server({
   port,
@@ -74,9 +72,7 @@ async function startServer() {
     path: '/{param*}',
     handler: (request, h) => {
       const { param } = request.params;
-      if (param.includes('swagger.json')) {
-        return h.file(param);
-      } else if (param.includes('.')) {
+      if (param.includes('.')) {
         return h.file(param);
       }
       return h.file('index.html');
