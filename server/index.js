@@ -33,6 +33,8 @@ const startDatabase = require('./boot/start-database');
 
 const port = process.env.PORT || 3000;
 
+console.log(HapiSwagger);
+
 const server = new Hapi.Server({
   port,
   routes: {
@@ -51,7 +53,6 @@ const swaggerOptions = {
   },
 };
 
-
 async function startServer() {
   await server.register([
     inert,
@@ -61,12 +62,21 @@ async function startServer() {
       options: swaggerOptions,
     },
   ]);
+  server.ext('onPreHandler', (request, h) => {
+    const host = request.info.hostname;
+    if (host.includes('herokuapp.com')) {
+      swaggerOptions.host = host;
+    }
+    return h.continue;
+  });
   server.route({
     method: 'GET',
     path: '/{param*}',
     handler: (request, h) => {
       const { param } = request.params;
-      if (param.includes('.')) {
+      if (param.includes('swagger.json')) {
+        return h.file(param);
+      } else if (param.includes('.')) {
         return h.file(param);
       }
       return h.file('index.html');
