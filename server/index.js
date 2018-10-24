@@ -26,7 +26,7 @@ const Hapi = require('hapi');
 const inert = require('inert');
 const path = require('path');
 const Vision = require('vision');
-const HapiSwagger = require('./hapi-swagger');
+const HapiSwagger = require('hapi-swagger');
 const app = require('./app');
 const registerFeats = require('./boot/register-feats');
 const startDatabase = require('./boot/start-database');
@@ -50,6 +50,10 @@ const swaggerOptions = {
     version: '1.0.0',
   },
 };
+
+if (process.env.HEROKU_APP_NAME) {
+  swaggerOptions.host = process.env.HEROKU_APP_NAME;
+}
 
 async function startServer() {
   await server.register([

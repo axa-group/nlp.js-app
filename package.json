@@ -50,14 +50,11 @@
   },
   "dependencies": {
     "dotenv": "^6.1.0",
-    "handlebars": "^4.0.12",
     "hapi": "^17.6.0",
     "hapi-swagger": "^9.1.2",
-    "hoek": "^5.0.4",
     "inert": "^5.1.0",
     "joi": "^14.0.0",
     "joigoose": "^4.0.2",
-    "json-schema-ref-parser": "^6.0.1",
     "mongoose": "^5.3.4",
     "node-nlp": "^2.1.1",
     "vision": "^5.4.0"
