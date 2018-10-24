@@ -87,30 +87,6 @@ async function startServer() {
   console.log(`Server running at: ${server.info.uri}`);
 }
 
-// internals.getHost = function(request) {
-//   let host = request.info.hostname;
-//   const port = request.server.info.port;
-//   const protocol = request.server.info.protocol;
-
-//   // do not set port if its protocol http/https with default post numbers
-//   // this cannot be tested on most desktops as ports below 1024 throw EACCES
-//   /* $lab:coverage:off$ */
-//   if (
-//       (port && (protocol === 'http' && port !== 80)) ||
-//       (protocol === 'https' && port !== 443)
-//   ) {
-//       host += ':' + port;
-//   }
-//   /* $lab:coverage:on$ */
-
-//   return (
-//       request.headers['x-forwarded-host'] ||
-//       request.headers['disguised-host'] ||
-//       host
-//   );
-// };
-
-
 async function start() {
   await startDatabase();
   await startServer();
