@@ -24,7 +24,7 @@ export default function configureStore(initialState = {}, history) {
   const apiURL = process.env.API_URL || ''
 
   const middlewares = [
-    swaggerMiddleware({ url: `${apiURL}/swagger.json` }),
+    swaggerMiddleware({ url: `${apiURL}/swagger2.json` }),
     sagaMiddleware,
     routerMiddleware(history),
   ];
