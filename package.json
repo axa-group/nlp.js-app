@@ -51,10 +51,12 @@
   "dependencies": {
     "dotenv": "^6.1.0",
     "hapi": "^17.6.0",
+    "hapi-swagger": "^9.1.2",
     "inert": "^5.1.0",
     "joi": "^14.0.0",
     "joigoose": "^4.0.2",
     "mongoose": "^5.3.4",
-    "node-nlp": "^2.1.1"
+    "node-nlp": "^2.1.1",
+    "vision": "^5.4.0"
   }
 }

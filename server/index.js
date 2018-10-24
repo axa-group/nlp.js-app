@@ -25,6 +25,8 @@ require('dotenv').config();
 const Hapi = require('hapi');
 const inert = require('inert');
 const path = require('path');
+const Vision = require('vision');
+const HapiSwagger = require('hapi-swagger');
 const app = require('./app');
 const registerFeats = require('./boot/register-feats');
 const startDatabase = require('./boot/start-database');
@@ -42,8 +44,23 @@ const server = new Hapi.Server({
 });
 app.server = server;
 
+const swaggerOptions = {
+  info: {
+    title: 'Test API Documentation',
+    version: '1.0.0',
+  },
+};
+
+
 async function startServer() {
-  await server.register(inert);
+  await server.register([
+    inert,
+    Vision,
+    {
+      plugin: HapiSwagger,
+      options: swaggerOptions,
+    },
+  ]);
   server.route({
     method: 'GET',
     path: '/{param*}',
