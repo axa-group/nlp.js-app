@@ -195,7 +195,7 @@ export class EntityPage extends React.PureComponent { // eslint-disable-line rea
     };
 
     let typeSelect = [];
-    const defaultOptionType = { value: 'learned', text: 'Learned', disabled: 'disabled' };
+    const defaultOptionType = { value: 'enum', text: 'Enum', disabled: 'disabled' };
     const regexOptionType = { value: 'regex', text: 'Regex', disabled: 'disabled' };
 
     typeSelect = [defaultOptionType, regexOptionType];
@@ -254,12 +254,12 @@ export class EntityPage extends React.PureComponent { // eslint-disable-line rea
                 s={12}
                 type="select"
                 label={messages.entityType.defaultMessage}
-                value={entity.type ? entity.type : 'learned'}
+                value={entity.type ? entity.type : 'enum'}
                 onChange={(evt) => this.onChangeInput(evt, 'type')}
               >
                 {returnFormattedOptions(typeSelect)}
               </Input>
-              {entity.type !== 'regex' ?
+              {entity.type === 'regex' ?
                 <FormTextInput
                   id='regex'
                   label={messages.regex}
@@ -270,11 +270,12 @@ export class EntityPage extends React.PureComponent { // eslint-disable-line rea
                   value={entity.regex}
                 /> : null
               }
-              {entity.type === 'regex' ? <InputLabel text={messages.regexValues} /> : <InputLabel text={messages.examples} />}
+              {entity.type !== 'regex' ? <InputLabel text={messages.examples} /> : null}
 
             </Row>
           </Form>
 
+              {entity.type !== 'regex' ?
           <TableContainer id={'examplesTable'}>
             <Table>
               {entity.type === 'regex' ?
@@ -319,6 +320,7 @@ export class EntityPage extends React.PureComponent { // eslint-disable-line rea
               />
             </Table>
           </TableContainer>
+            : null }
           <br />
           <div
             ref={(el) => {

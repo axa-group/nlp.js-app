@@ -26,7 +26,7 @@ const Hapi = require('hapi');
 const inert = require('inert');
 const path = require('path');
 const Vision = require('vision');
-const HapiSwagger = require('hapi-swagger');
+const HapiSwaggerStatic = require('hapi-swagger-static');
 const app = require('./app');
 const registerFeats = require('./boot/register-feats');
 const startDatabase = require('./boot/start-database');
@@ -44,38 +44,16 @@ const server = new Hapi.Server({
 });
 app.server = server;
 
-const swaggerOptions = {
-  info: {
-    title: 'Test API Documentation',
-    version: '1.0.0',
-  },
-};
-
-if (process.env.HEROKU_APP_NAME) {
-  const name = process.env.HEROKU_APP_NAME;
-  if (name.includes('.')) {
-    swaggerOptions.host = process.env.HEROKU_APP_NAME;
-  } else {
-    swaggerOptions.host = `${process.env.HEROKU_APP_NAME}.herokuapp.com`;
-  }
-}
-
 async function startServer() {
+  registerFeats();
   await server.register([
     inert,
     Vision,
     {
-      plugin: HapiSwagger,
-      options: swaggerOptions,
+      plugin: HapiSwaggerStatic,
+      options: {},
     },
   ]);
-  server.ext('onPreHandler', (request, h) => {
-    const host = request.info.hostname;
-    if (host.includes('herokuapp.com')) {
-      swaggerOptions.host = host;
-    }
-    return h.continue;
-  });
   server.route({
     method: 'GET',
     path: '/{param*}',
@@ -87,7 +65,6 @@ async function startServer() {
       return h.file('index.html');
     },
   });
-  registerFeats();
   await server.start();
   console.log(`Server running at: ${server.info.uri}`);
 }

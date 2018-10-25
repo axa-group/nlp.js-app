@@ -51,7 +51,7 @@
   "dependencies": {
     "dotenv": "^6.1.0",
     "hapi": "^17.6.0",
-    "hapi-swagger": "^9.1.2",
+    "hapi-swagger-static": "^2.0.9",
     "inert": "^5.1.0",
     "joi": "^14.0.0",
     "joigoose": "^4.0.2",

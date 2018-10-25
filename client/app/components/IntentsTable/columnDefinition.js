@@ -18,7 +18,7 @@ export default [{
   label: 'Domain',
   tooltip: '',
   type: 'string',
-  accessor: row => row.domain,
+  accessor: row => row.domainName,
   headerClassName: 'text-align-left table2-header',
   cellClassName: 'text-align-left table2-column',
   minWidth: 1.75,

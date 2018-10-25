@@ -1,6 +1,5 @@
 {
   "swagger": "2.0",
-  "host": "localhost:3000",
   "basePath": "/api/",
   "schemes": ["http"],
   "info": {
@@ -1985,8 +1984,8 @@
         },
         "type": {
           "type": "string",
-          "default": "enum",
-          "enum": ["enum", "regex"],
+          "default": "learned",
+          "enum": ["learned", "regex"],
           "x-convert": {
             "trim": true
           }
@@ -2183,8 +2182,8 @@
         },
         "type": {
           "type": "string",
-          "default": "enum",
-          "enum": ["enum", "regex"],
+          "default": "learned",
+          "enum": ["learned", "regex"],
           "x-convert": {
             "trim": true
           }
@@ -2868,8 +2867,8 @@
         },
         "type": {
           "type": "string",
-          "default": "enum",
-          "enum": ["enum", "regex"],
+          "default": "learned",
+          "enum": ["learned", "regex"],
           "x-convert": {
             "trim": true
           }

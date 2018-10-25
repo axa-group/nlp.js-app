@@ -29,8 +29,8 @@ class NlpjsTrainer {
 
   addEntities(manager, data) {
     data.entities.forEach(entity => {
-      if (entity.type === 'learned') {
-        const { entityName } = entity;
+      const { entityName } = entity;
+      if (entity.type === 'enum') {
         for (let i = 0; i < entity.examples.length; i += 1) {
           const example = entity.examples[i];
           const optionName = example.value;
@@ -44,6 +44,9 @@ class NlpjsTrainer {
             );
           }
         }
+      } else if (entity.type === 'regex') {
+        const language = entity.language || manager.languages[0];
+        manager.addRegexEntity(entityName, language, entity.regex);
       }
     });
   }

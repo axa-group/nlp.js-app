@@ -256,7 +256,7 @@ export default defineMessages({
   },
   enableModelsPerDomainTooltip: {
     id: 'containers.AgentPage.create_agent.enable_models_per_domain_tooltip',
-    defaultMessage: 'Depending on the Rasa pipeline you are using, sometimes is better to use only one model for the agent. If you enable this toggle, a separate model will be generated for each domain in the agent.',
+    defaultMessage: 'If you enable this toggle, a separate model will be generated for each domain in the agent.',
   },
   agentTrainingSettingsTitle: {
     id: 'containers.AgentPage.agent_training_settings_title',
