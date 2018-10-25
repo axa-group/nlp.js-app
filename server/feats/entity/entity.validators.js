@@ -34,11 +34,11 @@ module.exports = {
       type: EntityModel.type
         .allow('')
         .allow(null)
-        .valid('learned', 'regex')
+        .valid('enum', 'regex')
         .optional()
-        .default('learned')
+        .default('enum')
         .error(
-          new Error('Please provide valid entity type among learned and regex')
+          new Error('Please provide valid entity type among enum and regex')
         ),
       examples: Joi.array()
         .items({
@@ -70,11 +70,11 @@ module.exports = {
       type: EntityModel.type
         .allow('')
         .allow(null)
-        .valid('learned', 'regex')
+        .valid('enum', 'regex')
         .optional()
-        .default('learned')
+        .default('enum')
         .error(
-          new Error('Please provide valid entity type among learned and regex')
+          new Error('Please provide valid entity type among enum and regex')
         ),
       examples: Joi.array().items({
         value: ExampleModel.value.required(),
