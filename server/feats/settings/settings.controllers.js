@@ -23,13 +23,56 @@
 
 const app = require('../../app');
 const response = require('./response.json');
+const defaultAgent = require('./default-agent.json');
 
 const modelName = 'settings';
+
+async function createDemo() {
+  const agent = await app.database.save('agent', defaultAgent.agent);
+  const domainSave = Object.assign({}, defaultAgent.domain);
+  // eslint-disable-next-line no-underscore-dangle
+  domainSave.agent = agent._id.toString();
+  const domain = await app.database.save('domain', domainSave);
+  defaultAgent.intents.forEach(async srcintent => {
+    const intentSave = {
+      // eslint-disable-next-line no-underscore-dangle
+      agent: agent._id.toString(),
+      // eslint-disable-next-line no-underscore-dangle
+      domain: domain._id.toString(),
+      intentName: srcintent.name,
+      examples: [],
+      useWebhook: false,
+      usePostFormat: false,
+      domainame: domain.domainName,
+    };
+    srcintent.utterances.forEach(utterance => {
+      intentSave.examples.push({
+        userSays: utterance,
+        entities: [],
+      });
+    });
+    const intent = await app.database.save('intent', intentSave);
+    const scenarioSave = {
+      agent: intentSave.agent,
+      domain: intentSave.domain,
+      // eslint-disable-next-line no-underscore-dangle
+      intent: intent._id.toString(),
+      scenarioName: srcintent.name,
+      slots: [],
+      intentResponses: [],
+    };
+    srcintent.answers.forEach(answer => {
+      scenarioSave.intentResponses.push(answer);
+    });
+    await app.database.save('scenario', scenarioSave);
+  });
+}
 
 async function findAll() {
   let settings = await app.database.find(modelName);
   if (!settings || settings.length === 0) {
     settings = await app.database.save(modelName, { any: response });
+    await createDemo();
   } else {
     [settings] = settings;
   }
