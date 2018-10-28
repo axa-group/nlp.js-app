@@ -81,42 +81,82 @@ async function deleteById(request) {
 }
 
 async function findIntentsInDomainByIdByAgentId(request) {
+  const { start, limit, filter } = request.query;
   const agentId = request.params.id;
   const agent = await app.database.findById(modelName, agentId);
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
   const { domainId } = request.params;
-  const intents = await app.database.find('intent', { domain: domainId });
+  const query = {};
+  if (domainId) {
+    query.domain = domainId;
+  }
+  if (filter) {
+    query.intentName = { $regex: filter, $options: 'i' };
+  }
+
+  let intents = await app.database.find('intent', query);
+  const total = intents.length;
+  if (start) {
+    intents = intents.slice(start);
+  }
+  if (limit && limit > 0) {
+    intents = intents.slice(0, limit - start);
+  }
   return {
     intents: app.database.processResponse(intents),
-    total: intents.length,
+    total,
   };
 }
 
 async function findIntentsByAgentId(request) {
+  const { start, limit, filter } = request.query;
   const agentId = request.params.id;
   const agent = await app.database.findById(modelName, agentId);
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
-  const intents = await app.database.find('intent', { agent: agentId });
+  const query = { agent: agentId };
+  if (filter) {
+    query.intentName = { $regex: filter, $options: 'i' };
+  }
+  let intents = await app.database.find('intent', query);
+  const total = intents.length;
+  if (start) {
+    intents = intents.slice(start);
+  }
+  if (limit && limit > 0) {
+    intents = intents.slice(0, limit - start);
+  }
   return {
     intents: app.database.processResponse(intents),
-    total: intents.length,
+    total,
   };
 }
 
 async function findEntitiesByAgentId(request) {
+  const { start, limit, filter } = request.query;
   const agentId = request.params.id;
   const agent = await app.database.findById(modelName, agentId);
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
-  const entities = await app.database.find('entity', { agent: agentId });
+  const query = { agent: agentId };
+  if (filter) {
+    query.entityName = { $regex: filter, $options: 'i' };
+  }
+  let entities = await app.database.find('entity', query);
+  const total = entities.length;
+  if (start) {
+    entities = entities.slice(start);
+  }
+  if (limit && limit > 0) {
+    entities = entities.slice(0, limit - start);
+  }
   return {
     entities: app.database.processResponse(entities),
-    total: entities.length,
+    total,
   };
 }
 
