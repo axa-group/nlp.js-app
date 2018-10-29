@@ -16,6 +16,7 @@
     "status" : "Out of Date",
     "__v" : 0,
     "settings" : {
+      "ducklingURL": "http://duckling:8000"
     }
   },
   "domain": {

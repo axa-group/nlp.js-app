@@ -274,6 +274,8 @@ async function train(request) {
     scenarios,
     entities,
   };
+  agent.status = 'Training';
+  app.database.saveItem(agent);
   let model = await app.train(data);
   if (model) {
     await app.database.deleteMany('training', { 'any.agentId': agentId });

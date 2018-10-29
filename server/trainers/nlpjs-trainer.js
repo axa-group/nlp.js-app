@@ -21,6 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 const { NlpManager } = require('node-nlp');
+const childProcess = require('child_process');
 
 class NlpjsTrainer {
   constructor() {
@@ -96,6 +97,14 @@ class NlpjsTrainer {
     });
   }
 
+  trainProcess(manager) {
+    return new Promise(resolve => {
+      const child = childProcess.fork('./server/trainers/nlpjs-process');
+      child.on('message', managerResult => resolve(managerResult));
+      child.send(manager);
+    });
+  }
+
   async train(data) {
     const languages = data.agent.language.split(',').map(x => x.trim());
     const manager = new NlpManager({ languages });
@@ -104,8 +113,7 @@ class NlpjsTrainer {
     this.addEntities(manager, data);
     this.addIntents(manager, data);
     this.addAnswers(manager, data);
-    await manager.train();
-    return manager.export();
+    return this.trainProcess(manager.export());
   }
 
   existsTraining(agentId) {
