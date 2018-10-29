@@ -100,7 +100,10 @@ class NlpjsTrainer {
   trainProcess(manager) {
     return new Promise(resolve => {
       const child = childProcess.fork('./server/trainers/nlpjs-process');
-      child.on('message', managerResult => resolve(managerResult));
+      child.on('message', managerResult => {
+        child.kill();
+        return resolve(managerResult);
+      });
       child.send(manager);
     });
   }
