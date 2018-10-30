@@ -116,7 +116,7 @@ class NlpjsTrainer {
     this.addEntities(manager, data);
     this.addIntents(manager, data);
     this.addAnswers(manager, data);
-    const result = this.trainProcess(manager.export());
+    const result = await this.trainProcess(manager.export());
     manager.import(result);
     return result;
   }
