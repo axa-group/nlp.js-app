@@ -116,7 +116,9 @@ class NlpjsTrainer {
     this.addEntities(manager, data);
     this.addIntents(manager, data);
     this.addAnswers(manager, data);
-    return this.trainProcess(manager.export());
+    const result = this.trainProcess(manager.export());
+    manager.import(result);
+    return result;
   }
 
   existsTraining(agentId) {
