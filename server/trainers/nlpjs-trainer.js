@@ -110,7 +110,11 @@ class NlpjsTrainer {
 
   async train(data) {
     const languages = data.agent.language.split(',').map(x => x.trim());
-    const manager = new NlpManager({ languages, useLRC: false });
+    const manager = new NlpManager({
+      languages,
+      useLRC: true,
+      useNeural: false,
+    });
     // eslint-disable-next-line no-underscore-dangle
     this.managers[data.agent._id] = manager;
     this.addEntities(manager, data);
@@ -126,7 +130,7 @@ class NlpjsTrainer {
   }
 
   loadTraining(agentId, model) {
-    this.managers[agentId] = new NlpManager({ useLRC: false });
+    this.managers[agentId] = new NlpManager({ useLRC: true, useNeural: false });
     if (!model.nerManager.settings) {
       model.nerManager.settings = {};
     }
