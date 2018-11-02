@@ -6,15 +6,21 @@
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
-Application to train and use NLP.js.
+Application to train your agents for bots, done using NLP.js.
 
-"NLP.js" is a general natural language utilities for nodejs. Currently supporting:
+27 languages supported: Arabic (ar), Armenian (hy), Basque (eu), Catala (ca), Chinese (zh), Czech (cs), Danish (da), Dutch (nl), English (en), Farsi (fa), Finnish (fi), French (fr), German (de), Hungarian (hu), Indonesian (id), Irish (ga), Italian (it), Japanese (ja), Norwegian (no), Portuguese (pt), Romanian (ro), Russian (ru), Slovene (sl), Spanish (es), Swedish (sv), Tamil (ta), Turkish (tr)
+
+<div align="center">
+<img src="https://github.com/axa-group/nlp.js-app/raw/master/screenshots/demonlp.gif" width="auto" height="auto"/>
+</div>
 
 ### TABLE OF CONTENTS
 
 <!--ts-->
 
 - [Installation](#installation)
+- [Example of Use](#example-of-use)
+- [Software Used](#software-used)
 - [Contributing](#contributing)
 - [Code of Conduct](#code-of-conduct)
 - [Who is behind it](#who-is-behind-it)
@@ -23,7 +29,51 @@ Application to train and use NLP.js.
 
 ## Installation
 
+You have a one click installation for free in heroku, clicking the "deploy to heroku" button in this page. 
+If you want to use it on-premise, follow this steps:
+
+- MongoDB is needed
+- NodeJS is needed
+- Clone this repo
+- Modify the .env at the root to point to your database (you have a .envexample you can use)
+- Modify the .env at the client folder to point to the url and port of your backend
+- Run ```npm start``` at the root folder
+- Run ```npm start``` at the client folder
+
+If you want to generate a production version, run ```npm run build``` at the client folder and copy the build contents to the public folder.
+
 ## Example of use
+
+You can create an agent:
+
+<div align="center">
+<img src="https://github.com/axa-group/nlp.js-app/raw/master/screenshots/create-agent.png" width="auto" height="auto"/>
+</div>
+
+Then create at least one domain:
+
+<div align="center">
+<img src="https://github.com/axa-group/nlp.js-app/raw/master/screenshots/create-domain.png" width="auto" height="auto"/>
+</div>
+
+Create some entities if you need them:
+<div align="center">
+<img src="https://github.com/axa-group/nlp.js-app/raw/master/screenshots/create-entity.png" width="auto" height="auto"/>
+</div>
+
+Create some intents:
+<div align="center">
+<img src="https://github.com/axa-group/nlp.js-app/raw/master/screenshots/create-intent.png" width="auto" height="auto"/>
+</div>
+
+Train and test:
+<div align="center">
+<img src="https://github.com/axa-group/nlp.js-app/raw/master/screenshots/train.png" width="auto" height="auto"/>
+</div>
+
+## Software Used
+
+This project is based on the Articulate Project from Samtec, that you can find here: https://github.com/samtecspg/articulate
 
 ## Contributing
 
