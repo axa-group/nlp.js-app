@@ -2404,7 +2404,7 @@
           "type": "array"
         }
       },
-      "required": ["domainName", "enabled", "intentThreshold"]
+      "required": ["domainName", "language", "enabled", "intentThreshold"]
     },
     "domains": {
       "type": "array",
@@ -2815,6 +2815,9 @@
         },
         "intentThreshold": {
           "type": "number"
+        },
+        "language": {
+          "type": "string"
         },
         "lastTraining": {
           "type": "string",

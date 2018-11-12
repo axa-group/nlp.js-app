@@ -12,6 +12,7 @@ const initialState = Immutable({
   domainData: {
     agent: null,
     domainName: '',
+    language: '',
     enabled: true,
     intentThreshold: 50,
     extraTrainingData: false,
