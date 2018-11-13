@@ -7,6 +7,7 @@ import {
 } from './constants';
 
 export function changeDomainData(payload) {
+  console.log(payload);
   return {
     type: CHANGE_DOMAIN_DATA,
     payload,

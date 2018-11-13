@@ -27,6 +27,7 @@ module.exports = {
   id: Joi.number(),
   agent: Joi.string().trim(),
   domainName: Joi.string().trim(),
+  language: Joi.string().trim(),
   enabled: Joi.boolean(),
   intentThreshold: Joi.number(),
   status: Joi.string().trim(),

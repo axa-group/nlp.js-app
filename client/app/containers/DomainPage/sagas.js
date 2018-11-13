@@ -52,6 +52,7 @@ export function* createDomain() {
 export function* putDomain(payload) {
   const { api } = payload;
   const domainData = yield select(makeSelectDomainData());
+  console.log(domainData);
   const updatedData = domainData.updateIn(['intentThreshold'], intentThreshold => intentThreshold / 100);
   const { id, agent, ...data } = updatedData;
 

@@ -27,8 +27,6 @@ module.exports = {
   id: Joi.number(),
   agentName: Joi.string().trim(),
   description: Joi.string().trim(),
-  language: Joi.string().trim(),
-  timezone: Joi.string().trim(),
   useWebhook: Joi.boolean(),
   usePostFormat: Joi.boolean(),
   domainClassifierThreshold: Joi.number(),

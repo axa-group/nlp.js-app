@@ -1900,6 +1900,9 @@
             "trim": true
           }
         },
+        "language":{
+          "type": "string"
+        },
         "enabled": {
           "type": "boolean"
         },
@@ -1920,7 +1923,7 @@
           "type": "boolean"
         }
       },
-      "required": ["agent", "domainName", "enabled", "intentThreshold"]
+      "required": ["agent", "language", "domainName", "enabled", "intentThreshold"]
     },
     "synonyms": {
       "type": "array",

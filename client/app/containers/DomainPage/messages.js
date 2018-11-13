@@ -23,6 +23,10 @@ export default defineMessages({
     id: 'containers.DomainPage.create_domain.agent',
     defaultMessage: 'Agent',
   },
+  language: {
+    id: 'containers.DomainPage.create_domain.language',
+    defaultMessage: 'Language',
+  },
   domainName: {
     id: 'containers.DomainPage.create_domain.domain_name',
     defaultMessage: 'Domain Name',

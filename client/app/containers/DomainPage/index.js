@@ -4,6 +4,7 @@ import {
   Col,
   Row,
   Icon,
+  Input,
 } from 'react-materialize';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
@@ -32,6 +33,7 @@ import {
   makeSelectInWizard,
   makeSelectLoading,
   makeSelectSuccess,
+  makeSelectSettingsData,
 } from '../App/selectors';
 import {
   changeDomainData,
@@ -41,6 +43,23 @@ import {
 
 import messages from './messages';
 import { makeSelectDomainData } from './selectors';
+
+const returnFormattedOptions = (options) => {
+  try {
+    return options.map((option, index) => (
+      <option key={index} value={option.value}>
+        {option.text}
+      </option>
+    ));
+  }
+  catch (e){
+    return [
+      <option key={0} value={''}>
+        {messages.errorParsingOptions.defaultMessage}
+      </option>
+    ]
+  }
+};
 
 export class DomainPage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   constructor() {
@@ -96,6 +115,7 @@ export class DomainPage extends React.PureComponent { // eslint-disable-line rea
       this.props.onEditMode(this.props.params.id);
     } else {
       this.props.resetForm();
+      this.props.onChangeAgentData('language', { target: { value: this.props.globalSettings.defaultAgentLanguage }});
       this.setState({ editMode: false });
       const { currentAgent } = this.props;
       if (currentAgent) {
@@ -114,7 +134,7 @@ export class DomainPage extends React.PureComponent { // eslint-disable-line rea
   }
 
   render() {
-    const { loading, error, success, domain, currentAgent } = this.props;
+    const { loading, error, success, domain, currentAgent, globalSettings } = this.props;
     const domainProps = {
       loading,
       success,
@@ -157,6 +177,19 @@ export class DomainPage extends React.PureComponent { // eslint-disable-line rea
                 onChange={(evt) => this.onChangeInput(evt, 'domainName')}
                 required
               />
+            </Row>
+            <Row>
+              <Input
+                s={6}
+                name="language"
+                type="select"
+                label={messages.language.defaultMessage}
+                value={domain.language}
+                onChange={(evt) => this.onChangeInput(evt, 'language')}
+              >
+                {returnFormattedOptions(globalSettings.agentLanguages)}
+              </Input>
+
             </Row>
           </Form>
 
@@ -264,6 +297,7 @@ const mapStateToProps = createStructuredSelector({
   success: makeSelectSuccess(),
   inWizard: makeSelectInWizard(),
   currentAgent: makeSelectCurrentAgent(),
+  globalSettings: makeSelectSettingsData(),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(DomainPage);
