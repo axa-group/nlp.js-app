@@ -6,13 +6,7 @@
     ],
     "agentName" : "Demo",
     "description" : "Demo agent",
-    "language" : "en",
-    "timezone" : "UTC",
     "domainClassifierThreshold" : 0.5,
-    "useWebhook" : false,
-    "usePostFormat" : false,
-    "extraTrainingData" : false,
-    "enableModelsPerDomain" : true,
     "status" : "Out of Date",
     "__v" : 0,
     "settings" : {
@@ -21,6 +15,7 @@
   },
   "domain": {
     "domainName" : "personality",
+    "language": "en",
     "enabled" : true,
     "intentThreshold" : 0.5,
     "extraTrainingData" : false,
