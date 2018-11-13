@@ -27,8 +27,6 @@ const initialState = Immutable({
   agentData: {
     agentName: '',
     description: '',
-    language: '',
-    timezone: '',
     domainClassifierThreshold: 50,
     fallbackResponses: [],
     useWebhook: false,

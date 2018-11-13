@@ -187,8 +187,6 @@ export class AgentPage extends React.PureComponent { // eslint-disable-line reac
     } else {
       this.setState({ editMode: false });
       this.props.resetForm();
-      this.props.onChangeAgentData('language', { target: { value: this.props.globalSettings.defaultAgentLanguage }});
-      this.props.onChangeAgentData('timezone', { target: { value: this.props.globalSettings.defaultTimezone }});
       this.props.onChangeAgentData('fallbackResponses', { target: { value: this.props.globalSettings.defaultAgentFallbackResponses }});
       this.props.onChangeAgentSettingsData({ initialLoad: true, field: 'rasaURL',  value: this.props.globalSettings.rasaURL });
       this.props.onChangeAgentSettingsData({ initialLoad: true, field: 'domainClassifierPipeline', value: this.props.globalSettings.domainClassifierPipeline });
@@ -215,60 +213,25 @@ export class AgentPage extends React.PureComponent { // eslint-disable-line reac
       });
     }
     else {
-        if(Array.isArray(this.props.agentSettings.domainClassifierPipeline)){
-          if(Array.isArray(this.props.agentSettings.intentClassifierPipeline)){
-            if(Array.isArray(this.props.agentSettings.entityClassifierPipeline)){
-              if(Array.isArray(this.props.agentSettings.spacyPretrainedEntities)){
-                if(Array.isArray(this.props.agentSettings.ducklingDimension)){
-                  if(this.props.agent.agentName.length > 0){
-                    if(this.props.agent.description.length > 0){
-                      if (this.state.editMode) {
-                        this.props.onUpdate();
-                      } else {
-                        this.props.onCreate();
-                      }
-                    }
-                    else {
-                      Alert.warning(messages.missingAgentDescription.defaultMessage, {
-                        position: 'bottom'
-                      });
-                    }
-                  }
-                  else {
-                    Alert.warning(messages.missingAgentName.defaultMessage, {
-                      position: 'bottom'
-                    });
-                  }
-                }
-                else {
-                  Alert.warning(messages.ducklingDimensionWarningMessage.defaultMessage, {
-                    position: 'bottom'
-                  });
-                }
-              }
-              else {
-                Alert.warning(messages.spacyEntitiesWarningMessage.defaultMessage, {
-                  position: 'bottom'
-                });
-              }
-            }
-            else {
-              Alert.warning(messages.entityClassifierPipelineWarningMessage.defaultMessage, {
-                position: 'bottom'
-              });
-            }
-          }
-          else {
-            Alert.warning(messages.intentClassifierPipelineWarningMessage.defaultMessage, {
-              position: 'bottom'
-            });
+      if(this.props.agent.agentName.length > 0){
+        if(this.props.agent.description.length > 0){
+          if (this.state.editMode) {
+            this.props.onUpdate();
+          } else {
+            this.props.onCreate();
           }
         }
         else {
-          Alert.warning(messages.domainClassifierPipelineWarningMessage.defaultMessage, {
+          Alert.warning(messages.missingAgentDescription.defaultMessage, {
             position: 'bottom'
           });
         }
+      }
+      else {
+        Alert.warning(messages.missingAgentName.defaultMessage, {
+          position: 'bottom'
+        });
+      }
     }
   }
 
@@ -372,30 +335,6 @@ export class AgentPage extends React.PureComponent { // eslint-disable-line reac
                 inputId="description"
                 onChange={this.props.onChangeAgentData.bind(null, 'description')}
                 value={agent.description}
-              />
-              <Input
-                s={6}
-                name="language"
-                type="select"
-                label={messages.language.defaultMessage}
-                value={agent.language}
-                onChange={this.props.onChangeAgentData.bind(null, 'language')}
-              >
-                {returnFormattedOptions(globalSettings.agentLanguages)}
-              </Input>
-              <Typeahead
-                id='timezone'
-                name='timezone'
-                maxSearchResults={10}
-                callback={this.props.onChangeAgentData}
-                label={messages.timezone.defaultMessage}
-                menuClassName={'timezones'}
-                dataSource={globalSettings.timezones}
-                value={agent.timezone}
-                s={6}
-                style={{
-                  marginTop: '23px'
-                }}
               />
             </Row>
           </Form>
