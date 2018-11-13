@@ -35,7 +35,7 @@ class NlpjsTrainer {
         for (let i = 0; i < entity.examples.length; i += 1) {
           const example = entity.examples[i];
           const optionName = example.value;
-          const language = example.language || manager.languages[0];
+          const language = example.language || manager.languages;
           for (let j = 0; j < example.synonyms.length; j += 1) {
             manager.addNamedEntityText(
               entityName,
@@ -46,10 +46,20 @@ class NlpjsTrainer {
           }
         }
       } else if (entity.type === 'regex') {
-        const language = entity.language || manager.languages[0];
+        const language = entity.language || manager.languages;
         manager.addRegexEntity(entityName, language, entity.regex);
       }
     });
+  }
+
+  getDomain(id, data) {
+    for (let i = 0; i < data.domains.length; i += 1) {
+      // eslint-disable-next-line no-underscore-dangle
+      if (data.domains[i]._id.toString() === id) {
+        return data.domains[i];
+      }
+    }
+    return undefined;
   }
 
   getDomainName(id, data) {
@@ -74,21 +84,22 @@ class NlpjsTrainer {
 
   addIntents(manager, data) {
     data.intents.forEach(intent => {
-      const domainName = this.getDomainName(intent.domain, data);
+      const domain = this.getDomain(intent.domain, data);
       const { intentName } = intent;
       for (let i = 0; i < intent.examples.length; i += 1) {
         const example = intent.examples[i];
-        const language = example.language || manager.languages[0];
+        const language = domain.language || manager.languages[0];
         const utterance = example.userSays;
         manager.addDocument(language, utterance, intentName);
       }
-      manager.assignDomain(intentName, domainName);
+      manager.assignDomain(intentName, domain.domainName);
     });
   }
 
   addAnswers(manager, data) {
     data.scenarios.forEach(scenario => {
-      const language = scenario.language || manager.languages[0];
+      const domain = this.getDomain(scenario.domain, data);
+      const language = domain.language || manager.languages[0];
       const intentName = this.getIntentName(scenario.intent, data);
       for (let i = 0; i < scenario.intentResponses.length; i += 1) {
         const answer = scenario.intentResponses[i];
@@ -109,7 +120,15 @@ class NlpjsTrainer {
   }
 
   async train(data) {
-    const languages = data.agent.language.split(',').map(x => x.trim());
+    const languages = [];
+    data.domains.forEach(domain => {
+      if (!domain.language) {
+        domain.language = 'en';
+      }
+      if (languages.indexOf(domain.language) === -1) {
+        languages.push(domain.language);
+      }
+    });
     const manager = new NlpManager({
       languages,
       useLRC: true,
@@ -117,14 +136,12 @@ class NlpjsTrainer {
     });
     // eslint-disable-next-line no-underscore-dangle
     this.managers[data.agent._id] = manager;
-    console.log(data);
     this.addEntities(manager, data);
     this.addIntents(manager, data);
     this.addAnswers(manager, data);
-    return;
-    // const result = await this.trainProcess(manager.export());
-    // manager.import(result);
-    // return result;
+    const result = await this.trainProcess(manager.export());
+    manager.import(result);
+    return result;
   }
 
   existsTraining(agentId) {
