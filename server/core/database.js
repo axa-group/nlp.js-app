@@ -24,7 +24,14 @@
 const mongoose = require('mongoose');
 const Joigoose = require('joigoose');
 
+/**
+ * Class for the Data Access Layer.
+ */
 class Database {
+  /**
+   * Constructor of the class.
+   * @param {string} url URL to the database.
+   */
   constructor(url) {
     this.url = url || process.env.MONGO_URL_URI || process.env.MONGO_URL;
     mongoose.set('useFindAndModify', false);
@@ -35,6 +42,10 @@ class Database {
     this.models = {};
   }
 
+  /**
+   * Connect to the database using mongoose.
+   * @returns {Promise} Promise for connecting.
+   */
   connect() {
     return new Promise((resolve, reject) => {
       mongoose.connect(
@@ -47,18 +58,38 @@ class Database {
     });
   }
 
+  /**
+   * Add a mongoose schema based on the Joi schema.
+   * @param {string} name Schema name.
+   * @param {object} joiSchema Joi Schema.
+   */
   addSchema(name, joiSchema) {
     this.schemas[name] = new mongoose.Schema(this.joigoose.convert(joiSchema));
   }
 
+  /**
+   * Gets an schema given its name.
+   * @param {string} name Schema name.
+   * @returns {object} Schema instance.
+   */
   getSchema(name) {
     return this.schemas[name] || this.schemas.default;
   }
 
+  /**
+   * Indicates if a given schema name has the default schema.
+   * @param {string} name Schema name
+   * @returns {boolean} True if is the default schema, false otherwise.
+   */
   isDefault(name) {
     return this.getSchema(name) === this.schemas.default;
   }
 
+  /**
+   * Add a model given the name and the schema.
+   * @param {string} name Model name.
+   * @param {object} schema Schema instance.
+   */
   addModel(name, schema) {
     let schemaName;
     if (typeof schema === 'object') {
@@ -71,6 +102,14 @@ class Database {
     this.models[name] = mongoose.model(name, this.modelSchemas[name]);
   }
 
+  /**
+   * Find data in the database.
+   * @param {string} name Model name.
+   * @param {object} condition Condition for the search.
+   * @param {object} projection Projection for the search.
+   * @param {object} options Options for the search.
+   * @return {Promise<object[]>} Array of documents found.
+   */
   find(name, condition, projection, options) {
     return new Promise((resolve, reject) => {
       const Model = this.models[name];
@@ -90,6 +129,12 @@ class Database {
     });
   }
 
+  /**
+   * Find one document
+   * @param {string} name Model name.
+   * @param {object} criteria Criteria instance.
+   * @returns {Promise<object>} Found document.
+   */
   findOne(name, criteria) {
     return new Promise((resolve, reject) => {
       const Model = this.models[name];
@@ -106,6 +151,12 @@ class Database {
     });
   }
 
+  /**
+   * Find one document by identifier.
+   * @param {string} name Model name.
+   * @param {string} id Unique identifier.
+   * @return {Promise<object>} Document found.
+   */
   findById(name, id) {
     return new Promise((resolve, reject) => {
       const Model = this.models[name];
@@ -122,6 +173,12 @@ class Database {
     });
   }
 
+  /**
+   * Delete one document by id.
+   * @param {string} name Model name.
+   * @param {string} id Identifier of the document.
+   * @return {Promise<object>} Promise for removal.
+   */
   removeById(name, id) {
     return new Promise((resolve, reject) => {
       const Model = this.models[name];
@@ -138,6 +195,12 @@ class Database {
     });
   }
 
+  /**
+   * Remove from a collection by condition.
+   * @param {string} name Model name.
+   * @param {object} condition Condition.
+   * @returns {Promise<object>} Promise for removal.
+   */
   remove(name, condition) {
     return new Promise((resolve, reject) => {
       const Model = this.models[name];
@@ -154,6 +217,12 @@ class Database {
     });
   }
 
+  /**
+   * Save a document into a collection.
+   * @param {string} name Model name.
+   * @param {object} data Payload of the data.
+   * @return {Promise<object>} Promise for saving.
+   */
   save(name, data) {
     return new Promise((resolve, reject) => {
       const Model = this.models[name];
@@ -171,6 +240,11 @@ class Database {
     });
   }
 
+  /**
+   * Save content into a collection.
+   * @param {object} item Item to be saved.
+   * @returns {Promise<object>} Promise for saving.
+   */
   saveItem(item) {
     return new Promise((resolve, reject) => {
       item.save((err, doc) => {
@@ -182,6 +256,13 @@ class Database {
     });
   }
 
+  /**
+   * Update a document given the identifier.
+   * @param {string} name Model name.
+   * @param {string} id Identifier of the document.
+   * @param {object} data Data to be saved.
+   * @returns {Promise<object>} Promise for updating.
+   */
   updateById(name, id, data) {
     return new Promise((resolve, reject) => {
       const Model = this.models[name];
@@ -203,6 +284,12 @@ class Database {
     });
   }
 
+  /**
+   * Delete documents given a condition.
+   * @param {string} name Model name.
+   * @param {object} condition Condition.
+   * @returns {Promise<object>} Promise for deletion.
+   */
   deleteMany(name, condition) {
     return new Promise((resolve, reject) => {
       const Model = this.models[name];
@@ -219,6 +306,11 @@ class Database {
     });
   }
 
+  /**
+   * Process a response cloning it and removing non needed fields.
+   * @param {object} response Response to be processed.
+   * @returns {object} Processed response.
+   */
   processResponse(response) {
     if (!response) {
       return undefined;
