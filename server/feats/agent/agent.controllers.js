@@ -25,6 +25,11 @@ const app = require('../../app');
 
 const modelName = 'agent';
 
+/**
+ * Find by ide or returns an error.
+ * @param {string} id Identifier
+ * @param {Function} fn Callback function.
+ */
 async function findOrError(id, fn) {
   const agent = await app.database.findById(modelName, id);
   if (!agent) {
@@ -33,10 +38,17 @@ async function findOrError(id, fn) {
   return fn ? fn(agent) : agent;
 }
 
+/**
+ * Find all agents.
+ */
 async function findAll() {
   return app.database.find(modelName);
 }
 
+/**
+ * Adds a new agent.
+ * @param {object} request Request.
+ */
 async function add(request) {
   const updateData = JSON.parse(request.payload);
   updateData.status = 'Ready';
@@ -44,10 +56,18 @@ async function add(request) {
   return app.database.save(modelName, updateData);
 }
 
+/**
+ * Find all settings
+ * @param {object} request Request
+ */
 async function findAllSettings(request) {
   return findOrError(request.params.id, x => x.settings);
 }
 
+/**
+ * Update settings
+ * @param {object} request Request
+ */
 async function updateSettings(request) {
   return findOrError(request.params.id, agent => {
     agent.settings = JSON.parse(request.payload);
@@ -55,16 +75,28 @@ async function updateSettings(request) {
   });
 }
 
+/**
+ * Find an agent by id.
+ * @param {object} request Request
+ */
 async function findById(request) {
   return findOrError(request.params.id);
 }
 
+/**
+ * Update an agent by id.
+ * @param {object} request Request
+ */
 async function updateById(request) {
   const agentId = request.params.id;
   const data = JSON.parse(request.payload);
   return app.database.updateById(modelName, agentId, data);
 }
 
+/**
+ * Find domains by agent id.
+ * @param {object} request Request
+ */
 async function findDomainsByAgentId(request) {
   const agentId = request.params.id;
   const domains = await app.database.find('domain', { agent: agentId });
@@ -74,12 +106,20 @@ async function findDomainsByAgentId(request) {
   };
 }
 
+/**
+ * Delete an agent by id.
+ * @param {object} request Request.
+ */
 async function deleteById(request) {
   const agentId = request.params.id;
   app.database.remove('domain', { agent: agentId });
   return app.database.removeById(modelName, agentId);
 }
 
+/**
+ * Find intents in a domain.
+ * @param {object} request Request
+ */
 async function findIntentsInDomainByIdByAgentId(request) {
   const { start, limit, filter } = request.query;
   const agentId = request.params.id;
@@ -110,6 +150,10 @@ async function findIntentsInDomainByIdByAgentId(request) {
   };
 }
 
+/**
+ * Find intents by agent id.
+ * @param {object} request Request
+ */
 async function findIntentsByAgentId(request) {
   const { start, limit, filter } = request.query;
   const agentId = request.params.id;
@@ -135,6 +179,10 @@ async function findIntentsByAgentId(request) {
   };
 }
 
+/**
+ * Find entities by agent id.
+ * @param {object} request Request
+ */
 async function findEntitiesByAgentId(request) {
   const { start, limit, filter } = request.query;
   const agentId = request.params.id;
@@ -160,6 +208,10 @@ async function findEntitiesByAgentId(request) {
   };
 }
 
+/**
+ * Find domain by id
+ * @param {object} request Request
+ */
 async function findDomainByIdByAgentId(request) {
   const agentId = request.params.id;
   const agent = await app.database.findById(modelName, agentId);
@@ -178,6 +230,10 @@ async function findDomainByIdByAgentId(request) {
   return domain;
 }
 
+/**
+ * Find and agent by name.
+ * @param {object} request Request
+ */
 async function findByName(request) {
   const { agentName } = request.params;
   const agents = await app.database.find(modelName, { agentName });
@@ -191,6 +247,10 @@ async function findByName(request) {
   return agents[0];
 }
 
+/**
+ * Find intent by domain and agent.
+ * @param {object} request Request
+ */
 async function findIntentByIdInDomainByIdByAgentId(request) {
   const { domainId, intentId } = request.params;
   const intent = await app.database.findById('intent', intentId);
@@ -214,6 +274,10 @@ async function findIntentByIdInDomainByIdByAgentId(request) {
   return intent;
 }
 
+/**
+ * Find scenario by domain and agent.
+ * @param {object} request Request
+ */
 async function findIntentScenarioInDomainByIdByAgentId(request) {
   const agentId = request.params.id;
   const agent = await app.database.findById(modelName, agentId);
@@ -239,6 +303,10 @@ async function findIntentScenarioInDomainByIdByAgentId(request) {
   return scenario;
 }
 
+/**
+ * Find entity by id.
+ * @param {*} request Request
+ */
 async function findEntityByIdByAgentId(request) {
   const agentId = request.params.id;
   const agent = await app.database.findById(modelName, agentId);
@@ -257,6 +325,10 @@ async function findEntityByIdByAgentId(request) {
   return entity;
 }
 
+/**
+ * Train an agent.
+ * @param {object} request Request
+ */
 async function train(request) {
   const agentId = request.params.id;
   const agent = await app.database.findById(modelName, agentId);
@@ -287,6 +359,10 @@ async function train(request) {
   return app.database.saveItem(agent);
 }
 
+/**
+ * Converse with an agent.
+ * @param {object} request Request.
+ */
 async function converse(request) {
   const agentId = request.params.id;
   if (!app.existsTraining(agentId)) {
