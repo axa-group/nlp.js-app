@@ -29,6 +29,9 @@ const {
   IntentModel,
 } = require('../../models');
 
+/**
+ * Validators for each endpoint.
+ */
 module.exports = {
   findAll: {
     query: (() => ({
