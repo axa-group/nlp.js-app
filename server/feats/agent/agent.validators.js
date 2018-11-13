@@ -44,22 +44,7 @@ module.exports = {
     payload: (() => ({
       agentName: AgentModel.agentName.required(),
       description: AgentModel.description,
-      language: AgentModel.language
-        .valid('en', 'es', 'de', 'fr', 'pt')
-        .required()
-        .error(new Error('Please provide a valid language for the agent')),
-      timezone: AgentModel.timezone.required(),
-      useWebhook: AgentModel.useWebhook.required(),
-      usePostFormat: AgentModel.usePostFormat.required(),
       domainClassifierThreshold: AgentModel.domainClassifierThreshold.required(),
-      fallbackResponses: AgentModel.fallbackResponses
-        .required()
-        .min(1)
-        .error(
-          new Error('Please add at least one fallback response for the agent')
-        ),
-      extraTrainingData: AgentModel.extraTrainingData,
-      enableModelsPerDomain: AgentModel.enableModelsPerDomain,
     }))(),
   },
   updateSettings: {
@@ -89,26 +74,8 @@ module.exports = {
     payload: (() => ({
       agentName: AgentModel.agentName,
       description: AgentModel.description,
-      language: AgentModel.language
-        .valid('en', 'es', 'de', 'fr', 'pt')
-        .error(
-          new Error(
-            'Please provide a valid language for the agent. Supported languages are: en, es, de, fr'
-          )
-        ),
-      timezone: AgentModel.timezone,
-      useWebhook: AgentModel.useWebhook,
-      usePostFormat: AgentModel.usePostFormat,
-      domainClassifierThreshold: AgentModel.domainClassifierThreshold,
-      fallbackResponses: AgentModel.fallbackResponses
-        .min(1)
-        .error(
-          new Error('please add at least one fallback response for the agent')
-        ),
       status: AgentModel.status,
       lastTraining: AgentModel.lastTraining,
-      extraTrainingData: AgentModel.extraTrainingData,
-      enableModelsPerDomain: AgentModel.enableModelsPerDomain,
       model: AgentModel.model,
     }))(),
   },

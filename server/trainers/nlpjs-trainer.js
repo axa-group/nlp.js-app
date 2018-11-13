@@ -117,12 +117,14 @@ class NlpjsTrainer {
     });
     // eslint-disable-next-line no-underscore-dangle
     this.managers[data.agent._id] = manager;
+    console.log(data);
     this.addEntities(manager, data);
     this.addIntents(manager, data);
     this.addAnswers(manager, data);
-    const result = await this.trainProcess(manager.export());
-    manager.import(result);
-    return result;
+    return;
+    // const result = await this.trainProcess(manager.export());
+    // manager.import(result);
+    // return result;
   }
 
   existsTraining(agentId) {
