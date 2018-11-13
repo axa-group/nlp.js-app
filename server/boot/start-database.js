@@ -31,6 +31,10 @@ const {
   ScenarioModel,
 } = require('../models');
 
+/**
+ * Starts the database.
+ * Initialize the models and connect.
+ */
 async function startDatabase() {
   app.database = new Database();
   app.database.addModel('settings');
