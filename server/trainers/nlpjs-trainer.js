@@ -108,6 +108,38 @@ class NlpjsTrainer {
     });
   }
 
+  addSlots(manager, data) {
+    data.scenarios.forEach(scenario => {
+      const domain = this.getDomain(scenario.domain, data);
+      const language = domain.language || manager.languages[0];
+      const intentName = this.getIntentName(scenario.intent, data);
+      if (scenario.slots && scenario.slots.length > 0) {
+        scenario.slots.forEach(slot => {
+          if (slot.isRequired) {
+            const managerSlot = manager.slotManager.getSlot(
+              intentName,
+              slot.entity
+            );
+            if (managerSlot) {
+              const texts = managerSlot.locales;
+              const text = slot.textPrompts[0];
+              texts[language] = text;
+            } else {
+              const texts = {};
+              const text = slot.textPrompts[0];
+              texts[language] = text;
+              manager.slotManager.addSlot(intentName, slot.entity, true, texts);
+            }
+          }
+        });
+      }
+    });
+  }
+
+  // manager.slotManager.addSlot('travel', 'fromCity', true, { en: 'Where do you want to go?' });
+  // manager.slotManager.addSlot('travel', 'toCity', true, { en: 'From where you are traveling?' });
+  // manager.slotManager.addSlot('travel', 'date', true, { en: 'When do you want to travel?' });
+
   trainProcess(manager) {
     return new Promise(resolve => {
       const child = childProcess.fork('./server/trainers/nlpjs-process');
@@ -139,6 +171,7 @@ class NlpjsTrainer {
     this.addEntities(manager, data);
     this.addIntents(manager, data);
     this.addAnswers(manager, data);
+    this.addSlots(manager, data);
     const result = await this.trainProcess(manager.export());
     manager.import(result);
     return result;
