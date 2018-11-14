@@ -52,6 +52,10 @@ const routes = {
   ],
 };
 
+/**
+ * Register the endpoints.
+ * @param {object} app Application.
+ */
 function register(app) {
   app.register('domain', routes, validators, controllers);
 }
