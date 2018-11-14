@@ -23,6 +23,9 @@
 
 const Joi = require('joi');
 
+/**
+ * Domain model.
+ */
 module.exports = {
   id: Joi.number(),
   agent: Joi.string().trim(),
