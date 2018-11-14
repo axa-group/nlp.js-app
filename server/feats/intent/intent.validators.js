@@ -30,6 +30,9 @@ const {
   SlotModel,
 } = require('../../models');
 
+/**
+ * Endpoint Validators.
+ */
 module.exports = {
   add: {
     payload: (() => ({
