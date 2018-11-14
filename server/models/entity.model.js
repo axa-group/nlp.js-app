@@ -24,6 +24,9 @@
 const Joi = require('joi');
 const ExampleModel = require('./example.entity.model');
 
+/**
+ * Entity model.
+ */
 module.exports = {
   id: Joi.number(),
   agent: Joi.string().trim(),
