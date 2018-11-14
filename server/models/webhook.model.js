@@ -23,6 +23,9 @@
 
 const Joi = require('joi');
 
+/**
+ * Webhook model
+ */
 module.exports = {
   id: Joi.string().trim(),
   webhookUrl: Joi.string().trim(),
