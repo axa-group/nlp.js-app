@@ -224,7 +224,7 @@ class NlpjsTrainer {
 
   /**
    * Indicates if a given agent has an existing training.
-   * @param {*} agentId 
+   * @param {string} agentId Agent identifier.
    */
   existsTraining(agentId) {
     return this.managers[agentId] !== undefined;
