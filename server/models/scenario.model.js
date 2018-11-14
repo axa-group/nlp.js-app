@@ -24,6 +24,9 @@
 const Joi = require('joi');
 const SlotModel = require('./slot.scenario.model');
 
+/**
+ * Scenario model
+ */
 module.exports = {
   id: Joi.string().trim(),
   agent: Joi.string().trim(),
