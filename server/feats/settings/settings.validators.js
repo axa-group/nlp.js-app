@@ -23,6 +23,9 @@
 
 const Joi = require('joi');
 
+/**
+ * Endpoint Validators.
+ */
 module.exports = {
   update: {
     payload: () => Joi.object(),
