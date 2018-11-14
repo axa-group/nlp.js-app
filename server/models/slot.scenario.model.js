@@ -23,6 +23,9 @@
 
 const Joi = require('joi');
 
+/**
+ * Slot model
+ */
 module.exports = {
   slotName: Joi.string().trim(),
   entity: Joi.string().trim(),
