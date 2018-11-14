@@ -23,6 +23,9 @@
 
 const Joi = require('joi');
 
+/**
+ * Agent model
+ */
 module.exports = {
   id: Joi.number(),
   agentName: Joi.string().trim(),
