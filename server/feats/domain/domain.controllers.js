@@ -25,6 +25,10 @@ const app = require('../../app');
 
 const modelName = 'domain';
 
+/**
+ * Adds a new domain.
+ * @param {object} request Request
+ */
 async function add(request) {
   const updateData = JSON.parse(request.payload);
   const agentName = updateData.agent;
@@ -38,6 +42,10 @@ async function add(request) {
   return app.database.save(modelName, updateData);
 }
 
+/**
+ * Find a domain by id.
+ * @param {object} request Request
+ */
 async function findById(request) {
   const domainId = request.params.id;
   const domain = await app.database.findById(modelName, domainId);
@@ -52,17 +60,29 @@ async function findById(request) {
   return domain;
 }
 
+/**
+ * Delete domain by id.
+ * @param {object} request Request
+ */
 async function deleteById(request) {
   const domainId = request.params.id;
   return app.database.removeById(modelName, domainId);
 }
 
+/**
+ * Update domain by id.
+ * @param {object} request Request
+ */
 async function updateById(request) {
   const domainId = request.params.id;
   const data = JSON.parse(request.payload);
   return app.database.updateById(modelName, domainId, data);
 }
 
+/**
+ * Find intents of the domain.
+ * @param {object} request Request
+ */
 async function findIntentsByDomainId(request) {
   const domainId = request.params.id;
   const intents = await app.database.find('intent', { domain: domainId });
