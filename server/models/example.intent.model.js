@@ -25,6 +25,9 @@ const Joi = require('joi');
 
 const IntentEntityModel = require('./entity.intent.model');
 
+/**
+ * Example intent model.
+ */
 module.exports = {
   id: Joi.number(),
   userSays: Joi.string().trim(),
