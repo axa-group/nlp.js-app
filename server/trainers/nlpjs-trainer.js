@@ -23,11 +23,22 @@
 const { NlpManager } = require('node-nlp');
 const childProcess = require('child_process');
 
+/**
+ * Class for a NLP.JS trainer
+ */
 class NlpjsTrainer {
+  /**
+   * Constructor of the class.
+   */
   constructor() {
     this.managers = {};
   }
 
+  /**
+   * Adds the entities to the NLP manager.
+   * @param {object} manager NLP Manager instance.
+   * @param {object} data Training data.
+   */
   addEntities(manager, data) {
     data.entities.forEach(entity => {
       const { entityName } = entity;
@@ -52,6 +63,11 @@ class NlpjsTrainer {
     });
   }
 
+  /**
+   * Gets a domain from the data given the id.
+   * @param {string} id Domain identifier.
+   * @param {object} data Training data.
+   */
   getDomain(id, data) {
     for (let i = 0; i < data.domains.length; i += 1) {
       // eslint-disable-next-line no-underscore-dangle
@@ -62,6 +78,11 @@ class NlpjsTrainer {
     return undefined;
   }
 
+  /**
+   * Gets the domain name or default.
+   * @param {string} id Domain identifier.
+   * @param {object} data Training data.
+   */
   getDomainName(id, data) {
     for (let i = 0; i < data.domains.length; i += 1) {
       // eslint-disable-next-line no-underscore-dangle
@@ -72,6 +93,11 @@ class NlpjsTrainer {
     return 'default';
   }
 
+  /**
+   * Gets the intent name by intent id.
+   * @param {string} id Intent identifier.
+   * @param {object} data Training dat.
+   */
   getIntentName(id, data) {
     for (let i = 0; i < data.intents.length; i += 1) {
       // eslint-disable-next-line no-underscore-dangle
@@ -82,6 +108,11 @@ class NlpjsTrainer {
     return 'default';
   }
 
+  /**
+   * Adds the intents to the NLP Manager.
+   * @param {object} manager NLP Manager instance.
+   * @param {object} data Training data.
+   */
   addIntents(manager, data) {
     data.intents.forEach(intent => {
       const domain = this.getDomain(intent.domain, data);
@@ -96,6 +127,11 @@ class NlpjsTrainer {
     });
   }
 
+  /**
+   * Add the answers to the NLP Manager.
+   * @param {object} manager NLP Manger instance.
+   * @param {object} data Training data.
+   */
   addAnswers(manager, data) {
     data.scenarios.forEach(scenario => {
       const domain = this.getDomain(scenario.domain, data);
@@ -108,6 +144,11 @@ class NlpjsTrainer {
     });
   }
 
+  /**
+   * Add slot filling information to the NLP Manager.
+   * @param {object} manager NLP Manager.
+   * @param {object} data Training data.
+   */
   addSlots(manager, data) {
     data.scenarios.forEach(scenario => {
       const domain = this.getDomain(scenario.domain, data);
@@ -136,10 +177,10 @@ class NlpjsTrainer {
     });
   }
 
-  // manager.slotManager.addSlot('travel', 'fromCity', true, { en: 'Where do you want to go?' });
-  // manager.slotManager.addSlot('travel', 'toCity', true, { en: 'From where you are traveling?' });
-  // manager.slotManager.addSlot('travel', 'date', true, { en: 'When do you want to travel?' });
-
+  /**
+   * Train the NLP Manager using a child process.
+   * @param {object} manager NLP Manager instance.
+   */
   trainProcess(manager) {
     return new Promise(resolve => {
       const child = childProcess.fork('./server/trainers/nlpjs-process');
@@ -151,6 +192,10 @@ class NlpjsTrainer {
     });
   }
 
+  /**
+   * Trains the NLP Manager with the provided training data.
+   * @param {object} data Training data.
+   */
   async train(data) {
     const languages = [];
     data.domains.forEach(domain => {
@@ -177,10 +222,19 @@ class NlpjsTrainer {
     return result;
   }
 
+  /**
+   * Indicates if a given agent has an existing training.
+   * @param {*} agentId 
+   */
   existsTraining(agentId) {
     return this.managers[agentId] !== undefined;
   }
 
+  /**
+   * Loads training for an agent.
+   * @param {string} agentId Agent identifier.
+   * @param {object} model Training model.
+   */
   loadTraining(agentId, model) {
     this.managers[agentId] = new NlpManager({ useLRC: true, useNeural: false });
     if (!model.nerManager.settings) {
@@ -192,6 +246,12 @@ class NlpjsTrainer {
     this.managers[agentId].import(model);
   }
 
+  /**
+   * Converse with a given agent.
+   * @param {string} agentId Agent identifier.
+   * @param {object} session Session instance.
+   * @param {string} text Utterance text.
+   */
   converse(agentId, session, text) {
     const manager = this.managers[agentId];
     if (!manager) {
