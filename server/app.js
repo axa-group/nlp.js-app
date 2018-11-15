@@ -23,12 +23,22 @@
 
 const trainer = require('./trainers/nlpjs-trainer');
 
+/**
+ * Class for the application.
+ */
 class App {
+  /**
+   * Constructor of the class
+   */
   constructor() {
     this.feats = {};
     this.apiPath = '/api';
   }
 
+  /**
+   * Gets a feat given the feat name.
+   * @param {string} featName Name of the feat.
+   */
   getFeat(featName) {
     if (!this.feats[featName]) {
       this.feats[featName] = {};
@@ -36,6 +46,11 @@ class App {
     return this.feats[featName];
   }
 
+  /**
+   * Gets an operation given the feat and operation name.
+   * @param {string} featName Name of the feat.
+   * @param {string} operationName Name of the operation
+   */
   getOperation(featName, operationName) {
     const feat = this.getFeat(featName);
     if (!feat[operationName]) {
@@ -48,14 +63,29 @@ class App {
     return feat[operationName];
   }
 
+  /**
+   * Default hapi handler.
+   * @param {object} request Request instance
+   * @param {object} h Response instance
+   */
   defaultHandle(request, h) {
     return h.response({ name: 'hello' }).code(201);
   }
 
+  /**
+   * Gets the operation validator or default.
+   * @param {object} operation Operation instance.
+   */
   validate(operation) {
     return operation.validator || {};
   }
 
+  /**
+   * Handlers for an operation.
+   * @param {object} operation Operation instance.
+   * @param {object} request Request instance.
+   * @param {object} h Response instance.
+   */
   async handle(operation, request, h) {
     const fn = operation.controller || this.defaultHandle;
     const result = await fn(request, h);
@@ -65,6 +95,14 @@ class App {
     return this.database.processResponse(result);
   }
 
+  /**
+   * Register a route in hapi.
+   * @param {string} featName Name of the feat.
+   * @param {string} operationName Name of the operation.
+   * @param {string} method Operation method.
+   * @param {string} path Operation path.
+   * @param {string} description Operation description.
+   */
   registerRoute(featName, operationName, method, path, description) {
     const operation = this.getOperation(featName, operationName);
     operation.route = {
@@ -80,16 +118,35 @@ class App {
     return operation.route;
   }
 
+  /**
+   * Register a controller for an operation.
+   * @param {string} featName Name of the feat.
+   * @param {string} operationName Name of the operation.
+   * @param {object} controller Controller of the operation.
+   */
   registerController(featName, operationName, controller) {
     const operation = this.getOperation(featName, operationName);
     operation.controller = controller;
   }
 
+  /**
+   * Register the validator for an operation.
+   * @param {string} featName Name of the feat.
+   * @param {string} operationName Name of the operation.
+   * @param {object} validator Validator of the operation.
+   */
   registerValidator(featName, operationName, validator) {
     const operation = this.getOperation(featName, operationName);
     operation.validator = validator;
   }
 
+  /**
+   * Register all feat operations.
+   * @param {string} featName Name of the feat.
+   * @param {object} routes Routes of the feat.
+   * @param {object} validators Validators of the feat.
+   * @param {object} controllers Controllers of the feat.
+   */
   register(featName, routes, validators, controllers) {
     const approutes = [];
     const operationNames = Object.keys(routes);
@@ -118,24 +175,48 @@ class App {
     this.server.route(approutes);
   }
 
+  /**
+   * Creates an error instance.
+   * @param {string} code Error code
+   * @param {string} message Error message
+   */
   error(code, message) {
     const result = new Error(message);
     result.code = code;
     return result;
   }
 
+  /**
+   * Trains a model.
+   * @param {object} data Training data.
+   */
   async train(data) {
     return JSON.parse(await trainer.train(data));
   }
 
+  /**
+   * Indicates if an agent has a training.
+   * @param {string} agentId Agent identifier.
+   */
   existsTraining(agentId) {
     return trainer.existsTraining(agentId);
   }
 
+  /**
+   * Loads the training of an agent.
+   * @param {string} agentId Agent identifier.
+   * @param {object} model Model to load.
+   */
   loadTraining(agentId, model) {
     trainer.loadTraining(agentId, model);
   }
 
+  /**
+   * Converse with an agent.
+   * @param {string} agentId Agent identifier.
+   * @param {object} session Session of the conversation.
+   * @param {string} text Utterance text.
+   */
   converse(agentId, session, text) {
     return trainer.converse(agentId, session, text);
   }
