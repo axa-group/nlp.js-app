@@ -24,6 +24,9 @@
 const Joi = require('joi');
 const { DomainModel } = require('../../models');
 
+/**
+ * Validators for the endpoints.
+ */
 module.exports = {
   add: {
     payload: (() => ({

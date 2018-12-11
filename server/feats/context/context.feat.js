@@ -42,6 +42,10 @@ const routes = {
   ],
 };
 
+/**
+ * Register the routes.
+ * @param {object} app Application.
+ */
 function register(app) {
   app.register('context', routes, validators, controllers);
 }

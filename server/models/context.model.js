@@ -23,6 +23,9 @@
 
 const Joi = require('joi');
 
+/**
+ * Context model.
+ */
 module.exports = {
   id: Joi.number(),
   name: Joi.string().trim(),

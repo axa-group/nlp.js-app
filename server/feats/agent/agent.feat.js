@@ -117,6 +117,10 @@ const routes = {
   ],
 };
 
+/**
+ * Register the routes
+ * @param {object} app Application.
+ */
 function register(app) {
   app.register('agent', routes, validators, controllers);
 }

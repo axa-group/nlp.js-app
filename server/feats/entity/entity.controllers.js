@@ -25,6 +25,10 @@ const app = require('../../app');
 
 const modelName = 'entity';
 
+/**
+ * Adds a new entity
+ * @param {object} request Request
+ */
 async function add(request) {
   const updateData = JSON.parse(request.payload);
   const agentName = updateData.agent;
@@ -43,6 +47,10 @@ async function add(request) {
   return app.database.save(modelName, updateData);
 }
 
+/**
+ * Find entity by id.
+ * @param {object} request Request
+ */
 async function findById(request) {
   const entityId = request.params.id;
   const entity = await app.database.findById(modelName, entityId);
@@ -57,6 +65,10 @@ async function findById(request) {
   return entity;
 }
 
+/**
+ * Remove an entity by id.
+ * @param {object} request Request.
+ */
 async function deleteById(request) {
   const entityId = request.params.id;
   const entity = await app.database.findById(modelName, entityId);
@@ -70,6 +82,11 @@ async function deleteById(request) {
   return app.database.removeById(modelName, entityId);
 }
 
+/**
+ * indicates if an intent uses an entity.
+ * @param {object} intent Intent instance.
+ * @param {string} entityId Entity identifier.
+ */
 function intentContainsEntity(intent, entityId) {
   if (!intent.examples) {
     return true;
@@ -87,6 +104,11 @@ function intentContainsEntity(intent, entityId) {
   return false;
 }
 
+/**
+ * Given an intent and a list of domains, finds the domain name of the intent.
+ * @param {object} intent Intent instance.
+ * @param {object[]} domains List of domains.
+ */
 function getDomainName(intent, domains) {
   for (let i = 0; i < domains.length; i += 1) {
     // eslint-disable-next-line no-underscore-dangle
@@ -97,6 +119,10 @@ function getDomainName(intent, domains) {
   return '';
 }
 
+/**
+ * Find intents by entity.
+ * @param {object} request Request
+ */
 async function findIntentsByEntityId(request) {
   const entityId = request.params.id;
   const entity = await app.database.findById(modelName, entityId);
@@ -122,6 +148,10 @@ async function findIntentsByEntityId(request) {
   return result;
 }
 
+/**
+ * Updates an entity by id.
+ * @param {object} request Request
+ */
 async function updateById(request) {
   const entityId = request.params.id;
   const entity = await app.database.findById(modelName, entityId);

@@ -60,6 +60,9 @@ if (process.env.HEROKU_APP_NAME) {
   }
 }
 
+/**
+ * Starts the server.
+ */
 async function startServer() {
   registerFeats();
   await server.register([

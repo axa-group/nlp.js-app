@@ -24,6 +24,9 @@
 const Joi = require('joi');
 const { EntityModel, ExampleModel } = require('../../models');
 
+/**
+ * Validators of endpoints.
+ */
 module.exports = {
   add: {
     payload: (() => ({

@@ -27,6 +27,9 @@ const defaultAgent = require('./default-agent.json');
 
 const modelName = 'settings';
 
+/**
+ * Creates the demo agent.
+ */
 async function createDemo() {
   const agent = await app.database.save('agent', defaultAgent.agent);
   const domainSave = Object.assign({}, defaultAgent.domain);
@@ -68,6 +71,9 @@ async function createDemo() {
   });
 }
 
+/**
+ * Find all settings.
+ */
 async function findAll() {
   let settings = await app.database.find(modelName);
   if (!settings || settings.length === 0) {
@@ -79,12 +85,20 @@ async function findAll() {
   return settings.any;
 }
 
+/**
+ * Find a setting by name.
+ * @param {object} request Request
+ */
 async function findSettingsByName(request) {
   const { name } = request.params;
   const settings = await app.database.find(modelName);
   return settings ? settings.any[name] : undefined;
 }
 
+/**
+ * Updates a setting by name.
+ * @param {object} request Request
+ */
 async function update(request) {
   const updateData = JSON.parse(request.payload);
   await app.database.deleteMany(modelName);

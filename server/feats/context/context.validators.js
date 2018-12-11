@@ -24,6 +24,9 @@
 const Joi = require('joi');
 const { AgentModel } = require('../../models');
 
+/**
+ * Validators for the endpoints.
+ */
 module.exports = {
   add: {
     params: (() => ({

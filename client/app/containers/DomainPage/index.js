@@ -115,7 +115,7 @@ export class DomainPage extends React.PureComponent { // eslint-disable-line rea
       this.props.onEditMode(this.props.params.id);
     } else {
       this.props.resetForm();
-      this.props.onChangeAgentData('language', { target: { value: this.props.globalSettings.defaultAgentLanguage }});
+      this.props.onChangeDomainData({ value: this.props.globalSettings.defaultAgentLanguage, field: 'language' });
       this.setState({ editMode: false });
       const { currentAgent } = this.props;
       if (currentAgent) {

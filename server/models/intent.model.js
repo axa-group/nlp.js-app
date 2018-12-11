@@ -24,6 +24,9 @@
 const Joi = require('joi');
 const ExampleIntentModel = require('./example.intent.model');
 
+/**
+ * Intent model.
+ */
 module.exports = {
   id: Joi.number(),
   agent: Joi.string().trim(),

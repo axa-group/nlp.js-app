@@ -25,6 +25,10 @@ const app = require('../../app');
 
 const modelName = 'intent';
 
+/**
+ * Adds a new intent.
+ * @param {object} request Request
+ */
 async function add(request) {
   const updateData = JSON.parse(request.payload);
   const agentName = updateData.agent;
@@ -47,6 +51,10 @@ async function add(request) {
   return app.database.save(modelName, updateData);
 }
 
+/**
+ * Finds an intent by id.
+ * @param {object} request Request.
+ */
 async function findById(request) {
   const intentId = request.params.id;
   const intent = await app.database.findById(modelName, intentId);
@@ -66,6 +74,10 @@ async function findById(request) {
   return intent;
 }
 
+/**
+ * Delete intent by id.
+ * @param {object} request Request
+ */
 async function deleteById(request) {
   const intentId = request.params.id;
   const intent = await app.database.findById(modelName, intentId);
@@ -80,6 +92,10 @@ async function deleteById(request) {
   return app.database.removeById(modelName, intentId);
 }
 
+/**
+ * Update intent by id.
+ * @param {object} request Request
+ */
 async function updateById(request) {
   const intentId = request.params.id;
   const intent = await app.database.findById(modelName, intentId);
@@ -94,6 +110,10 @@ async function updateById(request) {
   return app.database.updateById(modelName, intentId, data);
 }
 
+/**
+ * Adds scenario to the intent.
+ * @param {object} request Request
+ */
 async function addScenario(request) {
   const updateData = JSON.parse(request.payload);
   const agentName = updateData.agent;
@@ -133,6 +153,10 @@ async function addScenario(request) {
   return app.database.save('scenario', updateData);
 }
 
+/**
+ * Update scenario.
+ * @param {object} request Request
+ */
 async function updateScenario(request) {
   const updateData = JSON.parse(request.payload);
   const intentId = request.params.id;
@@ -144,11 +168,19 @@ async function updateScenario(request) {
   return app.database.updateById('scenario', scenario._id, updateData);
 }
 
+/**
+ * Delete scenario.
+ * @param {object} request Request
+ */
 async function deleteScenario(request) {
   const intentId = request.params.id;
   return app.database.remove('scenario', { intent: intentId });
 }
 
+/**
+ * Find scenario
+ * @param {object} request Request
+ */
 async function findScenario(request) {
   const intentId = request.params.id;
   const intent = await app.database.findById(modelName, intentId);

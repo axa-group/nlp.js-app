@@ -25,6 +25,10 @@ const app = require('../../app');
 
 const modelName = 'session';
 
+/**
+ * Add acontext by id.
+ * @param {object} request Request
+ */
 async function addById(request) {
   const agentId = request.params.id;
   const agent = app.database.findById('agent', agentId);
@@ -48,6 +52,10 @@ async function addById(request) {
   return app.database.save(modelName, sessionAny.any);
 }
 
+/**
+ * Find a context by id.
+ * @param {object} request Request.
+ */
 async function findById(request) {
   const agentId = request.params.id;
   const agent = app.database.findById('agent', agentId);
@@ -69,6 +77,10 @@ async function findById(request) {
   return sessionAny.any;
 }
 
+/**
+ * Delete a context by id.
+ * @param {object} request Request.
+ */
 async function deleteById(request) {
   const agentId = request.params.id;
   const agent = app.database.findById('agent', agentId);
