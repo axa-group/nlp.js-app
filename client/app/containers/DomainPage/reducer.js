@@ -12,33 +12,25 @@ const initialState = Immutable({
   domainData: {
     agent: null,
     domainName: '',
-    language: '',
+    language: 'en',
     enabled: true,
     intentThreshold: 50,
-    extraTrainingData: false,
-  },
+    extraTrainingData: false
+  }
 });
 
 function domainReducer(state = initialState, action) {
   switch (action.type) {
     case CHANGE_DOMAIN_DATA:
-      return state
-        .setIn(['domainData', action.payload.field], action.payload.value);
+      return state.setIn(['domainData', action.payload.field], action.payload.value);
     case RESET_DOMAIN_DATA:
       return initialState;
     case LOAD_DOMAIN:
-      return state
-        .set('loading', true)
-        .set('error', false);
+      return state.set('loading', true).set('error', false);
     case LOAD_DOMAIN_SUCCESS:
-      return state
-        .set('loading', false)
-        .set('error', false)
-        .set('domainData', action.domain);
+      return state.set('loading', false).set('error', false).set('domainData', action.domain);
     case LOAD_DOMAIN_ERROR:
-      return state
-        .set('error', action.error)
-        .set('loading', false);
+      return state.set('error', action.error).set('loading', false);
     default:
       return state;
   }
