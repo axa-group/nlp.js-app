@@ -180,7 +180,8 @@ async function updateScenario(request) {
  */
 async function deleteScenario(request) {
   const intentId = request.params.id;
-  const scenario = await app.database.findOne('scenario', { intent: intentId });
+  const intentFilter = { intent: intentId };
+  const scenario = await app.database.findOne('scenario', intentFilter);
   if (!scenario) {
     return app.error(404, 'The scenario was not found');
   }
@@ -189,7 +190,7 @@ async function deleteScenario(request) {
     agent.status = AgentStatus.OutOfDate;
     await app.database.saveItem(agent);
   }
-  return app.database.remove('scenario', { intent: intentId });
+  return app.database.remove('scenario', intentFilter);
 }
 
 /**
