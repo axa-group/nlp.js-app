@@ -182,6 +182,7 @@ class NlpjsTrainer {
    * @param {object} manager NLP Manager instance.
    */
   trainProcess(manager) {
+    console.log(manager);
     return new Promise(resolve => {
       const child = childProcess.fork('./server/trainers/nlpjs-process');
       child.on('message', managerResult => {
@@ -199,6 +200,7 @@ class NlpjsTrainer {
   async train(data) {
     const languages = [];
     data.domains.forEach(domain => {
+      console.log(domain);
       if (!domain.language) {
         domain.language = 'en';
       }

@@ -136,7 +136,7 @@ async function addScenario(request) {
     }
   }
   const intentName = updateData.intent;
-  const intent = await app.database.findOne('intent', { intentName });
+  const intent = await app.database.findOne('intent', { intentName, domain: domain._id });
   if (!intent) {
     return app.error(404, 'The intent was not found');
   }
@@ -164,6 +164,11 @@ async function updateScenario(request) {
   if (!scenario) {
     return app.error(404, 'The scenario was not found');
   }
+  const agent = await app.database.findById('agent', scenario.agent);
+  if (agent) {
+    agent.status = 'Out of Date';
+    await app.database.saveItem(agent);
+  }
   // eslint-disable-next-line no-underscore-dangle
   return app.database.updateById('scenario', scenario._id, updateData);
 }
@@ -174,6 +179,15 @@ async function updateScenario(request) {
  */
 async function deleteScenario(request) {
   const intentId = request.params.id;
+  const scenario = await app.database.findOne('scenario', { intent: intentId });
+  if (!scenario) {
+    return app.error(404, 'The scenario was not found');
+  }
+  const agent = await app.database.findById('agent', scenario.agent);
+  if (agent) {
+    agent.status = 'Out of Date';
+    await app.database.saveItem(agent);
+  }
   return app.database.remove('scenario', { intent: intentId });
 }
 
