@@ -22,6 +22,7 @@
  */
 
 const app = require('../../app');
+const { AgentStatus } = require('./agent.constants');
 
 const modelName = 'agent';
 
@@ -346,7 +347,7 @@ async function train(request) {
     scenarios,
     entities,
   };
-  agent.status = 'Training';
+  agent.status = AgentStatus.Training;
   app.database.saveItem(agent);
   let model = await app.train(data);
   if (model) {
@@ -355,7 +356,7 @@ async function train(request) {
     await app.database.save('training', { any: { agentId, model } });
   }
   agent.lastTraining = new Date();
-  agent.status = 'Ready';
+  agent.status = AgentStatus.Ready;
   return app.database.saveItem(agent);
 }
 

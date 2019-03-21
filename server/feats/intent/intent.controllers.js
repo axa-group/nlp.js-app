@@ -22,6 +22,7 @@
  */
 
 const app = require('../../app');
+const { AgentStatus } = require('../agent/agent.constants');
 
 const modelName = 'intent';
 
@@ -41,7 +42,7 @@ async function add(request) {
   if (!domain) {
     return app.error(404, 'The domain was not found');
   }
-  agent.status = 'Out of Date';
+  agent.status = AgentStatus.OutOfDate;
   await app.database.saveItem(agent);
   updateData.status = 'Ready';
   // eslint-disable-next-line no-underscore-dangle
@@ -84,7 +85,7 @@ async function deleteById(request) {
   if (intent) {
     const agent = await app.database.findById('agent', intent.agent);
     if (agent) {
-      agent.status = 'Out of Date';
+      agent.status = AgentStatus.OutOfDate;
       await app.database.saveItem(agent);
     }
   }
@@ -102,7 +103,7 @@ async function updateById(request) {
   if (intent) {
     const agent = await app.database.findById('agent', intent.agent);
     if (agent) {
-      agent.status = 'Out of Date';
+      agent.status = AgentStatus.OutOfDate;
       await app.database.saveItem(agent);
     }
   }
@@ -142,7 +143,7 @@ async function addScenario(request) {
   }
   // eslint-disable-next-line no-underscore-dangle
   app.database.remove('scenario', { intent: intent._id });
-  agent.status = 'Out of Date';
+  agent.status = AgentStatus.OutOfDate;
   await app.database.saveItem(agent);
   // eslint-disable-next-line no-underscore-dangle
   updateData.agent = agent._id.toString();
@@ -166,7 +167,7 @@ async function updateScenario(request) {
   }
   const agent = await app.database.findById('agent', scenario.agent);
   if (agent) {
-    agent.status = 'Out of Date';
+    agent.status = AgentStatus.OutOfDate;
     await app.database.saveItem(agent);
   }
   // eslint-disable-next-line no-underscore-dangle
@@ -185,7 +186,7 @@ async function deleteScenario(request) {
   }
   const agent = await app.database.findById('agent', scenario.agent);
   if (agent) {
-    agent.status = 'Out of Date';
+    agent.status = AgentStatus.OutOfDate;
     await app.database.saveItem(agent);
   }
   return app.database.remove('scenario', { intent: intentId });

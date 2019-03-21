@@ -22,6 +22,7 @@
  */
 
 const app = require('../../app');
+const { AgentStatus } = require('../agent/agent.constants');
 
 const modelName = 'entity';
 
@@ -36,7 +37,7 @@ async function add(request) {
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
-  agent.status = 'Out of Date';
+  agent.status = AgentStatus.OutOfDate;
   app.database.saveItem(agent);
   updateData.status = 'Ready';
   // eslint-disable-next-line no-underscore-dangle
@@ -75,7 +76,7 @@ async function deleteById(request) {
   if (entity) {
     const agent = await app.database.findById('agent', entity.agent);
     if (agent) {
-      agent.status = 'Out of Date';
+      agent.status = AgentStatus.OutOfDate;
       await app.database.saveItem(agent);
     }
   }
@@ -158,7 +159,7 @@ async function updateById(request) {
   if (entity) {
     const agent = await app.database.findById('agent', entity.agent);
     if (agent) {
-      agent.status = 'Out of Date';
+      agent.status = AgentStatus.OutOfDate;
       await app.database.saveItem(agent);
     }
   }
