@@ -22,6 +22,7 @@
  */
 
 const app = require('../../app');
+const { AgentStatus } = require('../agent/agent.constants');
 
 const modelName = 'intent';
 
@@ -41,7 +42,7 @@ async function add(request) {
   if (!domain) {
     return app.error(404, 'The domain was not found');
   }
-  agent.status = 'Out of Date';
+  agent.status = AgentStatus.OutOfDate;
   await app.database.saveItem(agent);
   updateData.status = 'Ready';
   // eslint-disable-next-line no-underscore-dangle
@@ -84,7 +85,7 @@ async function deleteById(request) {
   if (intent) {
     const agent = await app.database.findById('agent', intent.agent);
     if (agent) {
-      agent.status = 'Out of Date';
+      agent.status = AgentStatus.OutOfDate;
       await app.database.saveItem(agent);
     }
   }
@@ -102,7 +103,7 @@ async function updateById(request) {
   if (intent) {
     const agent = await app.database.findById('agent', intent.agent);
     if (agent) {
-      agent.status = 'Out of Date';
+      agent.status = AgentStatus.OutOfDate;
       await app.database.saveItem(agent);
     }
   }
@@ -136,13 +137,13 @@ async function addScenario(request) {
     }
   }
   const intentName = updateData.intent;
-  const intent = await app.database.findOne('intent', { intentName });
+  const intent = await app.database.findOne('intent', { intentName, domain: domain._id });
   if (!intent) {
     return app.error(404, 'The intent was not found');
   }
   // eslint-disable-next-line no-underscore-dangle
   app.database.remove('scenario', { intent: intent._id });
-  agent.status = 'Out of Date';
+  agent.status = AgentStatus.OutOfDate;
   await app.database.saveItem(agent);
   // eslint-disable-next-line no-underscore-dangle
   updateData.agent = agent._id.toString();
@@ -164,6 +165,11 @@ async function updateScenario(request) {
   if (!scenario) {
     return app.error(404, 'The scenario was not found');
   }
+  const agent = await app.database.findById('agent', scenario.agent);
+  if (agent) {
+    agent.status = AgentStatus.OutOfDate;
+    await app.database.saveItem(agent);
+  }
   // eslint-disable-next-line no-underscore-dangle
   return app.database.updateById('scenario', scenario._id, updateData);
 }
@@ -174,7 +180,17 @@ async function updateScenario(request) {
  */
 async function deleteScenario(request) {
   const intentId = request.params.id;
-  return app.database.remove('scenario', { intent: intentId });
+  const intentFilter = { intent: intentId };
+  const scenario = await app.database.findOne('scenario', intentFilter);
+  if (!scenario) {
+    return app.error(404, 'The scenario was not found');
+  }
+  const agent = await app.database.findById('agent', scenario.agent);
+  if (agent) {
+    agent.status = AgentStatus.OutOfDate;
+    await app.database.saveItem(agent);
+  }
+  return app.database.remove('scenario', intentFilter);
 }
 
 /**
