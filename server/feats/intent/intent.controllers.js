@@ -137,7 +137,10 @@ async function addScenario(request) {
     }
   }
   const intentName = updateData.intent;
-  const intent = await app.database.findOne('intent', { intentName, domain: domain._id });
+  const intent = await app.database.findOne('intent', {
+    intentName,
+    domain: domain._id,
+  });
   if (!intent) {
     return app.error(404, 'The intent was not found');
   }
