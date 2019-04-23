@@ -25,10 +25,11 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import {
   applyRouterMiddleware,
-  browserHistory,
-  Router
+  Router,
+  useRouterHistory
 } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
+import { createHistory } from 'history'
 import { useScroll } from 'react-router-scroll';
 import 'sanitize.css/sanitize.css';
 // Import CSS reset and Global Styles
@@ -42,6 +43,7 @@ import {
 // Import root routes
 import createRoutes from './routes';
 import configureStore from './store';
+
 /* eslint-enable import/no-unresolved, import/extensions */
 
 // Create redux store with history
@@ -49,6 +51,10 @@ import configureStore from './store';
 // Optionally, this could be changed to leverage a created history
 // e.g. `const browserHistory = useRouterHistory(createBrowserHistory)();`
 const initialState = loadState();
+
+const browserHistory = useRouterHistory(createHistory)({
+  basename: process.env.PUBLIC_PATH_PREFIX
+});
 const store = configureStore(initialState, browserHistory);
 store.subscribe(() => {
   saveState(store.getState());

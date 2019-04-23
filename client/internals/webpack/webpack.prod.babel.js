@@ -4,6 +4,10 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const OfflinePlugin = require('offline-plugin');
 
+require('dotenv').config();
+
+const publicPathPrefix = `${process.env.PUBLIC_PATH_PREFIX}/` || '/';
+
 module.exports = require('./webpack.base.babel')({
   // In production, we skip all hot-reloading stuff
   entry: [
@@ -17,6 +21,7 @@ module.exports = require('./webpack.base.babel')({
   },
 
   plugins: [
+
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
       children: true,
@@ -45,8 +50,8 @@ module.exports = require('./webpack.base.babel')({
     // Put it in the end to capture all the HtmlWebpackPlugin's
     // assets manipulations and do leak its manipulations to HtmlWebpackPlugin
     new OfflinePlugin({
-      relativePaths: false,
-      publicPath: '/',
+      relativePaths: true,
+      publicPath: publicPathPrefix,
 
       // No need to cache .htaccess. See http://mxs.is/googmp,
       // this is applied before any match in `caches` section
