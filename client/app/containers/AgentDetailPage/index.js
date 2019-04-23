@@ -33,13 +33,13 @@ import Preloader from '../../components/Preloader';
 import SliderInput from '../../components/SliderInput';
 import InputLabel from '../../components/InputLabel';
 import EditDeleteButton from '../../components/EditDeleteButton';
-import ExportButton from '../../components/ExportButton/index';
+import ExportAgentButton from '../../components/ExportAgentButton/index';
 import Toggle from '../../components/Toggle';
 
 import Table from '../../components/Table';
 import TableContainer from '../../components/TableContainer';
 
-import { deleteAgent, exportAgent } from '../App/actions';
+import { deleteAgent } from '../App/actions';
 import {
   makeSelectError,
   makeSelectLoading,
@@ -159,8 +159,6 @@ export class AgentDetailPage extends React.PureComponent {
       breadcrumbs = [{ label: 'Agent' }, { label: `${currentAgent.agentName}` }];
     }
 
-    const exportUrl = `http://localhost:3000/api/agent/${currentAgent.id}/export`;
-
     return (
       <div>
         <Col style={{ zIndex: 2, position: 'fixed', top: '50%', left: '45%' }} s={12}>
@@ -188,10 +186,10 @@ export class AgentDetailPage extends React.PureComponent {
                 iconName="delete"
                 onClick={this.onDeletePrompt}
               />
-              <ExportButton
+              <ExportAgentButton
                 label={messages.exportButton}
                 iconName=""
-                url={exportUrl}
+                agent={currentAgent}
               />
             </div>
           }
