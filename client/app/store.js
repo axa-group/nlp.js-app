@@ -21,7 +21,7 @@ export default function configureStore(initialState = {}, history) {
   // 2. sagaMiddleware: Makes redux-sagas work
   // 3. routerMiddleware: Syncs the location/URL path to the state
 
-  const apiURL = process.env.API_URL || ''
+  const apiURL = process.env.API_URL || '';
 
   const middlewares = [
     swaggerMiddleware({ url: `${apiURL}/swagger2.json` }),
