@@ -22,6 +22,7 @@
  */
 
 const trainer = require('./trainers/nlpjs-trainer');
+const FileBundle = require('./core/file-bundle');
 
 /**
  * Class for the application.
@@ -89,9 +90,13 @@ class App {
   async handle(operation, request, h) {
     const fn = operation.controller || this.defaultHandle;
     const result = await fn(request, h);
+
     if (result instanceof Error) {
       return h.response(result.message).code(result.code || 500);
+    } else if(result instanceof FileBundle) {
+      return result.content;
     }
+
     return this.database.processResponse(result);
   }
 

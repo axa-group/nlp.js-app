@@ -22,9 +22,11 @@
  */
 
 const app = require('../../app');
+const FileBundle = require('../../core/file-bundle');
+const { Model } = require('../../constants');
 const { AgentStatus } = require('./agent.constants');
 
-const modelName = 'agent';
+const modelName = Model.Agent;
 
 /**
  * Find by ide or returns an error.
@@ -52,7 +54,7 @@ async function findAll() {
  */
 async function add(request) {
   const updateData = JSON.parse(request.payload);
-  updateData.status = 'Ready';
+  updateData.status = AgentStatus.Ready;
   updateData.domains = [];
   return app.database.save(modelName, updateData);
 }
@@ -100,10 +102,10 @@ async function updateById(request) {
  */
 async function findDomainsByAgentId(request) {
   const agentId = request.params.id;
-  const domains = await app.database.find('domain', { agent: agentId });
+  const domains = await app.database.find(Model.Domain, { agent: agentId });
   return {
     domains: app.database.processResponse(domains),
-    total: domains.length,
+    total: domains.length
   };
 }
 
@@ -113,7 +115,7 @@ async function findDomainsByAgentId(request) {
  */
 async function deleteById(request) {
   const agentId = request.params.id;
-  app.database.remove('domain', { agent: agentId });
+  app.database.remove(Model.Domain, { agent: agentId });
   return app.database.removeById(modelName, agentId);
 }
 
@@ -137,7 +139,7 @@ async function findIntentsInDomainByIdByAgentId(request) {
     query.intentName = { $regex: filter, $options: 'i' };
   }
 
-  let intents = await app.database.find('intent', query);
+  let intents = await app.database.find(Model.Intent, query);
   const total = intents.length;
   if (start) {
     intents = intents.slice(start);
@@ -147,7 +149,7 @@ async function findIntentsInDomainByIdByAgentId(request) {
   }
   return {
     intents: app.database.processResponse(intents),
-    total,
+    total
   };
 }
 
@@ -166,7 +168,7 @@ async function findIntentsByAgentId(request) {
   if (filter) {
     query.intentName = { $regex: filter, $options: 'i' };
   }
-  let intents = await app.database.find('intent', query);
+  let intents = await app.database.find(Model.Intent, query);
   const total = intents.length;
   if (start) {
     intents = intents.slice(start);
@@ -176,7 +178,7 @@ async function findIntentsByAgentId(request) {
   }
   return {
     intents: app.database.processResponse(intents),
-    total,
+    total
   };
 }
 
@@ -195,7 +197,7 @@ async function findEntitiesByAgentId(request) {
   if (filter) {
     query.entityName = { $regex: filter, $options: 'i' };
   }
-  let entities = await app.database.find('entity', query);
+  let entities = await app.database.find(Model.Entity, query);
   const total = entities.length;
   if (start) {
     entities = entities.slice(start);
@@ -205,7 +207,7 @@ async function findEntitiesByAgentId(request) {
   }
   return {
     entities: app.database.processResponse(entities),
-    total,
+    total
   };
 }
 
@@ -220,7 +222,7 @@ async function findDomainByIdByAgentId(request) {
     return app.error(404, 'The agent was not found');
   }
   const { domainId } = request.params;
-  const domain = await app.database.findById('domain', domainId);
+  const domain = await app.database.findById(Model.Domain, domainId);
   if (!domain) {
     return app.error(404, 'The domain was not found');
   }
@@ -254,7 +256,7 @@ async function findByName(request) {
  */
 async function findIntentByIdInDomainByIdByAgentId(request) {
   const { domainId, intentId } = request.params;
-  const intent = await app.database.findById('intent', intentId);
+  const intent = await app.database.findById(Model.Intent, intentId);
   if (!intent) {
     return app.error(404, 'The intent was not found');
   }
@@ -263,7 +265,7 @@ async function findIntentByIdInDomainByIdByAgentId(request) {
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
-  const domain = await app.database.findById('domain', domainId);
+  const domain = await app.database.findById(Model.Domain, domainId);
   if (!domain) {
     return app.error(404, 'The domain was not found');
   }
@@ -286,15 +288,15 @@ async function findIntentScenarioInDomainByIdByAgentId(request) {
     return app.error(404, 'The agent was not found');
   }
   const { domainId, intentId } = request.params;
-  const domain = await app.database.findById('domain', domainId);
+  const domain = await app.database.findById(Model.Domain, domainId);
   if (!domain) {
     return app.error(404, 'The domain was not found');
   }
-  const intent = await app.database.findById('intent', intentId);
+  const intent = await app.database.findById(Model.Intent, intentId);
   if (!intent) {
     return app.error(404, 'The intent was not found');
   }
-  const scenario = await app.database.findOne('scenario', { intent: intentId });
+  const scenario = await app.database.findOne(Model.Scenario, { intent: intentId });
   if (!scenario) {
     return app.error(404, 'The scenario was not found');
   }
@@ -315,7 +317,7 @@ async function findEntityByIdByAgentId(request) {
     return app.error(404, 'The agent was not found');
   }
   const { entityId } = request.params;
-  const entity = await app.database.findById('entity', entityId);
+  const entity = await app.database.findById(Model.Entity, entityId);
   if (!entity) {
     return app.error(404, 'The entity was not found');
   }
@@ -336,16 +338,16 @@ async function train(request) {
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
-  const domains = await app.database.find('domain', { agent: agentId });
-  const entities = await app.database.find('entity', { agent: agentId });
-  const intents = await app.database.find('intent', { agent: agentId });
-  const scenarios = await app.database.find('scenario', { agent: agentId });
+  const domains = await app.database.find(Model.Domain, { agent: agentId });
+  const entities = await app.database.find(Model.Entity, { agent: agentId });
+  const intents = await app.database.find(Model.Intent, { agent: agentId });
+  const scenarios = await app.database.find(Model.Scenario, { agent: agentId });
   const data = {
     agent,
     domains,
     intents,
     scenarios,
-    entities,
+    entities
   };
   agent.status = AgentStatus.Training;
   app.database.saveItem(agent);
@@ -367,8 +369,8 @@ async function train(request) {
 async function converse(request) {
   const agentId = request.params.id;
   if (!app.existsTraining(agentId)) {
-    const training = await app.database.findOne('training', {
-      'any.agentId': agentId,
+    const training = await app.database.findOne(Model.Training, {
+      'any.agentId': agentId
     });
     if (!training) {
       return app.error(404, 'Agent training not found');
@@ -378,23 +380,86 @@ async function converse(request) {
   }
   const { sessionId } = request.query;
   const { text } = request.query;
-  let sessionAny = await app.database.findOne('session', {
+  let sessionAny = await app.database.findOne(Model.Session, {
     'any.agentId': agentId,
-    'any.sessionId': sessionId,
+    'any.sessionId': sessionId
   });
   if (!sessionAny) {
     sessionAny = {
       any: {
         agentId,
         sessionId,
-        context: {},
-      },
+        context: {}
+      }
     };
   }
   const answer = await app.converse(agentId, sessionAny.any, text);
   answer.textResponse = answer.answer;
-  await app.database.save('session', sessionAny.any);
+  await app.database.save(Model.Session, sessionAny);
   return answer;
+}
+
+async function readContentHierarchyFromDb(agentId) {
+  const headers = ['Agent name', 'Agent id', 'Domain name', 'Domain id', 'Domain language', 'Domain status', 'Intent name', 'Intent id', 'Example / Response', 'Text'];
+  const RowType = {
+    Example: 'EXAMPLE',
+    Response: 'RESPONSE'
+  };
+  const contentMatrix = [headers];
+  const agent = await app.database.findById(Model.Agent, agentId);
+  const domains = await app.database.find(Model.Domain, { agent: agentId });
+  const agentsPrefix = [agent.agentName, agent._id];
+
+  for(let domain of domains) {
+    const { domainName, language, status } = domain;
+    const domainPrefix = [...agentsPrefix, domainName, domain._id, language, status];
+
+    const intents = await app.database.find(Model.Intent, { agent: agentId, domain: domain._id });
+
+    for(let intent of intents) {
+      const { intentName } = intent;
+      const intentPrefix = [...domainPrefix, intentName, intent._id];
+
+      intent.examples.forEach(example => {
+        contentMatrix.push(intentPrefix.concat([RowType.Example, example.userSays]));
+      });
+
+      const scenarios = await app.database.find(Model.Scenario, { agent: agentId, domain: domain._id, intent: intent._id });
+
+      if (scenarios.length) {
+        scenarios[0].intentResponses.forEach(response => {
+          contentMatrix.push(intentPrefix.concat([RowType.Response, response]));
+        });
+      }
+    }
+  }
+  return contentMatrix;
+}
+
+async function generateCsvContent(agentId) {
+  const contentMatrix = await readContentHierarchyFromDb(agentId);
+  const sep = ';';
+  let content = '';
+
+  contentMatrix.forEach(row => {
+    content += `"${row.join(`"${sep}"`)}"\n`;
+  });
+
+  return content;
+}
+
+async function exportContent(request, h) {
+  const agentId = request.params.id;
+  const timestamp = new Date().getTime();
+  const filename = `${timestamp}-agent.csv`;
+  const csvContent = await generateCsvContent(agentId);
+  const response = h.response(csvContent);
+
+  response.headers['Content-disposition'] = `attachment; filename=${filename}`;
+  response.headers['Content-type'] = `application/octet-stream; charset=utf-8; header=present;`;
+  response.type('application/octet-stream');
+
+  return new FileBundle(response);
 }
 
 module.exports = {
@@ -417,4 +482,5 @@ module.exports = {
   findEntityByIdByAgentId,
   train,
   converse,
+  exportContent
 };
