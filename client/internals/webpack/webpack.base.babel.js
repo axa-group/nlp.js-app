@@ -5,6 +5,12 @@ const material = require('material-colors');
 const path = require('path');
 const webpack = require('webpack');
 const Dotenv = require('dotenv-webpack');
+const CopyPlugin = require('copy-webpack-plugin');
+
+const dotenvPath = path.resolve(__dirname, '..', '..', '.env');
+const publicPathPrefix = `${process.env.PUBLIC_PATH_PREFIX}/`  || '/';
+const swagger2Path = path.resolve(__dirname, '..', '..', 'swagger2.json');
+
 let processEnv = {
   NODE_ENV: JSON.stringify(process.env.NODE_ENV)
 };
@@ -16,7 +22,7 @@ module.exports = (options) => ({
   entry: options.entry,
   output: Object.assign({ // Compile into js/build.js
     path: path.resolve(process.cwd(), 'build'),
-    publicPath: '/',
+    publicPath: publicPathPrefix
   }, options.output), // Merge with env dependent settings
   module: {
     loaders: [{
@@ -72,6 +78,14 @@ module.exports = (options) => ({
     }],
   },
   plugins: options.plugins.concat([
+
+    new CopyPlugin([
+      {
+        from: swagger2Path,
+        to: path.resolve(process.cwd(), 'build')
+      }
+    ]),
+
     new webpack.ProvidePlugin({
       // make fetch available
       fetch: 'exports-loader?self.fetch!whatwg-fetch',
@@ -85,9 +99,8 @@ module.exports = (options) => ({
     }),
     new webpack.NamedModulesPlugin(),
     new Dotenv({
-      path: './.env', // Path to .env file (this is the default)
-      silent: true //If true, all warnings will be surpressed.
-
+      path: dotenvPath,
+      silent: true // If true, all warnings will be surpressed.
     }),
   ]),
   resolve: {
