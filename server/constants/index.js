@@ -21,12 +21,15 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+<<<<<<< HEAD
 const Format = {
   csv: 'csv'
 };
 
 Format.default = Format.csv;
 
+=======
+>>>>>>> 1cff9d1945b9adf5785434ca4e7ee60dbac91db0
 module.exports = {
   Model: {
     Settings: 'settings',
@@ -38,6 +41,7 @@ module.exports = {
     Entity: 'entity',
     Scenario: 'scenario',
     Users: 'users'
+<<<<<<< HEAD
   },
   exportSettings: {
     csv: {
@@ -50,4 +54,7 @@ module.exports = {
     Response: 'RESPONSE'
   },
   Format
+=======
+  }
+>>>>>>> 1cff9d1945b9adf5785434ca4e7ee60dbac91db0
 };
