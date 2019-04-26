@@ -1900,6 +1900,9 @@
             "trim": true
           }
         },
+        "language":{
+          "type": "string"
+        },
         "enabled": {
           "type": "boolean"
         },
@@ -1920,7 +1923,7 @@
           "type": "boolean"
         }
       },
-      "required": ["agent", "domainName", "enabled", "intentThreshold"]
+      "required": ["agent", "language", "domainName", "enabled", "intentThreshold"]
     },
     "synonyms": {
       "type": "array",
@@ -1984,8 +1987,8 @@
         },
         "type": {
           "type": "string",
-          "default": "learned",
-          "enum": ["learned", "regex"],
+          "default": "enum",
+          "enum": ["enum", "regex"],
           "x-convert": {
             "trim": true
           }
@@ -2182,8 +2185,8 @@
         },
         "type": {
           "type": "string",
-          "default": "learned",
-          "enum": ["learned", "regex"],
+          "default": "enum",
+          "enum": ["enum", "regex"],
           "x-convert": {
             "trim": true
           }
@@ -2404,7 +2407,7 @@
           "type": "array"
         }
       },
-      "required": ["domainName", "language", "enabled", "intentThreshold"]
+      "required": ["domainName", "enabled", "intentThreshold"]
     },
     "domains": {
       "type": "array",
@@ -2816,9 +2819,6 @@
         "intentThreshold": {
           "type": "number"
         },
-        "language": {
-          "type": "string"
-        },
         "lastTraining": {
           "type": "string",
           "format": "date"
@@ -2870,8 +2870,8 @@
         },
         "type": {
           "type": "string",
-          "default": "learned",
-          "enum": ["learned", "regex"],
+          "default": "enum",
+          "enum": ["enum", "regex"],
           "x-convert": {
             "trim": true
           }

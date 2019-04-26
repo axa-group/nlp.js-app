@@ -42,7 +42,7 @@ class NavSideBar extends React.Component { // eslint-disable-line react/prefer-s
     if (agentId !== '-1') {
       const agent = this.props.agents.find((a) => a.id === agentId);
       this.props.onChangeCurrentAgent(agent);
-      browserHistory.push(`/agent/${agent.id}`);
+      this.props.onChangeUrl(`/agent/${agent.id}`);
     } else {
       this.props.onChangeCurrentAgent(false);
       this.props.onChangeUrl('/');
