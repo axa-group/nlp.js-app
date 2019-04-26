@@ -74,6 +74,10 @@ export default defineMessages({
     id: 'containers.AgentDetailPage.create_agent.delete_button',
     defaultMessage: 'Edit',
   },
+  exportButton: {
+    id: 'containers.AgentDetailPage.create_agent.export_button',
+    defaultMessage: 'Export',
+  },
   agentFallbackTitle: {
     id: 'containers.AgentDetailPage.create_agent.success_message',
     defaultMessage: 'Fallback Responses',
