@@ -21,6 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 const { NlpManager } = require('node-nlp');
+const { useNeuralSettings } = require('./nlpjs-settings');
 const childProcess = require('child_process');
 
 /**
@@ -48,12 +49,7 @@ class NlpjsTrainer {
           const optionName = example.value;
           const language = example.language || manager.languages;
           for (let j = 0; j < example.synonyms.length; j += 1) {
-            manager.addNamedEntityText(
-              entityName,
-              optionName,
-              language,
-              example.synonyms[j]
-            );
+            manager.addNamedEntityText(entityName, optionName, language, example.synonyms[j]);
           }
         }
       } else if (entity.type === 'regex') {
@@ -117,13 +113,13 @@ class NlpjsTrainer {
     data.intents.forEach(intent => {
       const domain = this.getDomain(intent.domain, data);
       const { intentName } = intent;
+      manager.assignDomain(domain.language || manager.languages[0], intentName, domain.domainName);
       for (let i = 0; i < intent.examples.length; i += 1) {
         const example = intent.examples[i];
         const language = domain.language || manager.languages[0];
         const utterance = example.userSays;
         manager.addDocument(language, utterance, intentName);
       }
-      manager.assignDomain(intentName, domain.domainName);
     });
   }
 
@@ -157,10 +153,7 @@ class NlpjsTrainer {
       if (scenario.slots && scenario.slots.length > 0) {
         scenario.slots.forEach(slot => {
           if (slot.isRequired) {
-            const managerSlot = manager.slotManager.getSlot(
-              intentName,
-              slot.entity
-            );
+            const managerSlot = manager.slotManager.getSlot(intentName, slot.entity);
             if (managerSlot) {
               const texts = managerSlot.locales;
               const text = slot.textPrompts[0];
@@ -207,9 +200,8 @@ class NlpjsTrainer {
       }
     });
     const manager = new NlpManager({
-      languages,
-      useLRC: true,
-      useNeural: false,
+      ...useNeuralSettings,
+      languages
     });
     // eslint-disable-next-line no-underscore-dangle
     this.managers[data.agent._id] = manager;
@@ -236,7 +228,7 @@ class NlpjsTrainer {
    * @param {object} model Training model.
    */
   loadTraining(agentId, model) {
-    this.managers[agentId] = new NlpManager({ useLRC: true, useNeural: false });
+    this.managers[agentId] = new NlpManager(useNeuralSettings);
     if (!model.nerManager.settings) {
       model.nerManager.settings = {};
     }

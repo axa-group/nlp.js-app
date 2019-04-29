@@ -332,6 +332,15 @@ async function findEntityByIdByAgentId(request) {
  */
 async function train(request) {
   const agentId = request.params.id;
+  if (!app.existsTraining(agentId)) {
+    const training = await app.database.findOne(Model.Training, {
+      'any.agentId': agentId
+    });
+    if (training) {
+      const model = JSON.parse(training.any.model);
+      app.loadTraining(agentId, model);
+    }
+  }
   const agent = await app.database.findById(modelName, agentId);
   if (!agent) {
     return app.error(404, 'The agent was not found');
