@@ -8,7 +8,7 @@ const Dotenv = require('dotenv-webpack');
 const CopyPlugin = require('copy-webpack-plugin');
 
 const dotenvPath = path.resolve(__dirname, '..', '..', '.env');
-const publicPathPrefix = `${process.env.PUBLIC_PATH_PREFIX}/`  || '/';
+const publicPathPrefix = process.env.PUBLIC_PATH_PREFIX ? `${process.env.PUBLIC_PATH_PREFIX}/` : '/';
 const swagger2Path = path.resolve(__dirname, '..', '..', 'swagger2.json');
 
 let processEnv = {
@@ -18,6 +18,7 @@ let processEnv = {
 if (process.env.API_URL) {
   processEnv.API_URL = JSON.stringify(process.env.API_URL);
 }
+
 module.exports = (options) => ({
   entry: options.entry,
   output: Object.assign({ // Compile into js/build.js

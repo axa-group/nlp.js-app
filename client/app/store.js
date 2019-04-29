@@ -30,7 +30,7 @@ export default function configureStore(initialState = {}, history) {
   ];
 
   const enhancers = [
-    applyMiddleware(...middlewares),
+    applyMiddleware(...middlewares)
   ];
 
   // If Redux DevTools Extension is installed use it, otherwise use Redux compose
