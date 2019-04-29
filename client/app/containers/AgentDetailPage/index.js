@@ -12,15 +12,12 @@ import {
   Accordion,
   AccordionItem,
   AccordionItemTitle,
-  AccordionItemBody,
+  AccordionItemBody
 } from 'react-accessible-accordion';
 
 import 'react-accessible-accordion/dist/fancy-example.css';
 
-import {
-  Col,
-  Row,
-} from 'react-materialize';
+import { Col, Row } from 'react-materialize';
 import { connect } from 'react-redux';
 import Alert from 'react-s-alert';
 import { push } from 'react-router-redux';
@@ -36,52 +33,56 @@ import Preloader from '../../components/Preloader';
 import SliderInput from '../../components/SliderInput';
 import InputLabel from '../../components/InputLabel';
 import EditDeleteButton from '../../components/EditDeleteButton';
+import ExportAgentButton from '../../components/ExportAgentButton/index';
 import Toggle from '../../components/Toggle';
 
 import Table from '../../components/Table';
 import TableContainer from '../../components/TableContainer';
 
-import {
-  deleteAgent,
-} from '../App/actions';
+import { deleteAgent } from '../App/actions';
 import {
   makeSelectError,
   makeSelectLoading,
   makeSelectCurrentAgent,
-  makeSelectSettingsData,
+  makeSelectSettingsData
 } from '../App/selectors';
 
 import Responses from './Components/Responses';
 
 import messages from './messages';
-import { makeSelectAgentData, makeSelectWebhookData, makeSelectPostFormatData, makeSelectAgentSettingsData } from './selectors';
+import {
+  makeSelectAgentData,
+  makeSelectWebhookData,
+  makeSelectPostFormatData,
+  makeSelectAgentSettingsData
+} from './selectors';
 import { loadAgent, loadWebhook, loadPostFormat, loadAgentSettings } from './actions';
 
-export class AgentDetailPage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
+export class AgentDetailPage extends React.PureComponent {
+  // eslint-disable-line react/prefer-stateless-function
 
   constructor() {
     super();
     this.onDeletePrompt = this.onDeletePrompt.bind(this);
     this.onDelete = this.onDelete.bind(this);
     this.onDeleteDismiss = this.onDeleteDismiss.bind(this);
+    this.onExportAction = this.onExportAction.bind(this);
   }
 
   state = {
     deleteModalOpen: false,
-    webhookLoaded: false,
+    webhookLoaded: false
   };
 
   componentWillMount() {
     const { currentAgent, agent } = this.props;
     if (!currentAgent) {
       this.props.onComponentWillMount(this.props);
-    }
-    else {
-      if (currentAgent.id !== agent.id){
+    } else {
+      if (currentAgent.id !== agent.id) {
         this.props.onComponentWillMount(this.props);
-      }
-      else{
-        if (!this.state.webhookLoaded){
+      } else {
+        if (!this.state.webhookLoaded) {
           const justWebhook = true;
           this.props.onComponentWillMount(this.props, justWebhook);
         }
@@ -91,19 +92,18 @@ export class AgentDetailPage extends React.PureComponent { // eslint-disable-lin
 
   componentWillUpdate(nextProps) {
     const { currentAgent } = nextProps;
-    if ((currentAgent && this.props.currentAgent) && (currentAgent.id !== this.props.currentAgent.id)) {
+    if (currentAgent && this.props.currentAgent && currentAgent.id !== this.props.currentAgent.id) {
       this.props.onComponentWillMount(nextProps);
     }
-    if ((currentAgent && !this.props.currentAgent)) {
-      if (!this.state.webhookLoaded){
+    if (currentAgent && !this.props.currentAgent) {
+      if (!this.state.webhookLoaded) {
         const justWebhook = true;
         this.props.onComponentWillMount(nextProps, justWebhook);
       }
     }
   }
 
-  componentDidUpdate(){
-
+  componentDidUpdate() {
     if (this.props.error) {
       Alert.error(this.props.error.message, {
         position: 'bottom'
@@ -111,9 +111,14 @@ export class AgentDetailPage extends React.PureComponent { // eslint-disable-lin
     }
   }
 
+  onExportAction() {
+    const { currentAgent } = this.props;
+    this.props.onExportAgent(currentAgent);
+  }
+
   onDeletePrompt() {
     this.setState({
-      deleteModalOpen: true,
+      deleteModalOpen: true
     });
   }
 
@@ -125,59 +130,78 @@ export class AgentDetailPage extends React.PureComponent { // eslint-disable-lin
 
   onDeleteDismiss() {
     this.setState({
-      deleteModalOpen: false,
+      deleteModalOpen: false
     });
   }
 
   render() {
-    const { loading, error, currentAgent, webhook, postFormat, globalSettings, agentSettings } = this.props;
+    const {
+      loading,
+      error,
+      currentAgent,
+      webhook,
+      postFormat,
+      globalSettings,
+      agentSettings
+    } = this.props;
 
     const agentProps = {
       loading,
       error,
-      currentAgent,
+      currentAgent
     };
 
     let breadcrumbs = [];
 
     if (!currentAgent) {
-      return (<div>&nbsp;</div>);
-    }
-    else {
-      breadcrumbs = [
-        { label: 'Agent' },
-        { label: `${currentAgent.agentName}` },
-      ];
+      return <div>&nbsp;</div>;
+    } else {
+      breadcrumbs = [{ label: 'Agent' }, { label: `${currentAgent.agentName}` }];
     }
 
     return (
       <div>
         <Col style={{ zIndex: 2, position: 'fixed', top: '50%', left: '45%' }} s={12}>
-          {agentProps.loading ? <Preloader color='#00ca9f' size='big' /> : null}
+          {agentProps.loading ? <Preloader color="#00ca9f" size="big" /> : null}
         </Col>
         <Helmet
           title={`Agent: ${currentAgent.agentName}`}
           meta={[
-            { name: 'description', content: `Details for NLU Agent ${currentAgent.agentName}` },
+            { name: 'description', content: `Details for NLU Agent ${currentAgent.agentName}` }
           ]}
         />
         <Header
-          breadcrumbs={breadcrumbs} actionButtons={
-          <div className="btn-edit-delete">
-            <EditDeleteButton
-              label={messages.editButton} iconName="edit" onClick={() => {
-              this.props.onChangeUrl(`/agent/${this.props.currentAgent.id}/edit`);
-            }}
-            />
-            <EditDeleteButton label={messages.deleteButton} iconName="delete" onClick={this.onDeletePrompt} />
-          </div>
-        }
+          breadcrumbs={breadcrumbs}
+          actionButtons={
+            <div className="btn-edit-delete">
+              <EditDeleteButton
+                label={messages.editButton}
+                iconName="edit"
+                onClick={() => {
+                  this.props.onChangeUrl(`/agent/${this.props.currentAgent.id}/edit`);
+                }}
+              />
+              <EditDeleteButton
+                label={messages.deleteButton}
+                iconName="delete"
+                onClick={this.onDeletePrompt}
+              />
+              <ExportAgentButton
+                label={messages.exportButton}
+                iconName=""
+                agent={currentAgent}
+              />
+            </div>
+          }
         />
         <Content>
           <Row>
             <header className="main-title">
               <h1>
-                <span>{messages.detailTitle.defaultMessage}{currentAgent.agentName}</span>
+                <span>
+                  {messages.detailTitle.defaultMessage}
+                  {currentAgent.agentName}
+                </span>
               </h1>
               <p>
                 <span>{currentAgent.description}</span>
@@ -186,11 +210,7 @@ export class AgentDetailPage extends React.PureComponent { // eslint-disable-lin
           </Row>
           <Row>
             <Form>
-              <FormTextInput
-                label={messages.agentName}
-                value={currentAgent.agentName}
-                disabled
-              />
+              <FormTextInput label={messages.agentName} value={currentAgent.agentName} disabled />
               <FormTextInput
                 label={messages.description}
                 placeholder={messages.descriptionPlaceholder.defaultMessage}
@@ -208,8 +228,7 @@ export class AgentDetailPage extends React.PureComponent { // eslint-disable-lin
               min="0"
               max="100"
               value={(currentAgent.domainClassifierThreshold * 100).toString()}
-              onChange={() => {
-              }}
+              onChange={() => {}}
               disabled
             />
           </Row>
@@ -220,16 +239,13 @@ export class AgentDetailPage extends React.PureComponent { // eslint-disable-lin
             </Form>
           </Row>
 
-          {currentAgent.fallbackResponses.length > 0 ?
+          {currentAgent.fallbackResponses.length > 0 ? (
             <TableContainer id="fallbackResponsesTable" quotes>
               <Table>
-                <Responses
-                  fallbackResponses={currentAgent.fallbackResponses}
-                />
+                <Responses fallbackResponses={currentAgent.fallbackResponses} />
               </Table>
             </TableContainer>
-            : null
-          }
+          ) : null}
 
           <Form>
             <Row>
@@ -237,11 +253,13 @@ export class AgentDetailPage extends React.PureComponent { // eslint-disable-lin
                 <AccordionItem>
                   <AccordionItemTitle>
                     {messages.agentTrainingSettingsTitle.defaultMessage}
-                    <div className='accordion_arrow_inverted'></div>
+                    <div className="accordion_arrow_inverted" />
                   </AccordionItemTitle>
                   <AccordionItemBody>
-                    <p style={{marginLeft: '-10px'}}>{messages.agentTrainingSettingsDescription.defaultMessage}</p>
-                    <Form style={{marginTop: '30px'}}>
+                    <p style={{ marginLeft: '-10px' }}>
+                      {messages.agentTrainingSettingsDescription.defaultMessage}
+                    </p>
+                    <Form style={{ marginTop: '30px' }}>
                       <Row>
                         <Toggle
                           disabled
@@ -281,19 +299,17 @@ export class AgentDetailPage extends React.PureComponent { // eslint-disable-lin
 
 AgentDetailPage.propTypes = {
   loading: React.PropTypes.bool,
-  error: React.PropTypes.oneOfType([
-    React.PropTypes.object,
-    React.PropTypes.bool,
-  ]),
+  error: React.PropTypes.oneOfType([React.PropTypes.object, React.PropTypes.bool]),
   onComponentWillMount: React.PropTypes.func,
   onDeleteAgent: React.PropTypes.func,
   onChangeUrl: React.PropTypes.func,
+  onExportAgent: React.PropTypes.func
 };
 
 export function mapDispatchToProps(dispatch) {
   return {
     onComponentWillMount: (props, justWebhook) => {
-      if (!justWebhook){
+      if (!justWebhook) {
         dispatch(loadAgent(props.params.id));
         dispatch(loadAgentSettings(props.params.id));
       }
@@ -304,8 +320,9 @@ export function mapDispatchToProps(dispatch) {
         dispatch(loadPostFormat(props.params.id));
       }
     },
-    onDeleteAgent: (agent) => dispatch(deleteAgent(agent.id)),
-    onChangeUrl: (url) => dispatch(push(url)),
+    onDeleteAgent: agent => dispatch(deleteAgent(agent.id)),
+    onChangeUrl: url => dispatch(push(url)),
+    onExportAgent: agent => dispatch(exportAgent(agent.id))
   };
 }
 
@@ -317,7 +334,10 @@ const mapStateToProps = createStructuredSelector({
   webhook: makeSelectWebhookData(),
   postFormat: makeSelectPostFormatData(),
   globalSettings: makeSelectSettingsData(),
-  agentSettings: makeSelectAgentSettingsData(),
+  agentSettings: makeSelectAgentSettingsData()
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(AgentDetailPage);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AgentDetailPage);

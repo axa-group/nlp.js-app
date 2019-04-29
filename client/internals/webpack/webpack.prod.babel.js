@@ -6,7 +6,7 @@ const OfflinePlugin = require('offline-plugin');
 
 require('dotenv').config();
 
-const publicPathPrefix = `${process.env.PUBLIC_PATH_PREFIX}/` || '/';
+const publicPathPrefix = process.env.PUBLIC_PATH_PREFIX ? `${process.env.PUBLIC_PATH_PREFIX}/` : '/';
 
 module.exports = require('./webpack.base.babel')({
   // In production, we skip all hot-reloading stuff

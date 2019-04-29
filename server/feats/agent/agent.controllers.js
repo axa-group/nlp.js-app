@@ -22,6 +22,9 @@
  */
 
 const app = require('../../app');
+const FileBundle = require('../../core/file-bundle');
+const { UnknownFormatException } = require('../../exceptions');
+const { Model, RowType, exportSettings, Format } = require('../../constants');
 const { AgentStatus } = require('./agent.constants');
 const { Model } = require('../../constants');
 
@@ -291,11 +294,11 @@ async function findIntentScenarioInDomainByIdByAgentId(request) {
   if (!domain) {
     return app.error(404, 'The domain was not found');
   }
-  const intent = await app.database.findById('intent', intentId);
+  const intent = await app.database.findById(Model.Intent, intentId);
   if (!intent) {
     return app.error(404, 'The intent was not found');
   }
-  const scenario = await app.database.findOne('scenario', { intent: intentId });
+  const scenario = await app.database.findOne(Model.Scenario, { intent: intentId });
   if (!scenario) {
     return app.error(404, 'The scenario was not found');
   }
@@ -392,7 +395,7 @@ async function converse(request) {
   }
   const { sessionId } = request.query;
   const { text } = request.query;
-  let sessionAny = await app.database.findOne('session', {
+  let sessionAny = await app.database.findOne(Model.Session, {
     'any.agentId': agentId,
     'any.sessionId': sessionId
   });
@@ -407,8 +410,88 @@ async function converse(request) {
   }
   const answer = await app.converse(agentId, sessionAny.any, text);
   answer.textResponse = answer.answer;
-  await app.database.save(Model.Session, sessionAny.any);
+  await app.database.save(Model.Session, sessionAny);
   return answer;
+}
+
+async function readContentHierarchyFromDb(agentId, headers) {
+  const contentMatrix = [headers];
+  const agent = await app.database.findById(Model.Agent, agentId);
+  const domains = await app.database.find(Model.Domain, { agent: agentId });
+  const agentsPrefix = [agent.agentName, agent._id];
+
+  for(let domain of domains) {
+    const { domainName, language, status } = domain;
+    const domainPrefix = [...agentsPrefix, domainName, domain._id, language, status];
+
+    const intents = await app.database.find(Model.Intent, { agent: agentId, domain: domain._id });
+
+    for(let intent of intents) {
+      const { intentName } = intent;
+      const intentPrefix = [...domainPrefix, intentName, intent._id];
+
+      intent.examples.forEach(example => {
+        contentMatrix.push(intentPrefix.concat([RowType.Example, example.userSays]));
+      });
+
+      const scenarios = await app.database.find(Model.Scenario, { agent: agentId, domain: domain._id, intent: intent._id });
+
+      if (scenarios.length) {
+        scenarios[0].intentResponses.forEach(response => {
+          contentMatrix.push(intentPrefix.concat([RowType.Response, response]));
+        });
+      }
+    }
+  }
+  return contentMatrix;
+}
+
+async function generateCsvContent(agentId) {
+  const { headers } = exportSettings.csv;
+  const contentMatrix = await readContentHierarchyFromDb(agentId, headers);
+  const { sep } = exportSettings.csv;
+  let content = '';
+
+  contentMatrix.forEach(row => {
+    content += `"${row.join(`"${sep}"`)}"\n`;
+  });
+
+  return content;
+}
+
+async function generateContent(agentId, format) {
+  let content;
+
+  if (format === Format.csv) {
+    content = await generateCsvContent(agentId);
+  } else {
+    throw new UnknownFormatException();
+  }
+
+  return content;
+}
+
+async function exportContent(request, h) {
+  const agentId = request.params.id;
+  const { format } = request.query;
+  const outputFormat = format ? format.toLowerCase() : Format.default;
+  const timestamp = new Date().getTime();
+  const filename = `${timestamp}-${Model.Agent}.${outputFormat}`;
+  let responseBundle;
+
+  try {
+    const content = await generateContent(agentId, outputFormat);
+    const response = h.response(content);
+
+    response.headers['Content-disposition'] = `attachment; filename=${filename}`;
+    response.headers['Content-type'] = `application/octet-stream; charset=utf-8; header=present;`;
+    response.type('application/octet-stream');
+    responseBundle = new FileBundle(response);
+  } catch(error) {
+    responseBundle = error;
+  }
+
+  return responseBundle;
 }
 
 module.exports = {
@@ -430,5 +513,6 @@ module.exports = {
   findIntentScenarioInDomainByIdByAgentId,
   findEntityByIdByAgentId,
   train,
-  converse
+  converse,
+  exportContent
 };

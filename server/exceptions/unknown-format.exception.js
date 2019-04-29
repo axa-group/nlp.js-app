@@ -21,33 +21,12 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Format = {
-  csv: 'csv'
-};
+class UnknownFormatException extends Error {
+  constructor() {
+    super();
+    this.message = 'Unknown format';
+    this.code = 400;
+  }
+}
 
-Format.default = Format.csv;
-
-module.exports = {
-  Model: {
-    Settings: 'settings',
-    Training: 'training',
-    Session: 'session',
-    Agent: 'agent',
-    Domain: 'domain',
-    Intent: 'intent',
-    Entity: 'entity',
-    Scenario: 'scenario',
-    Users: 'users'
-  },
-  exportSettings: {
-    csv: {
-      sep: ';',
-      headers: ['Agent name', 'Agent id', 'Domain name', 'Domain id', 'Domain language', 'Domain status', 'Intent name', 'Intent id', 'Example / Response', 'Text']
-    }
-  },
-  RowType: {
-    Example: 'EXAMPLE',
-    Response: 'RESPONSE'
-  },
-  Format
-};
+module.exports = UnknownFormatException;

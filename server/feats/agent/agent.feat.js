@@ -115,6 +115,11 @@ const routes = {
     '/agent/{id}/converse',
     'Converse with an already trained agent',
   ],
+  exportContent: [
+    'GET',
+    '/agent/{id}/export',
+    'Download a csv file with agent content (domains, intents, entities...)',
+  ],
 };
 
 /**
