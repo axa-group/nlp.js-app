@@ -23,8 +23,9 @@
 
 const app = require('../../app');
 const { AgentStatus } = require('./agent.constants');
+const { Model } = require('../../constants');
 
-const modelName = 'agent';
+const modelName = Model.Agent;
 
 /**
  * Find by ide or returns an error.
@@ -52,7 +53,7 @@ async function findAll() {
  */
 async function add(request) {
   const updateData = JSON.parse(request.payload);
-  updateData.status = 'Ready';
+  updateData.status = AgentStatus.Ready;
   updateData.domains = [];
   return app.database.save(modelName, updateData);
 }
@@ -100,10 +101,10 @@ async function updateById(request) {
  */
 async function findDomainsByAgentId(request) {
   const agentId = request.params.id;
-  const domains = await app.database.find('domain', { agent: agentId });
+  const domains = await app.database.find(Model.Domain, { agent: agentId });
   return {
     domains: app.database.processResponse(domains),
-    total: domains.length,
+    total: domains.length
   };
 }
 
@@ -113,7 +114,7 @@ async function findDomainsByAgentId(request) {
  */
 async function deleteById(request) {
   const agentId = request.params.id;
-  app.database.remove('domain', { agent: agentId });
+  app.database.remove(Model.Domain, { agent: agentId });
   return app.database.removeById(modelName, agentId);
 }
 
@@ -137,7 +138,7 @@ async function findIntentsInDomainByIdByAgentId(request) {
     query.intentName = { $regex: filter, $options: 'i' };
   }
 
-  let intents = await app.database.find('intent', query);
+  let intents = await app.database.find(Model.Intent, query);
   const total = intents.length;
   if (start) {
     intents = intents.slice(start);
@@ -147,7 +148,7 @@ async function findIntentsInDomainByIdByAgentId(request) {
   }
   return {
     intents: app.database.processResponse(intents),
-    total,
+    total
   };
 }
 
@@ -166,7 +167,7 @@ async function findIntentsByAgentId(request) {
   if (filter) {
     query.intentName = { $regex: filter, $options: 'i' };
   }
-  let intents = await app.database.find('intent', query);
+  let intents = await app.database.find(Model.Intent, query);
   const total = intents.length;
   if (start) {
     intents = intents.slice(start);
@@ -176,7 +177,7 @@ async function findIntentsByAgentId(request) {
   }
   return {
     intents: app.database.processResponse(intents),
-    total,
+    total
   };
 }
 
@@ -195,7 +196,7 @@ async function findEntitiesByAgentId(request) {
   if (filter) {
     query.entityName = { $regex: filter, $options: 'i' };
   }
-  let entities = await app.database.find('entity', query);
+  let entities = await app.database.find(Model.Entity, query);
   const total = entities.length;
   if (start) {
     entities = entities.slice(start);
@@ -205,7 +206,7 @@ async function findEntitiesByAgentId(request) {
   }
   return {
     entities: app.database.processResponse(entities),
-    total,
+    total
   };
 }
 
@@ -220,7 +221,7 @@ async function findDomainByIdByAgentId(request) {
     return app.error(404, 'The agent was not found');
   }
   const { domainId } = request.params;
-  const domain = await app.database.findById('domain', domainId);
+  const domain = await app.database.findById(Model.Domain, domainId);
   if (!domain) {
     return app.error(404, 'The domain was not found');
   }
@@ -254,7 +255,7 @@ async function findByName(request) {
  */
 async function findIntentByIdInDomainByIdByAgentId(request) {
   const { domainId, intentId } = request.params;
-  const intent = await app.database.findById('intent', intentId);
+  const intent = await app.database.findById(Model.Intent, intentId);
   if (!intent) {
     return app.error(404, 'The intent was not found');
   }
@@ -263,7 +264,7 @@ async function findIntentByIdInDomainByIdByAgentId(request) {
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
-  const domain = await app.database.findById('domain', domainId);
+  const domain = await app.database.findById(Model.Domain, domainId);
   if (!domain) {
     return app.error(404, 'The domain was not found');
   }
@@ -286,7 +287,7 @@ async function findIntentScenarioInDomainByIdByAgentId(request) {
     return app.error(404, 'The agent was not found');
   }
   const { domainId, intentId } = request.params;
-  const domain = await app.database.findById('domain', domainId);
+  const domain = await app.database.findById(Model.Domain, domainId);
   if (!domain) {
     return app.error(404, 'The domain was not found');
   }
@@ -315,7 +316,7 @@ async function findEntityByIdByAgentId(request) {
     return app.error(404, 'The agent was not found');
   }
   const { entityId } = request.params;
-  const entity = await app.database.findById('entity', entityId);
+  const entity = await app.database.findById(Model.Entity, entityId);
   if (!entity) {
     return app.error(404, 'The entity was not found');
   }
@@ -345,28 +346,32 @@ async function train(request) {
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
-  const domains = await app.database.find('domain', { agent: agentId });
-  const entities = await app.database.find('entity', { agent: agentId });
-  const intents = await app.database.find('intent', { agent: agentId });
-  const scenarios = await app.database.find('scenario', { agent: agentId });
+
+  const domains = await app.database.find(Model.Domain, { agent: agentId });
+  const entities = await app.database.find(Model.Entity, { agent: agentId });
+  const intents = await app.database.find(Model.Intent, { agent: agentId });
+  const scenarios = await app.database.find(Model.Scenario, { agent: agentId });
   const data = {
     agent,
     domains,
     intents,
     scenarios,
-    entities,
+    entities
   };
-  agent.status = AgentStatus.Training;
-  app.database.saveItem(agent);
-  let model = await app.train(data);
-  if (model) {
-    await app.database.deleteMany('training', { 'any.agentId': agentId });
-    model = JSON.stringify(model);
-    await app.database.save('training', { any: { agentId, model } });
+  if (agent.status !== AgentStatus.Training) {
+    agent.status = AgentStatus.Training;
+    app.database.saveItem(agent);
+    let model = await app.train(data);
+    if (model) {
+      await app.database.deleteMany(Model.Training, { 'any.agentId': agentId });
+      model = JSON.stringify(model);
+      await app.database.save(Model.Training, { any: { agentId, model } });
+    }
+    agent.lastTraining = new Date();
+    agent.status = AgentStatus.Ready;
+    return app.database.saveItem(agent);
   }
-  agent.lastTraining = new Date();
-  agent.status = AgentStatus.Ready;
-  return app.database.saveItem(agent);
+  return {};
 }
 
 /**
@@ -376,8 +381,8 @@ async function train(request) {
 async function converse(request) {
   const agentId = request.params.id;
   if (!app.existsTraining(agentId)) {
-    const training = await app.database.findOne('training', {
-      'any.agentId': agentId,
+    const training = await app.database.findOne(Model.Training, {
+      'any.agentId': agentId
     });
     if (!training) {
       return app.error(404, 'Agent training not found');
@@ -389,20 +394,20 @@ async function converse(request) {
   const { text } = request.query;
   let sessionAny = await app.database.findOne('session', {
     'any.agentId': agentId,
-    'any.sessionId': sessionId,
+    'any.sessionId': sessionId
   });
   if (!sessionAny) {
     sessionAny = {
       any: {
         agentId,
         sessionId,
-        context: {},
-      },
+        context: {}
+      }
     };
   }
   const answer = await app.converse(agentId, sessionAny.any, text);
   answer.textResponse = answer.answer;
-  await app.database.save('session', sessionAny.any);
+  await app.database.save(Model.Session, sessionAny.any);
   return answer;
 }
 
@@ -425,5 +430,5 @@ module.exports = {
   findIntentScenarioInDomainByIdByAgentId,
   findEntityByIdByAgentId,
   train,
-  converse,
+  converse
 };
