@@ -26,7 +26,6 @@ const FileBundle = require('../../core/file-bundle');
 const { UnknownFormatException } = require('../../exceptions');
 const { Model, RowType, exportSettings, Format } = require('../../constants');
 const { AgentStatus } = require('./agent.constants');
-const { Model } = require('../../constants');
 
 const modelName = Model.Agent;
 
