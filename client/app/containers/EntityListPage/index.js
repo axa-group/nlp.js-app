@@ -162,6 +162,7 @@ export class EntityListPage extends React.PureComponent { // eslint-disable-line
           isOpen={this.state.deleteModalOpen}
           onDelete={this.onDelete}
           onDismiss={this.onDeleteDismiss}
+          contentBody={messages.deleteModal.text}
         />
       </div>
     );
