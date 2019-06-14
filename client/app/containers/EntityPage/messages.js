@@ -43,7 +43,7 @@ export default defineMessages({
   },
   regexPlaceholder: {
     id:  'containers.EntityPage.regex_placeholder',
-    defaultMessage : 'Type a regex to help find this entity.'
+    defaultMessage : 'Type a regex to help find this entity. Example: /[a-zA-Z]+/'
   },
   examples: {
     id: 'containers.EntityPage.create_entity.examples',
