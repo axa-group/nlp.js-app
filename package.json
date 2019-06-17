@@ -59,7 +59,7 @@
     "joigoose": "^4.0.2",
     "lodash": "^4.17.11",
     "mongoose": "^5.3.4",
-    "node-nlp": "^2.1.7",
+    "node-nlp": "^3.1.1",
     "vision": "^5.4.0"
   }
 }
