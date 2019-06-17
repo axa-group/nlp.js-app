@@ -421,7 +421,7 @@ async function readContentHierarchyFromDb(agentId, headers) {
 
   for(let domain of domains) {
     const { domainName, language, status } = domain;
-    const domainPrefix = [...agentsPrefix, domainName, domain._id, language, status];
+    const domainPrefix = [...agentsPrefix, domainName, domain._id, language];
 
     const intents = await app.database.find(Model.Intent, { agent: agentId, domain: domain._id });
 
