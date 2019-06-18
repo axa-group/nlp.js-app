@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "commitizen": "^2.10.1",
+    "commitizen": "^3.1.1",
     "coveralls": "^3.0.2",
     "cz-conventional-changelog": "^2.1.0",
     "eslint": "^5.16.0",
@@ -22,8 +22,8 @@
     "eslint-plugin-jest": "^21.22.0",
     "eslint-plugin-prettier": "^3.0.0",
     "husky": "^1.1.0",
-    "jest": "^23.5.0",
-    "jsdoc": "^3.5.5",
+    "jest": "^24.8.0",
+    "jsdoc": "^3.6.2",
     "lint-staged": "^7.3.0",
     "merge": "^1.2.1",
     "prettier": "^1.14.3"
@@ -50,16 +50,17 @@
     ]
   },
   "dependencies": {
+    "braces": "^2.3.2",
     "dotenv": "^6.1.0",
     "hapi": "^17.6.0",
     "hapi-swagger": "^9.1.2",
-    "hapi-swagger-static": "^2.0.9",
+    "hapi-swagger-static": "^2.0.11",
     "inert": "^5.1.0",
     "joi": "^14.0.0",
     "joigoose": "^4.0.2",
     "lodash": "^4.17.11",
     "mongoose": "^5.3.4",
-    "node-nlp": "^2.1.7",
+    "node-nlp": "^3.1.1",
     "vision": "^5.4.0"
   }
 }

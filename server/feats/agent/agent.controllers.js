@@ -343,10 +343,21 @@ async function findEntityByIdByAgentId(request) {
  */
 async function train(request) {
   const agentId = request.params.id;
+
+  if (!app.existsTraining(agentId)) {
+    const training = await app.database.findOne(Model.Training, {
+      'any.agentId': agentId
+    });
+    if (training) {
+      const model = JSON.parse(training.any.model);
+      app.loadTraining(agentId, model);
+    }
+  }
   const agent = await app.database.findById(Model.Agent, agentId);
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
+
   const domains = await app.database.find(Model.Domain, { agent: agentId });
   const entities = await app.database.find(Model.Entity, { agent: agentId });
   const intents = await app.database.find(Model.Intent, { agent: agentId });
@@ -358,17 +369,20 @@ async function train(request) {
     scenarios,
     entities
   };
-  agent.status = AgentStatus.Training;
-  app.database.saveItem(agent);
-  let model = await app.train(data);
-  if (model) {
-    await app.database.deleteMany('training', { 'any.agentId': agentId });
-    model = JSON.stringify(model);
-    await app.database.save('training', { any: { agentId, model } });
+  if (agent.status !== AgentStatus.Training) {
+    agent.status = AgentStatus.Training;
+    app.database.saveItem(agent);
+    let model = await app.train(data);
+    if (model) {
+      await app.database.deleteMany(Model.Training, { 'any.agentId': agentId });
+      model = JSON.stringify(model);
+      await app.database.save(Model.Training, { any: { agentId, model } });
+    }
+    agent.lastTraining = new Date();
+    agent.status = AgentStatus.Ready;
+    return app.database.saveItem(agent);
   }
-  agent.lastTraining = new Date();
-  agent.status = AgentStatus.Ready;
-  return app.database.saveItem(agent);
+  return {};
 }
 
 /**
@@ -416,7 +430,7 @@ async function readContentHierarchyFromDb(agentId, headers) {
 
   for(let domain of domains) {
     const { domainName, language, status } = domain;
-    const domainPrefix = [...agentsPrefix, domainName, domain._id, language, status];
+    const domainPrefix = [...agentsPrefix, domainName, domain._id, language];
 
     const intents = await app.database.find(Model.Intent, { agent: agentId, domain: domain._id });
 

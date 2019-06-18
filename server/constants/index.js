@@ -42,7 +42,7 @@ module.exports = {
   exportSettings: {
     csv: {
       sep: ';',
-      headers: ['Agent name', 'Agent id', 'Domain name', 'Domain id', 'Domain language', 'Domain status', 'Intent name', 'Intent id', 'Example / Response', 'Text']
+      headers: ['Agent name', 'Agent id', 'Domain name', 'Domain id', 'Domain language', 'Intent name', 'Intent id', 'Example / Response', 'Text']
     }
   },
   RowType: {

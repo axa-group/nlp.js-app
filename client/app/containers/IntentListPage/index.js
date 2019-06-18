@@ -118,7 +118,9 @@ export class IntentListPage extends React.PureComponent { // eslint-disable-line
   }
 
   onCreateAction() {
-    this.props.onChangeUrl('/intents/create');
+    const query = this.state.selectedDomain ? `?domainId=${this.state.selectedDomain.id.toString()}` : '';
+
+    this.props.onChangeUrl(`/intents/create${query}`);
   }
 
   onDeletePrompt(intent) {
@@ -159,7 +161,8 @@ export class IntentListPage extends React.PureComponent { // eslint-disable-line
   }
 
   render() {
-    const { loading, error, agentDomains, domainIntents, currentAgent } = this.props;
+    const { loading, error, agentDomains, domainIntents, currentAgent, location } = this.props;
+    const domainId = location.query.domainId && location.query.domainId;
     const domainProps = {
       loading,
       error,
@@ -213,7 +216,7 @@ export class IntentListPage extends React.PureComponent { // eslint-disable-line
                 type="select"
                 label={messages.domain.defaultMessage}
                 onChange={this.onSelectDomain}
-                value={this.state.selectedDomain ? this.state.selectedDomain.id.toString() : 'default'}
+                value={domainId || (this.state.selectedDomain ? this.state.selectedDomain.id.toString() : 'default')}
               >
                 {this.renderDomainSelectOptions(domainsSelect)}
               </Input>

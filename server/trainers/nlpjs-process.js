@@ -21,14 +21,14 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 const { NlpManager } = require('node-nlp');
+const { NEURAL } = require('./nlpjs-settings');
 
 /**
  * Child process for training.
  */
 process.on('message', async json => {
-  const manager = new NlpManager({ useLRC: true, useNeural: false });
+  const manager = new NlpManager({ useNeural: NEURAL });
   manager.import(json);
-  manager.settings.useNeural = false;
   await manager.train();
   process.send(manager.export());
 });

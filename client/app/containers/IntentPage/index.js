@@ -178,6 +178,7 @@ export class IntentPage extends React.PureComponent { // eslint-disable-line rea
   componentDidMount() {
     this.setEditMode(this.props.route.name === 'intentEdit');
     this.props.router.setRouteLeaveHook(this.props.route, this.routerWillLeave);
+
     this.setState({
       userExamplesShown: this.props.intent.examples.slice(0, this.props.defaultUserExamplesPageSize)
     });
@@ -244,7 +245,7 @@ export class IntentPage extends React.PureComponent { // eslint-disable-line rea
       this.setState({findNewSysEntities: true});
       this.props.onFindSysEntities(this.props.currentAgent.id);
     }
-    
+
     if (prevProps.intent.examples.length !== this.props.intent.examples.length ) {
       this.setState({findNewSysEntities: true});
       this.props.onFindSysEntities(this.props.currentAgent.id);
@@ -443,7 +444,10 @@ export class IntentPage extends React.PureComponent { // eslint-disable-line rea
   }
 
   render() {
-    const { loading, error, success, intent, webhook, agentDomains, agentEntities, currentAgent, postFormat } = this.props;
+    const { loading, error, success, intent, webhook, agentDomains, agentEntities, currentAgent, postFormat, location } = this.props;
+
+    const domainId = location.query.domainId && location.query.domainId;
+
     if (_.isNil(agentDomains) && _.isNil(agentEntities)) return undefined;
     const intentProps = {
       loading,
@@ -455,8 +459,9 @@ export class IntentPage extends React.PureComponent { // eslint-disable-line rea
     let domainsSelect = [];
     if (agentDomains !== false) {
       const defaultOption = { value: 'default', text: 'Please choose a domain to place your intent', disabled: 'disabled' };
+
       const options = agentDomains.domains.map((domain) => ({
-        value: domain.domainName,
+        value: domain.id,
         text: domain.domainName,
       }));
       domainsSelect = [defaultOption, ...options];
@@ -474,6 +479,8 @@ export class IntentPage extends React.PureComponent { // eslint-disable-line rea
     else {
       breadcrumbs = [{ label: '+ Creating intents' },];
     }
+
+    const domainValue = domainId ? domainId : (intent.domain ? intent.domain : 'default');
 
     return (
 
@@ -500,8 +507,9 @@ export class IntentPage extends React.PureComponent { // eslint-disable-line rea
                 s={12}
                 type="select"
                 label={messages.domain.defaultMessage}
-                value={intent.domainName ? intent.domainName : 'default'}
+                value={domainValue}
                 onChange={(evt) => this.onChangeInput(evt, 'domainName')}
+                disabled = {domainId || (domainValue !== 'default')}
               >
                 {returnFormattedOptions(domainsSelect)}
               </Input>
@@ -691,7 +699,7 @@ export class IntentPage extends React.PureComponent { // eslint-disable-line rea
               </Table>
             </TableContainer> :
             <TableContainer id="intentResponsesTable" style={{ backgroundColor: '#e2e5ee' }} quotes>
-              <Table>            
+              <Table>
                 <tbody>
                   <tr style={{ width: '100%' }}>
                     <td style={{ width: '100%', display: 'inline-block' }}>
