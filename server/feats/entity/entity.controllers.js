@@ -22,43 +22,34 @@
  */
 
 const app = require('../../app');
+const { Model } = require('../../constants');
 const { AgentStatus } = require('../agent/agent.constants');
 
-const modelName = 'entity';
-
-/**
- * Adds a new entity
- * @param {object} request Request
- */
 async function add(request) {
   const updateData = JSON.parse(request.payload);
   const agentName = updateData.agent;
-  const agent = await app.database.findOne('agent', { agentName });
+  const agent = await app.database.findOne(Model.Agent, { agentName });
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
   agent.status = AgentStatus.OutOfDate;
   app.database.saveItem(agent);
-  updateData.status = 'Ready';
+  updateData.status = AgentStatus.Ready;
   // eslint-disable-next-line no-underscore-dangle
   updateData.agent = agent._id.toString();
   if (!updateData.regex) {
     delete updateData.regex;
   }
-  return app.database.save(modelName, updateData);
+  return app.database.save(Model.Entity, updateData);
 }
 
-/**
- * Find entity by id.
- * @param {object} request Request
- */
 async function findById(request) {
   const entityId = request.params.id;
-  const entity = await app.database.findById(modelName, entityId);
+  const entity = await app.database.findById(Model.Entity, entityId);
   if (!entity) {
     return app.error(404, 'The entity was not found');
   }
-  const agent = await app.database.findById('agent', entity.agent);
+  const agent = await app.database.findById(Model.Agent, entity.agent);
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
@@ -66,28 +57,63 @@ async function findById(request) {
   return entity;
 }
 
-/**
- * Remove an entity by id.
- * @param {object} request Request.
- */
 async function deleteById(request) {
   const entityId = request.params.id;
-  const entity = await app.database.findById(modelName, entityId);
-  if (entity) {
-    const agent = await app.database.findById('agent', entity.agent);
-    if (agent) {
-      agent.status = AgentStatus.OutOfDate;
-      await app.database.saveItem(agent);
+  const entity = await app.database.findById(Model.Entity, entityId);
+
+  if (!entity) {
+    return app.error(404, 'The entity was not found');
+  }
+  const agent = await app.database.findById(Model.Agent, entity.agent);
+  if (agent) {
+    agent.status = AgentStatus.OutOfDate;
+    await app.database.saveItem(agent);
+  }
+  const intents = await app.database.find(Model.Intent, { 'examples.entities.entityId': entityId });
+
+  console.log(`Deleting entity ${entity.entityName} (${entityId}), Found ${intents.length} related intents`);
+
+  const intentUpdates = [];
+  const scenarioUpdates = [];
+
+  for (let intent of intents) {
+    intent.examples.forEach(example => {
+      example.entities = example.entities.filter(entity => (entity.entityId !== entityId));
+    });
+
+    const scenarioQuery = { intent: intent._id, 'slots.entity': entity.entityName };
+    const scenarios = await app.database.find(Model.Scenario, scenarioQuery);
+
+    scenarios.forEach(scenario => {
+      scenario.slots = scenario.slots.filter(slot => slot.entity !== entity.entityName);
+      scenarioUpdates.push(app.database.saveItem(scenario));
+    });
+
+    console.log('Adding new version of intent', JSON.stringify(intent));
+    intentUpdates.push(app.database.saveItem(intent));
+  }
+
+  if (scenarioUpdates.length) {
+    console.log(`updating ${scenarioUpdates.length} scenarios`);
+    try {
+      await Promise.all(scenarioUpdates);
+    } catch(error) {
+      console.error('Error scenarios:', error);
     }
   }
-  return app.database.removeById(modelName, entityId);
+
+  if (intentUpdates.length) {
+    console.log(`updating ${intentUpdates.length} intents`);
+    try {
+      await Promise.all(intentUpdates);
+    } catch(error) {
+      console.error('Error intents:', error);
+    }
+  }
+
+  return app.database.removeById(Model.Entity, entityId);
 }
 
-/**
- * indicates if an intent uses an entity.
- * @param {object} intent Intent instance.
- * @param {string} entityId Entity identifier.
- */
 function intentContainsEntity(intent, entityId) {
   if (!intent.examples) {
     return true;
@@ -105,11 +131,6 @@ function intentContainsEntity(intent, entityId) {
   return false;
 }
 
-/**
- * Given an intent and a list of domains, finds the domain name of the intent.
- * @param {object} intent Intent instance.
- * @param {object[]} domains List of domains.
- */
 function getDomainName(intent, domains) {
   for (let i = 0; i < domains.length; i += 1) {
     // eslint-disable-next-line no-underscore-dangle
@@ -120,18 +141,14 @@ function getDomainName(intent, domains) {
   return '';
 }
 
-/**
- * Find intents by entity.
- * @param {object} request Request
- */
 async function findIntentsByEntityId(request) {
   const entityId = request.params.id;
-  const entity = await app.database.findById(modelName, entityId);
+  const entity = await app.database.findById(Model.Entity, entityId);
   if (!entity) {
     return app.error(404, 'The entity was not found');
   }
   const agentId = entity.agent;
-  const agent = await app.database.findById('agent', agentId);
+  const agent = await app.database.findById(Model.Agent, agentId);
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
@@ -149,22 +166,18 @@ async function findIntentsByEntityId(request) {
   return result;
 }
 
-/**
- * Updates an entity by id.
- * @param {object} request Request
- */
 async function updateById(request) {
   const entityId = request.params.id;
-  const entity = await app.database.findById(modelName, entityId);
+  const entity = await app.database.findById(Model.Entity, entityId);
   if (entity) {
-    const agent = await app.database.findById('agent', entity.agent);
+    const agent = await app.database.findById(Model.Agent, entity.agent);
     if (agent) {
       agent.status = AgentStatus.OutOfDate;
       await app.database.saveItem(agent);
     }
   }
   const data = JSON.parse(request.payload);
-  return app.database.updateById(modelName, entityId, data);
+  return app.database.updateById(Model.Entity, entityId, data);
 }
 
 module.exports = {
@@ -172,5 +185,5 @@ module.exports = {
   findById,
   deleteById,
   findIntentsByEntityId,
-  updateById,
+  updateById
 };
