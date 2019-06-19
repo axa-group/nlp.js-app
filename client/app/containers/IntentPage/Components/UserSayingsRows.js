@@ -29,6 +29,7 @@ export function UserSayingsRows(props) {
     if (!value.entities) {
       value.entities = [];
     }
+
     const entities = _.cloneDeep(value.entities);
     let regexEntityIsList = [];
     const regexEntitiesDefinedAsSlot = props.agentEntities.entities.filter((ent) => {
@@ -40,42 +41,32 @@ export function UserSayingsRows(props) {
         return slot.entity === ent.entityName;
       }).length > 0
     });
+
     if (entities.length > 0 || regexEntitiesDefinedAsSlot.length > 0) {
       regexEntitiesDefinedAsSlot.forEach((regexEntity) => {
 
         const entityName = regexEntity.entityName;
-        let entityIsList = regexEntityIsList.indexOf(entityName) >= 0;
+        const entityIsList = regexEntityIsList.indexOf(entityName) >= 0;
         let lastRegexMatch;
         let indexLastMatch = 0;
-        regexEntity.examples.forEach((regexExample) => {
-
-          const entityValue = regexExample.value;
-
-          if (regexExample.synonyms.indexOf(entityValue) < 0) {
-            regexExample.synonyms.push(entityValue);
+        const  regexToTest = new RegExp(regexEntity.regex.replace(/\//g,''), 'ig');
+        let match = regexToTest.exec(textValue);
+ 
+        while (match !==null) {
+          const startIndex = match.index;
+          const endIndex = startIndex + match[0].length;
+          const resultToSend = { value: match[0], entity: entityName, start: startIndex, end: endIndex };
+          match = regexToTest.exec(textValue);
+          if (entityIsList) {
+            entities.push(_.cloneDeep(resultToSend));
           }
-          regexExample.synonyms.forEach((syn) => {
+          if (match === null && startIndex >= indexLastMatch){ //save the last match to use it if slot is not a list
+            lastRegexMatch = _.cloneDeep(resultToSend);
+            indexLastMatch = startIndex;
+          }
+        }
 
-            let regexToTest = null; // re intialize the regex as it has been defined globally
-            let match;
-            regexToTest = new RegExp(syn, 'ig');
-            match = regexToTest.exec(textValue)
-            while (match !==null) {
-              const startIndex = match.index;
-              const endIndex = startIndex + match[0].length;
-              const resultToSend = { value: match[0], entity: entityName, start: startIndex, end: endIndex };
-              match = regexToTest.exec(textValue);
-              if (entityIsList) {
-                entities.push(_.cloneDeep(resultToSend));
-              }
-              if (match === null && startIndex >= indexLastMatch){ //save the last match to use it if slot is not a list
-                lastRegexMatch = _.cloneDeep(resultToSend);
-                indexLastMatch = startIndex;
-              }
-            }
-          });
-        })
-         if (!entityIsList){
+        if (!entityIsList){
           //this is the last match kept int user saying row
           entities.push(_.cloneDeep(lastRegexMatch));
         }
