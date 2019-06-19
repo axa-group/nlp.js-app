@@ -57,50 +57,21 @@ async function findById(request) {
   return entity;
 }
 
-async function deleteById(request) {
-  const entityId = request.params.id;
-  const entity = await app.database.findById(Model.Entity, entityId);
-
-  if (!entity) {
-    return app.error(404, 'The entity was not found');
-  }
-  const agent = await app.database.findById(Model.Agent, entity.agent);
-  if (agent) {
-    agent.status = AgentStatus.OutOfDate;
-    await app.database.saveItem(agent);
-  }
-  const intents = await app.database.find(Model.Intent, { 'examples.entities.entityId': entityId });
-
-  console.log(`Deleting entity ${entity.entityName} (${entityId}), Found ${intents.length} related intents`);
-
+async function removeEntityFromIntents(entity) {
+  const entityId = entity._id.toString();
   const intentUpdates = [];
-  const scenarioUpdates = [];
+  const intentQuery = { 'examples.entities.entityId': entityId, agent: entity.agent };
+  const intents = await app.database.find(Model.Intent, intentQuery);
 
-  for (let intent of intents) {
+  console.log(`Found ${intents.length} intents related with entity`);
+
+  intents.forEach(intent => {
     intent.examples.forEach(example => {
       example.entities = example.entities.filter(entity => (entity.entityId !== entityId));
     });
-
-    const scenarioQuery = { intent: intent._id, 'slots.entity': entity.entityName };
-    const scenarios = await app.database.find(Model.Scenario, scenarioQuery);
-
-    scenarios.forEach(scenario => {
-      scenario.slots = scenario.slots.filter(slot => slot.entity !== entity.entityName);
-      scenarioUpdates.push(app.database.saveItem(scenario));
-    });
-
     console.log('Adding new version of intent', JSON.stringify(intent));
     intentUpdates.push(app.database.saveItem(intent));
-  }
-
-  if (scenarioUpdates.length) {
-    console.log(`updating ${scenarioUpdates.length} scenarios`);
-    try {
-      await Promise.all(scenarioUpdates);
-    } catch(error) {
-      console.error('Error scenarios:', error);
-    }
-  }
+  });
 
   if (intentUpdates.length) {
     console.log(`updating ${intentUpdates.length} intents`);
@@ -110,6 +81,49 @@ async function deleteById(request) {
       console.error('Error intents:', error);
     }
   }
+}
+
+async function removeEntityFromScenarios(entity) {
+  const scenarioUpdates = [];
+  const scenarioQuery = { 'slots.entity': entity.entityName, agent: entity.agent };
+  const scenarios = await app.database.find(Model.Scenario, scenarioQuery);
+
+  console.log(`Found ${scenarios.length} scenarios related with entity`);
+
+  scenarios.forEach(scenario => {
+    scenario.slots = scenario.slots.filter(slot => slot.entity !== entity.entityName);
+    console.log('Adding new version of scenario', JSON.stringify(scenario));
+    scenarioUpdates.push(app.database.saveItem(scenario));
+  });
+
+  if (scenarioUpdates.length) {
+    console.log(`updating ${scenarioUpdates.length} scenarios`);
+    try {
+      await Promise.all(scenarioUpdates);
+    } catch(error) {
+      console.error('Error scenarios:', error);
+    }
+  }
+}
+
+async function deleteById(request) {
+  const entityId = request.params.id;
+  const entity = await app.database.findById(Model.Entity, entityId);
+
+  console.log(`Deleting entity ${entity.entityName} (${entityId})...`);
+
+  if (!entity) {
+    return app.error(404, 'The entity was not found');
+  }
+  const agent = await app.database.findById(Model.Agent, entity.agent);
+
+  if (agent) {
+    agent.status = AgentStatus.OutOfDate;
+    await app.database.saveItem(agent);
+  }
+
+  await removeEntityFromIntents(entity);
+  await removeEntityFromScenarios(entity);
 
   return app.database.removeById(Model.Entity, entityId);
 }
