@@ -254,4 +254,7 @@ export default defineMessages({
     id: 'containers.AgentPage.response_definition_settings_description',
     defaultMessage: 'Whenever you talk with your agent you may want to have additional data in your response beside the text. Here you can enable this settings to add more data to your /converse endpoint.',
   },
+  deleteModal: {
+    text: 'Be cautious. Delete an agent implies waterfall deletion of related Domains, Intents, Scenarios and Entities'
+  }
 });

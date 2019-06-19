@@ -22,9 +22,8 @@
  */
 
 const app = require('../../app');
+const { Model } = require('../../constants');
 const { AgentStatus } = require('../agent/agent.constants');
-
-const modelName = 'intent';
 
 /**
  * Adds a new intent.
@@ -33,23 +32,23 @@ const modelName = 'intent';
 async function add(request) {
   const updateData = JSON.parse(request.payload);
   const agentName = updateData.agent;
-  const agent = await app.database.findOne('agent', { agentName });
+  const agent = await app.database.findOne(Model.Agent, { agentName });
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
   const { domainName } = updateData;
-  const domain = await app.database.findOne('domain', { domainName });
+  const domain = await app.database.findOne(Model.Domain, { domainName });
   if (!domain) {
     return app.error(404, 'The domain was not found');
   }
   agent.status = AgentStatus.OutOfDate;
   await app.database.saveItem(agent);
-  updateData.status = 'Ready';
+  updateData.status = AgentStatus.Ready;
   // eslint-disable-next-line no-underscore-dangle
   updateData.agent = agent._id.toString();
   // eslint-disable-next-line no-underscore-dangle
   updateData.domain = domain._id.toString();
-  return app.database.save(modelName, updateData);
+  return app.database.save(Model.Intent, updateData);
 }
 
 /**
@@ -58,16 +57,16 @@ async function add(request) {
  */
 async function findById(request) {
   const intentId = request.params.id;
-  const intent = await app.database.findById(modelName, intentId);
+  const intent = await app.database.findById(Model.Intent, intentId);
   if (!intent) {
     return app.error(404, 'The intent was not found');
   }
-  const agent = await app.database.findById('agent', intent.agent);
+  const agent = await app.database.findById(Model.Agent, intent.agent);
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
   intent.agentName = agent.agentName;
-  const domain = await app.database.findById('domain', intent.domain);
+  const domain = await app.database.findById(Model.Domain, intent.domain);
   if (!domain) {
     return app.error(404, 'The domain was not found');
   }
@@ -81,16 +80,16 @@ async function findById(request) {
  */
 async function deleteById(request) {
   const intentId = request.params.id;
-  const intent = await app.database.findById(modelName, intentId);
+  const intent = await app.database.findById(Model.Intent, intentId);
   if (intent) {
-    const agent = await app.database.findById('agent', intent.agent);
+    const agent = await app.database.findById(Model.Agent, intent.agent);
     if (agent) {
       agent.status = AgentStatus.OutOfDate;
       await app.database.saveItem(agent);
     }
   }
-  app.database.remove('scenario', { intent: intentId });
-  return app.database.removeById(modelName, intentId);
+  app.database.remove(Model.Scenario, { intent: intentId });
+  return app.database.removeById(Model.Intent, intentId);
 }
 
 /**
@@ -99,16 +98,16 @@ async function deleteById(request) {
  */
 async function updateById(request) {
   const intentId = request.params.id;
-  const intent = await app.database.findById(modelName, intentId);
+  const intent = await app.database.findById(Model.Intent, intentId);
   if (intent) {
-    const agent = await app.database.findById('agent', intent.agent);
+    const agent = await app.database.findById(Model.Agent, intent.agent);
     if (agent) {
       agent.status = AgentStatus.OutOfDate;
       await app.database.saveItem(agent);
     }
   }
   const data = JSON.parse(request.payload);
-  return app.database.updateById(modelName, intentId, data);
+  return app.database.updateById(Model.Intent, intentId, data);
 }
 
 /**
@@ -118,9 +117,9 @@ async function updateById(request) {
 async function addScenario(request) {
   const updateData = JSON.parse(request.payload);
   const agentName = updateData.agent;
-  let agent = await app.database.findOne('agent', { agentName });
+  let agent = await app.database.findOne(Model.Agent, { agentName });
   if (!agent) {
-    agent = await app.database.findById('agent', agentName);
+    agent = await app.database.findById(Model.Agent, agentName);
     if (!agent) {
       return app.error(404, 'The agent was not found');
     }
@@ -129,15 +128,15 @@ async function addScenario(request) {
   if (!domainName) {
     domainName = updateData.domain;
   }
-  let domain = await app.database.findOne('domain', { domainName });
+  let domain = await app.database.findOne(Model.Domain, { domainName });
   if (!domain) {
-    domain = await app.database.findById('domain', domainName);
+    domain = await app.database.findById(Model.Domain, domainName);
     if (!domain) {
       return app.error(404, 'The domain was not found');
     }
   }
   const intentName = updateData.intent;
-  const intent = await app.database.findOne('intent', {
+  const intent = await app.database.findOne(Model.Intent, {
     intentName,
     domain: domain._id,
   });
@@ -145,7 +144,7 @@ async function addScenario(request) {
     return app.error(404, 'The intent was not found');
   }
   // eslint-disable-next-line no-underscore-dangle
-  app.database.remove('scenario', { intent: intent._id });
+  app.database.remove(Model.Scenario, { intent: intent._id });
   agent.status = AgentStatus.OutOfDate;
   await app.database.saveItem(agent);
   // eslint-disable-next-line no-underscore-dangle
@@ -154,7 +153,7 @@ async function addScenario(request) {
   updateData.domain = domain._id.toString();
   // eslint-disable-next-line no-underscore-dangle
   updateData.intent = intent._id.toString();
-  return app.database.save('scenario', updateData);
+  return app.database.save(Model.Scenario, updateData);
 }
 
 /**
@@ -164,17 +163,17 @@ async function addScenario(request) {
 async function updateScenario(request) {
   const updateData = JSON.parse(request.payload);
   const intentId = request.params.id;
-  const scenario = await app.database.findOne('scenario', { intent: intentId });
+  const scenario = await app.database.findOne(Model.Scenario, { intent: intentId });
   if (!scenario) {
     return app.error(404, 'The scenario was not found');
   }
-  const agent = await app.database.findById('agent', scenario.agent);
+  const agent = await app.database.findById(Model.Agent, scenario.agent);
   if (agent) {
     agent.status = AgentStatus.OutOfDate;
     await app.database.saveItem(agent);
   }
   // eslint-disable-next-line no-underscore-dangle
-  return app.database.updateById('scenario', scenario._id, updateData);
+  return app.database.updateById(Model.Scenario, scenario._id, updateData);
 }
 
 /**
@@ -184,16 +183,16 @@ async function updateScenario(request) {
 async function deleteScenario(request) {
   const intentId = request.params.id;
   const intentFilter = { intent: intentId };
-  const scenario = await app.database.findOne('scenario', intentFilter);
+  const scenario = await app.database.findOne(Model.Scenario, intentFilter);
   if (!scenario) {
     return app.error(404, 'The scenario was not found');
   }
-  const agent = await app.database.findById('agent', scenario.agent);
+  const agent = await app.database.findById(Model.Agent, scenario.agent);
   if (agent) {
     agent.status = AgentStatus.OutOfDate;
     await app.database.saveItem(agent);
   }
-  return app.database.remove('scenario', intentFilter);
+  return app.database.remove(Model.Scenario, intentFilter);
 }
 
 /**
@@ -202,19 +201,19 @@ async function deleteScenario(request) {
  */
 async function findScenario(request) {
   const intentId = request.params.id;
-  const intent = await app.database.findById(modelName, intentId);
+  const intent = await app.database.findById(Model.Intent, intentId);
   if (!intent) {
     return app.error(404, 'The intent was not found');
   }
-  const scenario = await app.database.findOne('scenario', { intent: intentId });
+  const scenario = await app.database.findOne(Model.Scenario, { intent: intentId });
   if (!scenario) {
     return app.error(404, 'The scenario was not found');
   }
-  const agent = await app.database.findById('agent', scenario.agent);
+  const agent = await app.database.findById(Model.Agent, scenario.agent);
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
-  const domain = await app.database.findById('domain', scenario.domain);
+  const domain = await app.database.findById(Model.Domain, scenario.domain);
   if (!domain) {
     return app.error(404, 'The domain was not found');
   }

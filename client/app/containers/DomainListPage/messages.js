@@ -17,4 +17,7 @@ export default defineMessages({
     id: 'containers.DomainListPage.list.action',
     defaultMessage: '+ Create Domain',
   },
+  deleteModal: {
+    text: 'Be cautious. Delete a Domain implies waterfall deletion of related Intents and Scenarios'
+  }
 });

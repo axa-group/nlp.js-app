@@ -22,8 +22,8 @@
  */
 
 const app = require('../../app');
-
-const modelName = 'domain';
+const { Model } = require('../../constants');
+const { AgentStatus } = require('../agent/agent.constants');
 
 /**
  * Adds a new domain.
@@ -32,14 +32,14 @@ const modelName = 'domain';
 async function add(request) {
   const updateData = JSON.parse(request.payload);
   const agentName = updateData.agent;
-  const agent = await app.database.findOne('agent', { agentName });
+  const agent = await app.database.findOne(Model.Agent, { agentName });
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
-  updateData.status = 'Ready';
+  updateData.status = AgentStatus.Ready;
   // eslint-disable-next-line no-underscore-dangle
   updateData.agent = agent._id.toString();
-  return app.database.save(modelName, updateData);
+  return app.database.save(Model.Domain, updateData);
 }
 
 /**
@@ -48,11 +48,11 @@ async function add(request) {
  */
 async function findById(request) {
   const domainId = request.params.id;
-  const domain = await app.database.findById(modelName, domainId);
+  const domain = await app.database.findById(Model.Domain, domainId);
   if (!domain) {
     return app.error(404, 'The domain was not found');
   }
-  const agent = await app.database.findById('agent', domain.agent);
+  const agent = await app.database.findById(Model.Agent, domain.agent);
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
@@ -66,7 +66,18 @@ async function findById(request) {
  */
 async function deleteById(request) {
   const domainId = request.params.id;
-  return app.database.removeById(modelName, domainId);
+
+  const domain = await app.database.findById(Model.Domain, domainId);
+  const agent = await app.database.findById(Model.Agent, domain.agent);
+
+  if (agent) {
+    agent.status = AgentStatus.OutOfDate;
+    await app.database.saveItem(agent);
+  }
+  await app.database.remove(Model.Intent, { domain: domainId });
+  await app.database.remove(Model.Scenario, { domain: domainId });
+
+  return app.database.removeById(Model.Domain, domainId);
 }
 
 /**
@@ -76,7 +87,7 @@ async function deleteById(request) {
 async function updateById(request) {
   const domainId = request.params.id;
   const data = JSON.parse(request.payload);
-  return app.database.updateById(modelName, domainId, data);
+  return app.database.updateById(Model.Domain, domainId, data);
 }
 
 /**
@@ -85,7 +96,7 @@ async function updateById(request) {
  */
 async function findIntentsByDomainId(request) {
   const domainId = request.params.id;
-  const intents = await app.database.find('intent', { domain: domainId });
+  const intents = await app.database.find(Model.Intent, { domain: domainId });
   return {
     intents: app.database.processResponse(intents),
     total: intents.length,
