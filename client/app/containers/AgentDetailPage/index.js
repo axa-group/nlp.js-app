@@ -291,6 +291,7 @@ export class AgentDetailPage extends React.PureComponent {
           isOpen={this.state.deleteModalOpen}
           onDelete={this.onDelete}
           onDismiss={this.onDeleteDismiss}
+          contentBody={messages.deleteModal.text}
         />
       </div>
     );

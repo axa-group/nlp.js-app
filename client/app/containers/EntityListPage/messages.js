@@ -17,4 +17,7 @@ export default defineMessages({
     id: 'containers.EntityListPage.list.action',
     defaultMessage: '+ Create Entity',
   },
+  deleteModal: {
+    text: 'Be cautious. Delete an Entity will affect to Intents that are using it'
+  }
 });

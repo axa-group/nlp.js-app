@@ -27,15 +27,13 @@ const { UnknownFormatException } = require('../../exceptions');
 const { Model, RowType, exportSettings, Format } = require('../../constants');
 const { AgentStatus } = require('./agent.constants');
 
-const modelName = Model.Agent;
-
 /**
  * Find by ide or returns an error.
  * @param {string} id Identifier
  * @param {Function} fn Callback function.
  */
 async function findOrError(id, fn) {
-  const agent = await app.database.findById(modelName, id);
+  const agent = await app.database.findById(Model.Agent, id);
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
@@ -46,7 +44,7 @@ async function findOrError(id, fn) {
  * Find all agents.
  */
 async function findAll() {
-  return app.database.find(modelName);
+  return app.database.find(Model.Agent);
 }
 
 /**
@@ -57,7 +55,7 @@ async function add(request) {
   const updateData = JSON.parse(request.payload);
   updateData.status = AgentStatus.Ready;
   updateData.domains = [];
-  return app.database.save(modelName, updateData);
+  return app.database.save(Model.Agent, updateData);
 }
 
 /**
@@ -94,7 +92,7 @@ async function findById(request) {
 async function updateById(request) {
   const agentId = request.params.id;
   const data = JSON.parse(request.payload);
-  return app.database.updateById(modelName, agentId, data);
+  return app.database.updateById(Model.Agent, agentId, data);
 }
 
 /**
@@ -116,8 +114,18 @@ async function findDomainsByAgentId(request) {
  */
 async function deleteById(request) {
   const agentId = request.params.id;
-  app.database.remove(Model.Domain, { agent: agentId });
-  return app.database.removeById(modelName, agentId);
+  const domains = await app.database.find(Model.Domain, { agent: agentId });
+
+  for(let domain of domains) {
+    const domainId = domain._id;
+    await app.database.remove(Model.Intent, { domain: domainId });
+    await app.database.remove(Model.Scenario, { domain: domainId });
+  }
+
+  await app.database.remove(Model.Entity, { agent: agentId });
+  await app.database.remove(Model.Domain, { agent: agentId });
+
+  return app.database.removeById(Model.Agent, agentId);
 }
 
 /**
@@ -127,7 +135,7 @@ async function deleteById(request) {
 async function findIntentsInDomainByIdByAgentId(request) {
   const { start, limit, filter } = request.query;
   const agentId = request.params.id;
-  const agent = await app.database.findById(modelName, agentId);
+  const agent = await app.database.findById(Model.Agent, agentId);
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
@@ -161,7 +169,7 @@ async function findIntentsInDomainByIdByAgentId(request) {
 async function findIntentsByAgentId(request) {
   const { start, limit, filter } = request.query;
   const agentId = request.params.id;
-  const agent = await app.database.findById(modelName, agentId);
+  const agent = await app.database.findById(Model.Agent, agentId);
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
@@ -190,7 +198,7 @@ async function findIntentsByAgentId(request) {
 async function findEntitiesByAgentId(request) {
   const { start, limit, filter } = request.query;
   const agentId = request.params.id;
-  const agent = await app.database.findById(modelName, agentId);
+  const agent = await app.database.findById(Model.Agent, agentId);
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
@@ -218,7 +226,7 @@ async function findEntitiesByAgentId(request) {
  */
 async function findDomainByIdByAgentId(request) {
   const agentId = request.params.id;
-  const agent = await app.database.findById(modelName, agentId);
+  const agent = await app.database.findById(Model.Agent, agentId);
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
@@ -240,9 +248,9 @@ async function findDomainByIdByAgentId(request) {
  */
 async function findByName(request) {
   const { agentName } = request.params;
-  const agents = await app.database.find(modelName, { agentName });
+  const agents = await app.database.find(Model.Agent, { agentName });
   if (!agents || agents.length === 0) {
-    const agent = await app.database.findById(modelName, agentName);
+    const agent = await app.database.findById(Model.Agent, agentName);
     if (!agent) {
       return app.error(404, 'The agent was not found');
     }
@@ -262,7 +270,7 @@ async function findIntentByIdInDomainByIdByAgentId(request) {
     return app.error(404, 'The intent was not found');
   }
   const agentId = request.params.id;
-  const agent = await app.database.findById(modelName, agentId);
+  const agent = await app.database.findById(Model.Agent, agentId);
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
@@ -284,7 +292,7 @@ async function findIntentByIdInDomainByIdByAgentId(request) {
  */
 async function findIntentScenarioInDomainByIdByAgentId(request) {
   const agentId = request.params.id;
-  const agent = await app.database.findById(modelName, agentId);
+  const agent = await app.database.findById(Model.Agent, agentId);
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
@@ -313,7 +321,7 @@ async function findIntentScenarioInDomainByIdByAgentId(request) {
  */
 async function findEntityByIdByAgentId(request) {
   const agentId = request.params.id;
-  const agent = await app.database.findById(modelName, agentId);
+  const agent = await app.database.findById(Model.Agent, agentId);
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
@@ -335,6 +343,7 @@ async function findEntityByIdByAgentId(request) {
  */
 async function train(request) {
   const agentId = request.params.id;
+
   if (!app.existsTraining(agentId)) {
     const training = await app.database.findOne(Model.Training, {
       'any.agentId': agentId
@@ -344,7 +353,7 @@ async function train(request) {
       app.loadTraining(agentId, model);
     }
   }
-  const agent = await app.database.findById(modelName, agentId);
+  const agent = await app.database.findById(Model.Agent, agentId);
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
