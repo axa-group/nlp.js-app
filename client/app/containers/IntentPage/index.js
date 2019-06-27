@@ -481,6 +481,11 @@ export class IntentPage extends React.PureComponent { // eslint-disable-line rea
     }
 
     const domainValue = domainId ? domainId : (intent.domain ? intent.domain : 'default');
+
+    if (domainId) {
+      this.props.onChangeIntentData('domain', domainId);
+    }
+
     return (
 
       <div>
