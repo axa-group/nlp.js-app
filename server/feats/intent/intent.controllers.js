@@ -36,8 +36,7 @@ async function add(request) {
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
-  const { domainName } = updateData;
-  const domain = await app.database.findOne(Model.Domain, { domainName });
+  const domain = await app.database.findById(Model.Domain, updateData.domain);
   if (!domain) {
     return app.error(404, 'The domain was not found');
   }
@@ -48,6 +47,7 @@ async function add(request) {
   updateData.agent = agent._id.toString();
   // eslint-disable-next-line no-underscore-dangle
   updateData.domain = domain._id.toString();
+  updateData.domainName = domain.domainName;
   return app.database.save(Model.Intent, updateData);
 }
 
