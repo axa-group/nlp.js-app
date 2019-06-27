@@ -198,6 +198,7 @@ export class IntentPage extends React.PureComponent { // eslint-disable-line rea
     } else {
       value = null;
     }
+
     if (field === 'examples' || field === 'responses') {
       if (evt.keyCode === 13 && !_.isEmpty(value)) { // If user hits enter add response
         if (field === 'responses') {
@@ -447,7 +448,6 @@ export class IntentPage extends React.PureComponent { // eslint-disable-line rea
     const { loading, error, success, intent, webhook, agentDomains, agentEntities, currentAgent, postFormat, location } = this.props;
 
     const domainId = location.query.domainId && location.query.domainId;
-
     if (_.isNil(agentDomains) && _.isNil(agentEntities)) return undefined;
     const intentProps = {
       loading,
@@ -482,6 +482,10 @@ export class IntentPage extends React.PureComponent { // eslint-disable-line rea
 
     const domainValue = domainId ? domainId : (intent.domain ? intent.domain : 'default');
 
+    if (domainId) {
+      this.props.onChangeIntentData('domain', domainId);
+    }
+
     return (
 
       <div>
@@ -508,8 +512,8 @@ export class IntentPage extends React.PureComponent { // eslint-disable-line rea
                 type="select"
                 label={messages.domain.defaultMessage}
                 value={domainValue}
-                onChange={(evt) => this.onChangeInput(evt, 'domainName')}
-                disabled = {domainId || (domainValue !== 'default')}
+                onChange={(evt) => this.onChangeInput(evt, 'domain')}
+                disabled = {domainId || this.state.editMode}
               >
                 {returnFormattedOptions(domainsSelect)}
               </Input>
