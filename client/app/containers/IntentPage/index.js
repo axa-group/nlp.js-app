@@ -261,7 +261,8 @@ export class IntentPage extends React.PureComponent { // eslint-disable-line rea
       else {
         const oldNumOfPages = Math.ceil(prevProps.intent.examples.length / this.props.defaultUserExamplesPageSize);
         const newNumOfPages = Math.ceil(this.props.intent.examples.length / this.props.defaultUserExamplesPageSize);
-        const currentPage = oldNumOfPages > newNumOfPages ? this.state.userExamplesPage - 1 : this.state.userExamplesPage;
+        const currentPage = oldNumOfPages > newNumOfPages ? Math.max(0, this.state.userExamplesPage - 1) : this.state.userExamplesPage;
+
         this.setState({
           userExamplesPage: currentPage,
           userExamplesPages: newNumOfPages,
