@@ -1,6 +1,6 @@
 {
   "name": "nlpjs-app",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "./server/index.js",
   "scripts": {
@@ -12,7 +12,6 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "commitizen": "^3.1.1",
     "coveralls": "^3.0.2",
     "cz-conventional-changelog": "^2.1.0",
     "eslint": "^5.16.0",
@@ -27,11 +26,6 @@
     "lint-staged": "^7.3.0",
     "merge": "^1.2.1",
     "prettier": "^1.14.3"
-  },
-  "config": {
-    "commitizen": {
-      "path": "cz-conventional-changelog"
-    }
   },
   "jest": {
     "verbose": true,
@@ -54,11 +48,11 @@
     "dotenv": "^6.1.0",
     "hapi": "^17.6.0",
     "hapi-swagger": "^9.1.2",
-    "hapi-swagger-static": "^2.0.11",
+    "hapi-swagger-static": "^2.0.12",
     "inert": "^5.1.0",
     "joi": "^14.0.0",
     "joigoose": "^4.0.2",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "mongoose": "^5.3.4",
     "node-nlp": "^3.1.1",
     "vision": "^5.4.0"
