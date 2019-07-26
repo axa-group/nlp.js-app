@@ -29,7 +29,7 @@ Application to train your agents for bots, done using NLP.js.
 
 ## Installation
 
-You have a one click installation for free in heroku, clicking the "deploy to heroku" button in this page. 
+You have a one click installation for free in heroku, clicking the "deploy to heroku" button in this page.
 If you want to use it on-premise, follow this steps:
 
 - MongoDB is needed
@@ -37,10 +37,10 @@ If you want to use it on-premise, follow this steps:
 - Clone this repo
 - Modify the .env at the root to point to your database (you have a .envexample you can use)
 - Modify the .env at the client folder to point to the url and port of your backend
-- Run ```npm start``` at the root folder
-- Run ```npm start``` at the client folder
+- Run `npm start` at the root folder
+- Run `npm start` at the client folder (This step is OPTIONAL. Run if you want to make change in the front-end )
 
-If you want to generate a production version, run ```npm run build``` at the client folder and copy the build contents to the public folder.
+If you want to generate a production version, run `npm run build` at the client folder and copy the build contents to the public folder.
 
 ## Example of use
 
@@ -57,16 +57,19 @@ Then create at least one domain:
 </div>
 
 Create some entities if you need them:
+
 <div align="center">
 <img src="https://github.com/axa-group/nlp.js-app/raw/master/screenshots/create-entity.png" width="auto" height="auto"/>
 </div>
 
 Create some intents:
+
 <div align="center">
 <img src="https://github.com/axa-group/nlp.js-app/raw/master/screenshots/create-intent.png" width="auto" height="auto"/>
 </div>
 
 Train and test:
+
 <div align="center">
 <img src="https://github.com/axa-group/nlp.js-app/raw/master/screenshots/train.png" width="auto" height="auto"/>
 </div>
