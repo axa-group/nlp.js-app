@@ -95,6 +95,28 @@ async function startServer() {
   console.log(`Server running at: ${server.info.uri}`);
 }
 
+eslint-disable-next-line no-shadow, no-unused-vars
+server.ext('onPostStop', server => {
+  // onPostStop: called after the connection listeners are stopped
+  // see: https://github.com/hapijs/hapi/blob/master/API.md#-serverextevents
+  app.database
+    .disconnect()
+    .then(() => process.exit(0))
+    .catch(err => {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      process.exit(1);
+    });
+});
+
+async function shutDown() {
+  const lapse = process.env.STOP_SERVER_WAIT ? process.env.STOP_SERVER_WAIT : 5;
+  await server.stop({ timeout: lapse * 1000 });
+}
+
+process.on('SIGTERM', shutDown);
+process.on('SIGINT', shutDown);
+
 async function start() {
   await startDatabase();
   await startServer();
