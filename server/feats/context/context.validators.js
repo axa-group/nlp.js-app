@@ -28,7 +28,7 @@ const { AgentModel } = require('../../models');
  * Validators for the endpoints.
  */
 module.exports = {
-  add: {
+  addById: {
     params: (() => ({
       id: AgentModel.id.required().description('Id of the agent'),
       sessionId: Joi.string()
