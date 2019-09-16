@@ -35,6 +35,7 @@ If you want to use it on-premise, follow this steps:
 - MongoDB is needed
 - NodeJS is needed
 - Clone this repo
+- Run `npm install` to download dependencies
 - Modify the .env at the root to point to your database (you have a .envexample you can use)
 - Modify the .env at the client folder to point to the url and port of your backend
 - Run `npm start` at the root folder
