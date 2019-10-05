@@ -25,7 +25,8 @@
     "jsdoc": "^3.6.2",
     "lint-staged": "^7.3.0",
     "merge": "^1.2.1",
-    "prettier": "^1.14.3"
+    "prettier": "^1.14.3",
+    "serverless": "^1.53.0"
   },
   "jest": {
     "verbose": true,
@@ -53,6 +54,7 @@
     "inert": "^5.1.0",
     "joi": "^14.0.0",
     "joigoose": "^4.0.2",
+    "lalalambda": "^1.0.0",
     "lodash": "^4.17.13",
     "mongoose": "^5.3.4",
     "node-nlp": "^3.9.0",

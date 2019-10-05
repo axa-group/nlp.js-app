@@ -1,0 +1,9 @@
+# serverless.yml
+service: nlpjs
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+
+plugins:
+  - lalalambda

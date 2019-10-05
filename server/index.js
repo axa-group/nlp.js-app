@@ -23,6 +23,7 @@
 
 require('dotenv').config();
 const Hapi = require('hapi');
+const Lalalambda = require('lalalambda');
 const inert = require('inert');
 const path = require('path');
 const Vision = require('vision');
@@ -65,6 +66,12 @@ if (process.env.HEROKU_APP_NAME) {
  */
 async function startServer() {
   registerFeats();
+  await server.register({
+    plugin: Lalalambda,
+    options: {
+        lambdaify: true
+    }
+  });
   await server.register([
     inert,
     Vision,
@@ -91,8 +98,10 @@ async function startServer() {
       return h.file('index.html');
     },
   });
-  await server.start();
-  console.log(`Server running at: ${server.info.uri}`);
+  if (!process.env.SERVERLESS) {
+    await server.start();
+    console.log(`Server running at: ${server.info.uri}`);
+  }
 }
 
 async function start() {
@@ -100,4 +109,13 @@ async function start() {
   await startServer();
 }
 
-start();
+if (process.env.SERVERLESS) {
+  module.exports = {
+    deployment: async () => {
+      await start();
+      return server;
+    }
+  };
+} else {
+  start();
+}
