@@ -21,7 +21,12 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Database = require('../core/database');
+let Database;
+if (process.env.AWS_ACCESS_KEY_ID) {
+  Database = require('../core/database-dynamo');
+} else {
+  Database = require('../core/database-mongo');
+}
 const app = require('../app');
 const {
   AgentModel,

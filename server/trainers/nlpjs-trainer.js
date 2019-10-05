@@ -202,7 +202,8 @@ class NlpjsTrainer {
     });
     const manager = new NlpManager({
       ...useNeuralSettings,
-      languages
+      languages,
+      nlu: { log: true }
     });
     // eslint-disable-next-line no-underscore-dangle
     this.managers[data.agent._id] = manager;

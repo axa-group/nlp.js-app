@@ -34,6 +34,7 @@ async function createDemo() {
   const agent = await app.database.save('agent', defaultAgent.agent);
   const domainSave = Object.assign({}, defaultAgent.domain);
   // eslint-disable-next-line no-underscore-dangle
+  console.log(agent);
   domainSave.agent = agent._id.toString();
   const domain = await app.database.save('domain', domainSave);
   defaultAgent.intents.forEach(async srcintent => {

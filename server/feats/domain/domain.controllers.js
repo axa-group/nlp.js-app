@@ -72,7 +72,7 @@ async function deleteById(request) {
 
   if (agent) {
     agent.status = AgentStatus.OutOfDate;
-    await app.database.saveItem(agent);
+    await app.database.saveItem(agent, 'agent');
   }
   await app.database.remove(Model.Intent, { domain: domainId });
   await app.database.remove(Model.Scenario, { domain: domainId });

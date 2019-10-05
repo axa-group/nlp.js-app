@@ -33,7 +33,7 @@ async function add(request) {
     return app.error(404, 'The agent was not found');
   }
   agent.status = AgentStatus.OutOfDate;
-  app.database.saveItem(agent);
+  app.database.saveItem(agent, 'agent');
   updateData.status = AgentStatus.Ready;
   // eslint-disable-next-line no-underscore-dangle
   updateData.agent = agent._id.toString();
@@ -70,7 +70,7 @@ async function removeEntityFromIntents(entity) {
       example.entities = example.entities.filter(entity => (entity.entityId !== entityId));
     });
     console.log('Adding new version of intent', JSON.stringify(intent));
-    intentUpdates.push(app.database.saveItem(intent));
+    intentUpdates.push(app.database.saveItem(intent, 'intent'));
   });
 
   if (intentUpdates.length) {
@@ -93,7 +93,7 @@ async function removeEntityFromScenarios(entity) {
   scenarios.forEach(scenario => {
     scenario.slots = scenario.slots.filter(slot => slot.entity !== entity.entityName);
     console.log('Adding new version of scenario', JSON.stringify(scenario));
-    scenarioUpdates.push(app.database.saveItem(scenario));
+    scenarioUpdates.push(app.database.saveItem(scenario, 'scenario'));
   });
 
   if (scenarioUpdates.length) {
@@ -119,7 +119,7 @@ async function deleteById(request) {
 
   if (agent) {
     agent.status = AgentStatus.OutOfDate;
-    await app.database.saveItem(agent);
+    await app.database.saveItem(agent, 'agent');
   }
 
   await removeEntityFromIntents(entity);
@@ -187,7 +187,7 @@ async function updateById(request) {
     const agent = await app.database.findById(Model.Agent, entity.agent);
     if (agent) {
       agent.status = AgentStatus.OutOfDate;
-      await app.database.saveItem(agent);
+      await app.database.saveItem(agent, 'agent');
     }
   }
   const data = JSON.parse(request.payload);
