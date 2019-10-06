@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://github.com/axa-group/nlp.js-app/raw/master/screenshots/nlplogo.gif" width="925" height="auto"/>
+<img src="./screenshots/nlplogo.gif" width="925" height="auto"/>
 </div>
 
 # NLP.js App
@@ -11,7 +11,7 @@ Application to train your agents for bots, done using NLP.js.
 27 languages supported: Arabic (ar), Armenian (hy), Basque (eu), Catala (ca), Chinese (zh), Czech (cs), Danish (da), Dutch (nl), English (en), Farsi (fa), Finnish (fi), French (fr), German (de), Hungarian (hu), Indonesian (id), Irish (ga), Italian (it), Japanese (ja), Norwegian (no), Portuguese (pt), Romanian (ro), Russian (ru), Slovene (sl), Spanish (es), Swedish (sv), Tamil (ta), Turkish (tr)
 
 <div align="center">
-<img src="https://github.com/axa-group/nlp.js-app/raw/master/screenshots/demonlp.gif" width="auto" height="auto"/>
+<img src="./screenshots/demonlp.gif" width="auto" height="auto"/>
 </div>
 
 ### TABLE OF CONTENTS
@@ -48,31 +48,31 @@ If you want to generate a production version, run `npm run build` at the client 
 You can create an agent:
 
 <div align="center">
-<img src="https://github.com/axa-group/nlp.js-app/raw/master/screenshots/create-agent.png" width="auto" height="auto"/>
+<img src="./screenshots/create-agent.png" width="auto" height="auto"/>
 </div>
 
 Then create at least one domain:
 
 <div align="center">
-<img src="https://github.com/axa-group/nlp.js-app/raw/master/screenshots/create-domain.png" width="auto" height="auto"/>
+<img src="./screenshots/create-domain.png" width="auto" height="auto"/>
 </div>
 
 Create some entities if you need them:
 
 <div align="center">
-<img src="https://github.com/axa-group/nlp.js-app/raw/master/screenshots/create-entity.png" width="auto" height="auto"/>
+<img src="./screenshots/create-entity.png" width="auto" height="auto"/>
 </div>
 
 Create some intents:
 
 <div align="center">
-<img src="https://github.com/axa-group/nlp.js-app/raw/master/screenshots/create-intent.png" width="auto" height="auto"/>
+<img src="./screenshots/create-intent.png" width="auto" height="auto"/>
 </div>
 
 Train and test:
 
 <div align="center">
-<img src="https://github.com/axa-group/nlp.js-app/raw/master/screenshots/train.png" width="auto" height="auto"/>
+<img src="./screenshots/train.png" width="auto" height="auto"/>
 </div>
 
 ## Software Used
