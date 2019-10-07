@@ -83,7 +83,7 @@ async function findAll() {
   } else {
     [settings] = settings;
   }
-  return settings.any;
+  return settings.any || settings;
 }
 
 /**
