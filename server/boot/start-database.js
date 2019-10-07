@@ -22,7 +22,7 @@
  */
 
 let Database;
-if (process.env.AWS_ACCESS_KEY_ID) {
+if (process.env.MY_AWS_ACCESS_KEY_ID) {
   Database = require('../core/database-dynamo');
 } else {
   Database = require('../core/database-mongo');

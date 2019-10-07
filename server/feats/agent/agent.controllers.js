@@ -398,7 +398,12 @@ async function converse(request) {
     if (!training) {
       return app.error(404, 'Agent training not found');
     }
-    const model = JSON.parse(training.any.model);
+    let model;
+    if (training.any) {
+      model = JSON.parse(training.any.model);
+    } else {
+      model = JSON.parse(training.model);
+    }
     app.loadTraining(agentId, model);
   }
   const { sessionId } = request.query;

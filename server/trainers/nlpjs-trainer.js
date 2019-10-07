@@ -251,7 +251,8 @@ class NlpjsTrainer {
     if (!manager) {
       throw new Error('Unknown manager');
     }
-    return manager.process(undefined, text, session.context);
+    const sessionContext = session ? session.context : {};
+    return manager.process(undefined, text, sessionContext);
   }
 }
 

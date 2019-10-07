@@ -26,9 +26,9 @@ const uuidv4 = require('uuid/v4');
 class DatabaseDynamo {
   constructor() {
     AWS.config.update({
-      region: process.env.AWS_REGION,
-      accessKeyId: process.env.AWS_USER_ID,
-      secretAccessKey: process.env.AWS_USER_PASSWORD,
+      region: process.env.MY_AWS_REGION,
+      accessKeyId: process.env.MY_AWS_USER_ID,
+      secretAccessKey: process.env.MY_AWS_USER_PASSWORD,
     });
     this.docClient = new AWS.DynamoDB.DocumentClient();
     this.preffix = process.env.AWS_DYNAMO_PREFFIX || '';
@@ -96,7 +96,19 @@ class DatabaseDynamo {
         TableName: this.getTableName(name),
       }
       if (condition) {
-        const keys = Object.keys(condition);
+        if (condition['any.agentId']) {
+          condition['agentId'] = condition['any.agentId'];
+          delete condition['any.agentId'];
+        }
+        let keys = Object.keys(condition);
+        for (let i = 0; i < keys.length; i += 1) {
+          const key = keys[i];
+          if (key.startsWith('any.')) {
+            condition[key.slice(4)] = condition[key];
+            delete condition[key];
+          }
+        }
+        keys = Object.keys(condition);
         if (keys.length > 0) {
           params.ExpressionAttributeValues = {};
           params.ExpressionAttributeNames = {};
@@ -113,6 +125,7 @@ class DatabaseDynamo {
           params.FilterExpression = conditionStr;
         }
       }
+      console.log(params);
       this.docClient.scan(params, (err, data) => {
         if (err) {
           return reject(err);
@@ -129,11 +142,21 @@ class DatabaseDynamo {
     return new Promise((resolve, reject) => {
       const params = {
         TableName: this.getTableName(name),
-        Item: data,
+        Item: Object.assign({}, data),
       }
       if (!params.Item.id) {
         params.Item.id = uuidv4();
       }
+      if (data.any) {
+        const keys = Object.keys(data.any);
+        for (let i = 0; i < keys.length; i += 1) {
+          const key = keys[i];
+          params.Item[key] = data.any[key];
+        }
+        delete params.Item.any;
+      }
+      console.log('SAVE');
+      console.log(params);
       this.docClient.put(params, (err, data) => {
         if (err) {
           return reject(err);
