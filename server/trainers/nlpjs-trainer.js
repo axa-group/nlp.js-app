@@ -48,14 +48,15 @@ class NlpjsTrainer {
         for (let i = 0; i < entity.examples.length; i += 1) {
           const example = entity.examples[i];
           const optionName = example.value;
-          const language = example.languages || manager.settings.languages;
+          const languages = example.languages || manager.settings.languages;
+
           for (let j = 0; j < example.synonyms.length; j += 1) {
-            manager.addNamedEntityText(entityName, optionName, language, example.synonyms[j]);
+            manager.addNamedEntityText(entityName, optionName, languages, example.synonyms[j]);
           }
         }
       } else if (entity.type === 'regex') {
-        const language = entity.language || manager.languages;
-        manager.addRegexEntity(entityName, language, entity.regex);
+        const languages = entity.languages || manager.settings.languages;
+        manager.addRegexEntity(entityName, languages, entity.regex);
       }
     });
   }
@@ -114,10 +115,11 @@ class NlpjsTrainer {
     data.intents.forEach(intent => {
       const domain = this.getDomain(intent.domain, data);
       const { intentName } = intent;
-      manager.assignDomain(domain.language || manager.languages[0], intentName, domain.domainName);
+      manager.assignDomain(domain.language || manager.settings.languages[0], intentName, domain.domainName);
+
       for (let i = 0; i < intent.examples.length; i += 1) {
         const example = intent.examples[i];
-        const language = domain.language || manager.languages[0];
+        const language = domain.language || manager.settings.languages[0];
         const utterance = example.userSays;
         manager.addDocument(language, utterance, intentName);
       }
@@ -132,8 +134,9 @@ class NlpjsTrainer {
   addAnswers(manager, data) {
     data.scenarios.forEach(scenario => {
       const domain = this.getDomain(scenario.domain, data);
-      const language = domain.language || manager.languages[0];
+      const language = domain.language || manager.settings.languages[0];
       const intentName = this.getIntentName(scenario.intent, data);
+
       for (let i = 0; i < scenario.intentResponses.length; i += 1) {
         const answer = scenario.intentResponses[i];
         manager.addAnswer(language, intentName, answer);
@@ -149,7 +152,7 @@ class NlpjsTrainer {
   addSlots(manager, data) {
     data.scenarios.forEach(scenario => {
       const domain = this.getDomain(scenario.domain, data);
-      const language = domain.language || manager.languages[0];
+      const language = domain.language || manager.settings.languages[0];
       const intentName = this.getIntentName(scenario.intent, data);
       if (scenario.slots && scenario.slots.length > 0) {
         scenario.slots.forEach(slot => {
