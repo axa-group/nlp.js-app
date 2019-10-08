@@ -14,6 +14,7 @@ services:
     volumes:
       - ${PWD}/mongo_data/data:/data/db
       - ${PWD}/mongo_data/init:/docker-entrypoint-initdb.d/
+      # # use this mapping option just in case is required to setup a fine grained DB configuration
       # - ${PWD}/mongo_data/configdb:/data/configdb
     expose:
       - 27017
