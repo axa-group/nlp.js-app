@@ -1,6 +1,6 @@
 {
   "name": "nlpjs-ui",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "UI of NLP.js",
   "author": {
     "email": "jesus.seijas@axa.com",
@@ -17,6 +17,9 @@
     {
       "email": "jesus.seijas@axa.com",
       "name": "Jesus Seijas"
+    }, {
+      "email": "eric.lara@axa.com",
+      "name": "Eric Lara"
     }
   ],
   "license": "MIT",
