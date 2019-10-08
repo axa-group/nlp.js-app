@@ -21,7 +21,7 @@ services:
       - nlpjs
     healthcheck:
       test: ["CMD", "mongostat", "-u", "myadmin", "-p", "myadmin", "--authenticationDatabase=admin", "--json", "-n", "1"]
-      # 
+      # # This variant takes relevant information with another command and the result is the same, It tests the health
       # test: ["CMD", "mongotop", "-u", "myadmin", "-p", "myadmin", "--authenticationDatabase=admin", "--json", "-n", "1"]
       interval: 30s
       timeout: 10s
