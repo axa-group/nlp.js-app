@@ -74,6 +74,8 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+    entrypoint: "/bin/bash -c 'sleep 40s && tini -p SIGTERM -- /docker-entrypoint.sh mongo-express'"
+    # # Deployment settings if needed in the future
     # deploy:
     #   restart_policy:
     #     # condition: on-failure
@@ -81,9 +83,3 @@ services:
     #     delay: 10s
     #     max_attempts: 3
     #     window: 60s
-    # OK
-    entrypoint: "/bin/bash -c 'sleep 40s && tini -p SIGTERM -- /docker-entrypoint.sh mongo-express'"
-    # KO:
-    # entrypoint: "/bin/bash -c 'sleep 40s' && tini -p SIGTERM -- /docker-entrypoint.sh mongo-express"
-    # OK
-    # entrypoint: "tini -p SIGTERM -- /docker-entrypoint.sh mongo-express"
