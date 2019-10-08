@@ -21,6 +21,7 @@ services:
       - nlpjs
     healthcheck:
       test: ["CMD", "mongostat", "-u", "myadmin", "-p", "myadmin", "--authenticationDatabase=admin", "--json", "-n", "1"]
+      # 
       # test: ["CMD", "mongotop", "-u", "myadmin", "-p", "myadmin", "--authenticationDatabase=admin", "--json", "-n", "1"]
       interval: 30s
       timeout: 10s
@@ -50,6 +51,7 @@ services:
       start_period: 30s
     depends_on:
       - mongo
+    # # this variant forces to erase and re-download the NPM dependencies, so more large process, less time lapse required
     # entrypoint: "/bin/bash -c 'npm cache clean --force && npm install && sleep 3s && node .'"
     entrypoint: "/bin/bash -c 'npm install && sleep 40s && node .'"
   mongo-express:
