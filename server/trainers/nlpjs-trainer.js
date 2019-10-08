@@ -48,7 +48,7 @@ class NlpjsTrainer {
         for (let i = 0; i < entity.examples.length; i += 1) {
           const example = entity.examples[i];
           const optionName = example.value;
-          const language = example.language || manager.languages;
+          const language = example.languages || manager.settings.languages;
           for (let j = 0; j < example.synonyms.length; j += 1) {
             manager.addNamedEntityText(entityName, optionName, language, example.synonyms[j]);
           }
