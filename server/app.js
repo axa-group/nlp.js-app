@@ -21,8 +21,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+const Logger = require('./common/logger');
 const trainer = require('./trainers/nlpjs-trainer');
 const FileBundle = require('./core/file-bundle');
+
+const logger = Logger.getInstance();
 
 /**
  * Class for the application.
@@ -101,7 +104,7 @@ class App {
 
       return this.database.processResponse(result);
     } catch(error) {
-      console.error('main error captured: ', error);
+      logger.error(`main error captured: ${error}`);
       return h.response('Unknown error').code(500);
     }
   }

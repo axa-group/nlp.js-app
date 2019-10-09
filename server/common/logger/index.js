@@ -21,38 +21,30 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Format = {
-  csv: 'csv'
-};
+const pino = require('pino');
 
-Format.default = Format.csv;
+const { ENV } = require('../../constants');
 
-module.exports = {
-  ENV: {
-    PRODUCTION: 'production',
-    DEVELOPMENT: 'development',
-    TEST: 'test'
-  },
-  Model: {
-    Settings: 'settings',
-    Training: 'training',
-    Session: 'session',
-    Agent: 'agent',
-    Domain: 'domain',
-    Intent: 'intent',
-    Entity: 'entity',
-    Scenario: 'scenario',
-    Users: 'users'
-  },
-  exportSettings: {
-    csv: {
-      sep: ';',
-      headers: ['Agent name', 'Agent id', 'Domain name', 'Domain id', 'Domain language', 'Intent name', 'Intent id', 'Example / Response', 'Text']
-    }
-  },
-  RowType: {
-    Example: 'EXAMPLE',
-    Response: 'RESPONSE'
-  },
-  Format
-};
+let defaultLogger = null;
+
+class Logger {
+	static getInstance() {
+		if (!defaultLogger) {
+			const logLevel = process.env.LOG_LEVEL || 'info';
+			const currentEnv = process.env.NODE_ENV;
+			const prettySettings = {
+				colorize: true,
+				translateTime: true
+			};
+			const settings = {
+				prettyPrint: currentEnv !== ENV.PRODUCTION ? prettySettings : false,
+				level: logLevel
+			};
+			defaultLogger = pino(settings);
+			defaultLogger.info(`log level: ${logLevel}`);
+		}
+		return defaultLogger;
+	}
+}
+
+module.exports = Logger;

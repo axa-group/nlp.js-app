@@ -55,6 +55,8 @@
     "lodash": "^4.17.15",
     "mongoose": "^5.3.4",
     "node-nlp": "^3.9.0",
+    "pino": "^5.13.4",
+    "pino-pretty": "^3.2.2",
     "vision": "^5.4.4"
   }
 }

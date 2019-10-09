@@ -21,9 +21,12 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+const Logger = require('../../common/logger');
 const app = require('../../app');
 const { Model } = require('../../constants');
 const { AgentStatus } = require('../agent/agent.constants');
+
+const logger = Logger.getInstance();
 
 async function add(request) {
   const updateData = JSON.parse(request.payload);
@@ -63,22 +66,22 @@ async function removeEntityFromIntents(entity) {
   const intentQuery = { 'examples.entities.entityId': entityId, agent: entity.agent };
   const intents = await app.database.find(Model.Intent, intentQuery);
 
-  console.log(`Found ${intents.length} intents related with entity`);
+  logger.info(`Found ${intents.length} intents related with entity`);
 
   intents.forEach(intent => {
     intent.examples.forEach(example => {
       example.entities = example.entities.filter(entity => (entity.entityId !== entityId));
     });
-    console.log('Adding new version of intent', JSON.stringify(intent));
+    logger.info(`Adding new version of intent ${JSON.stringify(intent)}`);
     intentUpdates.push(app.database.saveItem(intent));
   });
 
   if (intentUpdates.length) {
-    console.log(`updating ${intentUpdates.length} intents`);
+    logger.info(`updating ${intentUpdates.length} intents`);
     try {
       await Promise.all(intentUpdates);
     } catch(error) {
-      console.error('Error intents:', error);
+      logger.error(`Error intents: ${error}`);
     }
   }
 }
@@ -88,20 +91,20 @@ async function removeEntityFromScenarios(entity) {
   const scenarioQuery = { 'slots.entity': entity.entityName, agent: entity.agent };
   const scenarios = await app.database.find(Model.Scenario, scenarioQuery);
 
-  console.log(`Found ${scenarios.length} scenarios related with entity`);
+  logger.info(`Found ${scenarios.length} scenarios related with entity`);
 
   scenarios.forEach(scenario => {
     scenario.slots = scenario.slots.filter(slot => slot.entity !== entity.entityName);
-    console.log('Adding new version of scenario', JSON.stringify(scenario));
+    logger.info(`Adding new version of scenario ${JSON.stringify(scenario)}`);
     scenarioUpdates.push(app.database.saveItem(scenario));
   });
 
   if (scenarioUpdates.length) {
-    console.log(`updating ${scenarioUpdates.length} scenarios`);
+    logger.info(`updating ${scenarioUpdates.length} scenarios`);
     try {
       await Promise.all(scenarioUpdates);
     } catch(error) {
-      console.error('Error scenarios:', error);
+      logger.error(`Error intents: ${error}`);
     }
   }
 }
@@ -110,7 +113,7 @@ async function deleteById(request) {
   const entityId = request.params.id;
   const entity = await app.database.findById(Model.Entity, entityId);
 
-  console.log(`Deleting entity ${entity.entityName} (${entityId})...`);
+  logger.info(`Deleting entity ${entity.entityName} (${entityId})...`);
 
   if (!entity) {
     return app.error(404, 'The entity was not found');
