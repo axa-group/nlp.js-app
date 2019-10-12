@@ -73,7 +73,7 @@ async function findAllSettings(request) {
 async function updateSettings(request) {
   return findOrError(request.params.id, agent => {
     agent.settings = JSON.parse(request.payload);
-    return app.database.saveItem(agent, 'agent');
+    return app.database.saveItem(agent, Model.Agent);
   });
 }
 
@@ -371,7 +371,7 @@ async function train(request) {
   };
   if (agent.status !== AgentStatus.Training) {
     agent.status = AgentStatus.Training;
-    await app.database.saveItem(agent, 'agent');
+    await app.database.saveItem(agent, Model.Agent);
     let model = await app.train(data);
     if (model) {
       await app.database.deleteMany(Model.Training, { 'any.agentId': agentId });
@@ -380,7 +380,7 @@ async function train(request) {
     }
     agent.lastTraining = new Date();
     agent.status = AgentStatus.Ready;
-    return app.database.saveItem(agent, 'agent');
+    return app.database.saveItem(agent, Model.Agent);
   }
   return {};
 }

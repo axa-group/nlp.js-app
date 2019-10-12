@@ -28,6 +28,11 @@ const Format = {
 Format.default = Format.csv;
 
 module.exports = {
+  ENV: {
+    PRODUCTION: 'production',
+    DEVELOPMENT: 'development',
+    TEST: 'test'
+  },
   Model: {
     Settings: 'settings',
     Training: 'training',

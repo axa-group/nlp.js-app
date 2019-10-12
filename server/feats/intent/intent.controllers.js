@@ -41,7 +41,7 @@ async function add(request) {
     return app.error(404, 'The domain was not found');
   }
   agent.status = AgentStatus.OutOfDate;
-  await app.database.saveItem(agent, 'agent');
+  await app.database.saveItem(agent, Model.Agent);
   updateData.status = AgentStatus.Ready;
   // eslint-disable-next-line no-underscore-dangle
   updateData.agent = agent._id.toString();
@@ -85,7 +85,7 @@ async function deleteById(request) {
     const agent = await app.database.findById(Model.Agent, intent.agent);
     if (agent) {
       agent.status = AgentStatus.OutOfDate;
-      await app.database.saveItem(agent, 'agent');
+      await app.database.saveItem(agent, Model.Agent);
     }
   }
   app.database.remove(Model.Scenario, { intent: intentId });
@@ -103,7 +103,7 @@ async function updateById(request) {
     const agent = await app.database.findById(Model.Agent, intent.agent);
     if (agent) {
       agent.status = AgentStatus.OutOfDate;
-      await app.database.saveItem(agent, 'agent');
+      await app.database.saveItem(agent, Model.Agent);
     }
   }
   const data = JSON.parse(request.payload);
@@ -146,7 +146,7 @@ async function addScenario(request) {
   // eslint-disable-next-line no-underscore-dangle
   app.database.remove(Model.Scenario, { intent: intent._id });
   agent.status = AgentStatus.OutOfDate;
-  await app.database.saveItem(agent, 'agent');
+  await app.database.saveItem(agent, Model.Agent);
   // eslint-disable-next-line no-underscore-dangle
   updateData.agent = agent._id.toString();
   // eslint-disable-next-line no-underscore-dangle
@@ -170,7 +170,7 @@ async function updateScenario(request) {
   const agent = await app.database.findById(Model.Agent, scenario.agent);
   if (agent) {
     agent.status = AgentStatus.OutOfDate;
-    await app.database.saveItem(agent, 'agent');
+    await app.database.saveItem(agent, Model.Agent);
   }
   // eslint-disable-next-line no-underscore-dangle
   return app.database.updateById(Model.Scenario, scenario._id, updateData);
@@ -190,7 +190,7 @@ async function deleteScenario(request) {
   const agent = await app.database.findById(Model.Agent, scenario.agent);
   if (agent) {
     agent.status = AgentStatus.OutOfDate;
-    await app.database.saveItem(agent, 'agent');
+    await app.database.saveItem(agent, Model.Agent);
   }
   return app.database.remove(Model.Scenario, intentFilter);
 }

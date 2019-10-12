@@ -22,16 +22,20 @@
  */
 
 require('dotenv').config();
+
 const Hapi = require('hapi');
 const Lalalambda = require('lalalambda');
 const inert = require('inert');
 const path = require('path');
 const Vision = require('vision');
 const HapiSwagger = require('hapi-swagger');
+
+const Logger = require('./common/logger');
 const app = require('./app');
 const registerFeats = require('./boot/register-feats');
 const startDatabase = require('./boot/start-database');
 
+const logger = Logger.getInstance();
 const port = process.env.PORT || 3000;
 
 const server = new Hapi.Server({
@@ -100,7 +104,7 @@ async function startServer() {
   });
   if (!process.env.SERVERLESS) {
     await server.start();
-    console.log(`Server running at: ${server.info.uri}`);
+    logger.info(`Server running at: ${server.info.uri}`);
   }
 }
 

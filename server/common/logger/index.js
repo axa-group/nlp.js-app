@@ -21,35 +21,30 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Joi = require('joi');
-const { AgentModel } = require('../../models');
+const pino = require('pino');
 
-/**
- * Validators for the endpoints.
- */
-module.exports = {
-  addById: {
-    params: (() => ({
-      id: AgentModel.id.required().description('Id of the agent'),
-      sessionId: Joi.string()
-        .required()
-        .description('Id of the session'),
-    }))(),
-  },
-  findById: {
-    params: (() => ({
-      id: AgentModel.id.required().description('Id of the agent'),
-      sessionId: Joi.string()
-        .required()
-        .description('Id of the session'),
-    }))(),
-  },
-  deleteById: {
-    params: (() => ({
-      id: AgentModel.id.required().description('Id of the agent'),
-      sessionId: Joi.string()
-        .required()
-        .description('Id of the session'),
-    }))(),
-  },
-};
+const { ENV } = require('../../constants');
+
+let defaultLogger = null;
+
+class Logger {
+	static getInstance() {
+		if (!defaultLogger) {
+			const logLevel = process.env.LOG_LEVEL || 'info';
+			const currentEnv = process.env.NODE_ENV;
+			const prettySettings = {
+				colorize: true,
+				translateTime: true
+			};
+			const settings = {
+				prettyPrint: currentEnv !== ENV.PRODUCTION ? prettySettings : false,
+				level: logLevel
+			};
+			defaultLogger = pino(settings);
+			defaultLogger.info(`log level: ${logLevel}`);
+		}
+		return defaultLogger;
+	}
+}
+
+module.exports = Logger;
