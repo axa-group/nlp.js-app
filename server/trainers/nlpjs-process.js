@@ -27,8 +27,8 @@ const { NEURAL } = require('./nlpjs-settings');
  * Child process for training.
  */
 process.on('message', async json => {
-  const manager = new NlpManager({ useNeural: NEURAL });
-  manager.import(json);
-  await manager.train();
-  process.send(manager.export());
+	const manager = new NlpManager({ useNeural: NEURAL });
+	manager.import(json);
+	await manager.train();
+	process.send(manager.export());
 });

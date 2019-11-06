@@ -35,16 +35,16 @@ const WebhookModel = require('./webhook.model');
 const PostFormatModel = require('./postFormat.model');
 
 module.exports = {
-  AgentModel,
-  ContextModel,
-  DomainModel,
-  EntityModel,
-  ExampleModel,
-  IntentModel,
-  IntentExampleModel,
-  IntentEntityModel,
-  ScenarioModel,
-  SlotModel,
-  WebhookModel,
-  PostFormatModel,
+	AgentModel,
+	ContextModel,
+	DomainModel,
+	EntityModel,
+	ExampleModel,
+	IntentModel,
+	IntentExampleModel,
+	IntentEntityModel,
+	ScenarioModel,
+	SlotModel,
+	WebhookModel,
+	PostFormatModel
 };

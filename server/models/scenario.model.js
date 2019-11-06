@@ -28,11 +28,11 @@ const SlotModel = require('./slot.scenario.model');
  * Scenario model
  */
 module.exports = {
-  id: Joi.string().trim(),
-  agent: Joi.string().trim(),
-  domain: Joi.string().trim(),
-  intent: Joi.string().trim(),
-  scenarioName: Joi.string().trim(),
-  slots: Joi.array().items(SlotModel),
-  intentResponses: Joi.array().items(Joi.string().trim()),
+	id: Joi.string().trim(),
+	agent: Joi.string().trim(),
+	domain: Joi.string().trim(),
+	intent: Joi.string().trim(),
+	scenarioName: Joi.string().trim(),
+	slots: Joi.array().items(SlotModel),
+	intentResponses: Joi.array().items(Joi.string().trim())
 };

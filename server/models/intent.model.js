@@ -28,12 +28,12 @@ const ExampleIntentModel = require('./example.intent.model');
  * Intent model.
  */
 module.exports = {
-  id: Joi.number(),
-  agent: Joi.string().trim(),
-  domain: Joi.string().trim(),
-  domainName: Joi.string().trim(),
-  intentName: Joi.string().trim(),
-  examples: Joi.array().items(ExampleIntentModel),
-  useWebhook: Joi.boolean(),
-  usePostFormat: Joi.boolean(),
+	id: Joi.number(),
+	agent: Joi.string().trim(),
+	domain: Joi.string().trim(),
+	domainName: Joi.string().trim(),
+	intentName: Joi.string().trim(),
+	examples: Joi.array().items(ExampleIntentModel),
+	useWebhook: Joi.boolean(),
+	usePostFormat: Joi.boolean()
 };

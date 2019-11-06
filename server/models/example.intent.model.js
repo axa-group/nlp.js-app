@@ -29,7 +29,7 @@ const IntentEntityModel = require('./entity.intent.model');
  * Example intent model.
  */
 module.exports = {
-  id: Joi.number(),
-  userSays: Joi.string().trim(),
-  entities: Joi.array().items(IntentEntityModel),
+	id: Joi.number(),
+	userSays: Joi.string().trim(),
+	entities: Joi.array().items(IntentEntityModel)
 };

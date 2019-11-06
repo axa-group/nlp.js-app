@@ -27,9 +27,9 @@ const Joi = require('joi');
  * Slot model
  */
 module.exports = {
-  slotName: Joi.string().trim(),
-  entity: Joi.string().trim(),
-  isList: Joi.boolean(),
-  isRequired: Joi.boolean(),
-  textPrompts: Joi.array().items(Joi.string().trim()),
+	slotName: Joi.string().trim(),
+	entity: Joi.string().trim(),
+	isList: Joi.boolean(),
+	isRequired: Joi.boolean(),
+	textPrompts: Joi.array().items(Joi.string().trim())
 };

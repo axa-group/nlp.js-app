@@ -1,11 +1,12 @@
 {
   "name": "nlpjs-app",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "",
   "main": "./server/index.js",
   "scripts": {
     "lint": "eslint .",
     "lintfix": "eslint --fix .",
+    "pretty": "prettier --write server/**.js server/**/*.js",
     "test": "eslint lib/** && jest --coverage --maxWorkers=4",
     "start": "node ."
   },
@@ -54,7 +55,7 @@
     "joigoose": "^4.0.8",
     "lodash": "^4.17.15",
     "mongoose": "^5.7.8",
-    "node-nlp": "^3.9.0",
+    "node-nlp": "^3.10.2",
     "pino": "^5.13.4",
     "pino-pretty": "^3.2.2",
     "vision": "^5.4.4"

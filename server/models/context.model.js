@@ -27,8 +27,8 @@ const Joi = require('joi');
  * Context model.
  */
 module.exports = {
-  id: Joi.number(),
-  name: Joi.string().trim(),
-  scenario: Joi.string().trim(),
-  slots: Joi.object().min(1),
+	id: Joi.number(),
+	name: Joi.string().trim(),
+	scenario: Joi.string().trim(),
+	slots: Joi.object().min(1)
 };

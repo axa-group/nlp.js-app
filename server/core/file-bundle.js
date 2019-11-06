@@ -22,9 +22,9 @@
  */
 
 class FileBundle {
-  constructor(content) {
-    this.content = content;
-  }
+	constructor(content) {
+		this.content = content;
+	}
 }
 
 module.exports = FileBundle;
