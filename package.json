@@ -1,6 +1,6 @@
 {
   "name": "nlpjs-app",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "",
   "main": "./server/index.js",
   "scripts": {
@@ -45,9 +45,9 @@
     ]
   },
   "dependencies": {
+    "@hapi/hapi": "^18.4.0",
     "braces": "^2.3.2",
     "dotenv": "^6.1.0",
-    "hapi": "^17.6.0",
     "hapi-swagger": "^9.1.2",
     "hapi-swagger-static": "^2.0.12",
     "inert": "^5.1.3",
