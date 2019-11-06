@@ -421,7 +421,9 @@ async function converse(request) {
   }
   const answer = await app.converse(agentId, sessionAny.any, text);
 
-  if (isUsingSlots(answer.srcAnswer)) {
+  logger.debug({ answer });
+
+  if (answer.srcAnswer && isUsingSlots(answer.srcAnswer)) {
     answer.textResponse = await processSlots(answer);
   } else {
     answer.textResponse = answer.answer;
