@@ -98,7 +98,8 @@ class App {
 
 			if (result instanceof Error) {
 				return h.response(result.message).code(result.code || 500);
-			} else if (result instanceof FileBundle) {
+			}
+			if (result instanceof FileBundle) {
 				return result.content;
 			}
 
