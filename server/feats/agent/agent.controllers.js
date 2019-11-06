@@ -22,10 +22,13 @@
  */
 
 const app = require('../../app');
+const Logger = require('../../common/logger');
 const FileBundle = require('../../core/file-bundle');
 const { UnknownFormatException } = require('../../exceptions');
 const { Model, RowType, exportSettings, Format } = require('../../constants');
 const { AgentStatus } = require('./agent.constants');
+
+const logger = Logger.getInstance();
 
 /**
  * Find by ide or returns an error.
@@ -417,9 +420,74 @@ async function converse(request) {
     };
   }
   const answer = await app.converse(agentId, sessionAny.any, text);
-  answer.textResponse = answer.answer;
+
+  if (isUsingSlots(answer.srcAnswer)) {
+    answer.textResponse = await processSlots(answer);
+  } else {
+    answer.textResponse = answer.answer;
+  }
+
   await app.database.save(Model.Session, sessionAny);
   return answer;
+}
+
+function isUsingSlots(srcAnswer) {
+  return srcAnswer.includes('{{slots.');
+}
+
+async function processSlots(answer) {
+  const { srcAnswer, entities } = answer;
+  
+  try {
+    const intent = await app.database.findOne(Model.Intent, {
+        'intentName': answer.intent
+      });
+
+    if (intent) {
+      const intentId = intent._id.toString();
+      const scenario = await app.database.findOne(Model.Scenario, {
+        'intent': intentId
+      });
+
+      let processedAnswer = srcAnswer;
+
+      scenario.slots.forEach(slot => {
+        const slotKeyName = `{{slots.${slot.slotName}.name}}`;
+        const slotKeyValue = `{{slots.${slot.slotName}.value}}`;
+        const slotKeySourceValue = `{{slots.${slot.slotName}.sourceText}}`;
+
+        if (slotKeyName.includes(slot.slotName)) {
+          logger.debug(`Replacing ${slotKeyName} by ${slot.slotName}`);
+          processedAnswer = processedAnswer.replace(new RegExp(slotKeyName, "gi"), slot.slotName);
+        }
+
+        let entity;
+
+        if (slotKeyValue.includes(slot.slotName)) {
+          entity = entities.find(item => item.entity === slot.entity);
+
+          if (entity) {
+            logger.debug(`Replacing ${slotKeyValue} by ${entity.option}`);
+            processedAnswer = processedAnswer.replace(new RegExp(slotKeyValue, "gi"), entity.option);
+          }
+        }
+
+        if (slotKeySourceValue.includes(slot.slotName)) {
+          entity = entity || entities.find(item => item.entity === slot.entity);
+
+          if (entity) {
+            logger.debug(`Replacing ${slotKeySourceValue} by ${entity.sourceText}`);
+            processedAnswer = processedAnswer.replace(new RegExp(slotKeySourceValue, "gi"), entity.sourceText);
+          }
+        }
+      });
+      return processedAnswer;
+    }
+    return srcAnswer;
+  } catch(error) {
+    logger.error(error);
+    return srcAnswer;
+  }
 }
 
 async function readContentHierarchyFromDb(agentId, headers) {

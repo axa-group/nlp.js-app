@@ -53,7 +53,7 @@ export default defineMessages({
   },
   agentResponseExample: {
     id: 'containers.IntentPage.create_intent.agent_responses_example',
-    defaultMessage: 'The weather in {{slots.location.value}} should be {{response.value}}.'
+    defaultMessage: 'The {{slots.location.name}} you said is {{slots.location.value}} but you originally said {{slots.location.sourceText}}'
   },
   userSaysInput: {
     id: 'containers.IntentPage.create_intent.user_says_input',
