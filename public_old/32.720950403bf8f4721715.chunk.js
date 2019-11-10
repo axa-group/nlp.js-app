@@ -1,0 +1,1 @@
+webpackJsonp([32],{"./app/containers/RasaSettingsPage/reducer.js":function(e,s,t){"use strict";function a(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:l;return arguments[1].type,e}Object.defineProperty(s,"__esModule",{value:!0});var n=t("./node_modules/seamless-immutable/seamless-immutable.development.js"),u=t.n(n),l=u()({});s.default=a}});
