@@ -10,8 +10,20 @@
     "test": "eslint lib/** && jest --coverage --maxWorkers=4",
     "start": "node ."
   },
-  "author": "",
-  "license": "ISC",
+  "author": {
+    "email": "jesus.seijas@axa.com",
+    "name": "Jesus Seijas"
+  },
+  "maintainers": [
+    {
+      "email": "jesus.seijas@axa.com",
+      "name": "Jesus Seijas"
+    }, {
+      "email": "eric.lara@axa.com",
+      "name": "Eric Lara"
+    }
+  ],
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/axa-group/nlp.js-app.git"
