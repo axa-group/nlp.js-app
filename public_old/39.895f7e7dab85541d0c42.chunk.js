@@ -1,1 +1,0 @@
-webpackJsonp([39],{"./app/containers/DucklingSettingsPage/reducer.js":function(e,t,n){"use strict";function s(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:l;return arguments[1].type,e}Object.defineProperty(t,"__esModule",{value:!0});var a=n("./node_modules/seamless-immutable/seamless-immutable.development.js"),u=n.n(a),l=u()({});t.default=s}});

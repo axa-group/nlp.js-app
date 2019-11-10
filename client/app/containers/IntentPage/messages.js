@@ -234,5 +234,9 @@ export default defineMessages({
   checkEntitiesOfSlots: {
     id: 'containers.IntentPage.create_agent.default_new_slot_name',
     defaultMessage: 'Please verify that every slot have an entity value',
-  }
+  },
+  checkDomain: {
+    id: 'containers.IntentPage.create_agent.check_domain',
+    defaultMessage: 'Please verify that the intent has a domain selected',
+  },
 });
