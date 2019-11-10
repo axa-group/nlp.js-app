@@ -132,7 +132,7 @@ class Database {
 	 * @param {object} criteria Criteria instance.
 	 * @returns {Promise<object>} Found document.
 	 */
-	findOne(name, criteria) {
+	findOne(name, criteria = {}) {
 		return new Promise((resolve, reject) => {
 			const Model = this.models[name];
 			if (!Model) {

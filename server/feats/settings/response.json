@@ -97,5 +97,5 @@
     "value": "tr"
   }
   ],
-  "defaultAgentFallbackResponses": ["Sorry can you rephrase that?", "I'm still learning to speak with humans. What you mean"]
+  "defaultAgentFallbackResponses": ["Sorry can you rephrase that?", "I'm still learning to speak with humans. What you mean?"]
 }

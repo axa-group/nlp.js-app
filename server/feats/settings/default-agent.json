@@ -1,8 +1,8 @@
 {
   "agent": {
-    "fallbackResponses" : [ 
-      "Sorry can you rephrase that?", 
-      "I'm still learning to speak with humans. What you mean"
+    "fallbackResponses" : [
+      "Sorry can you rephrase that?",
+      "I'm still learning to speak with humans. What you mean?"
     ],
     "agentName" : "Demo",
     "description" : "Demo agent",
@@ -189,7 +189,7 @@
         "are you still working on it",
         "you seem busy",
         "are you working today"
-      ], 
+      ],
       "answers": [
         "I always have time to chat with you. What can I do for you?",
         "Never too busy for you. Shall we chat?",
@@ -741,7 +741,7 @@
         "nice to talk to you",
         "it's nice to talk to you",
         "nice talking to you",
-        "it's been nice talking to you" 
+        "it's been nice talking to you"
       ],
       "answers": [
         "It sure was. We can chat again anytime",

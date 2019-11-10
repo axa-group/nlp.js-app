@@ -23,6 +23,7 @@
 
 const app = require('../../app');
 const Logger = require('../../common/logger');
+const Utils = require('../../common/utils');
 const FileBundle = require('../../core/file-bundle');
 const { UnknownFormatException } = require('../../exceptions');
 const { Model, RowType, exportSettings, Format } = require('../../constants');
@@ -393,7 +394,7 @@ async function train(request) {
 }
 
 /**
- * Method that perform replacements of entity values in the answer
+ * Method that performs replacements of entity values in the answer
  * @param answer incoming from nlp.js result)
  * @return {Promise<String>}
  */
@@ -457,6 +458,27 @@ function isUsingSlots(srcAnswer) {
 }
 
 /**
+ * It returns a fallback response based on settings hierarchy (1st agent, 2nd global settings, 3rd default)
+ * @param agentId
+ * @return {Promise<string>}
+ */
+async function getFallbackResponse(agentId) {
+	let fallbackResponses;
+
+	const agent = await app.database.findById(Model.Agent, agentId);
+	if (agent && agent.fallbackResponses && agent.fallbackResponses.length) {
+		fallbackResponses = agent.fallbackResponses;
+	} else {
+		const settings = await app.database.findOne(Model.Settings);
+
+		fallbackResponses = settings.any.defaultAgentFallbackResponses;
+	}
+	const randomIndex = Utils.getRandomInt(0, fallbackResponses.length - 1);
+
+	return fallbackResponses.length ? fallbackResponses[randomIndex] : '...';
+}
+
+/**
  * Converse with an agent.
  * @param {object} request Request.
  */
@@ -491,13 +513,20 @@ async function converse(request) {
 
   logger.debug({ answer });
 
-  if (answer.srcAnswer && isUsingSlots(answer.srcAnswer)) {
+  if (answer.intent === 'None') {
+    const fallbackResponse = await getFallbackResponse(agentId);
+
+    answer.srcAnswer = fallbackResponse;
+    answer.answer = fallbackResponse;
+    answer.textResponse = fallbackResponse;
+  } else if (answer.srcAnswer && isUsingSlots(answer.srcAnswer)) {
     answer.textResponse = await processSlots(answer);
   } else {
     answer.textResponse = answer.answer;
   }
 
   await app.database.save(Model.Session, sessionAny);
+
   return answer;
 }
 
