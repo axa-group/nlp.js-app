@@ -43,6 +43,35 @@ If you want to use it on-premise, follow this steps:
 
 If you want to generate a production version, run `npm run build` at the client folder and copy the build contents to the public folder.
 
+### Running in a different port
+
+Example of application running in port 3010:
+
+./.env
+```
+NODE_ENV=development
+MONGO_URL=mongodb://localhost:27017/nlpjs
+LOG_LEVEL=debug
+PORT=3010
+```
+
+./client/.env
+```
+SETTINGS_URL=http://localhost:3010
+API_URL=http://localhost:3010
+PUBLIC_PATH_PREFIX=
+```
+
+Then, replace "public" folder content:
+```
+cd client
+npm run build
+cd ..
+mv public public_old
+mv client/build public
+npm start
+```
+
 ## Example of use
 
 You can create an agent:
