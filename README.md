@@ -104,6 +104,22 @@ Train and test:
 <img src="./screenshots/train.png" width="auto" height="auto"/>
 </div>
 
+### Slot filling
+
+It's also possible to check required entities within an intent.
+
+Example of basic slot filling:
+
+<div align="center">
+<img src="./screenshots/slot-filling.png" width="auto" height="auto"/>
+</div>
+
+Example of multiple slot filling used in the same intent:
+
+<div align="center">
+<img src="./screenshots/slot-filling-2.png" width="auto" height="auto"/>
+</div>
+
 ## Software Used
 
 This project is based on the Articulate Project from Samtec, that you can find here: https://github.com/samtecspg/articulate
