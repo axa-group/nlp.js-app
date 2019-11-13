@@ -70,7 +70,7 @@ async function removeEntityFromIntents(entity) {
 
   intents.forEach(intent => {
     intent.examples.forEach(example => {
-      example.entities = example.entities.filter(entity => (entity.entityId !== entityId));
+      example.entities = example.entities.filter(item => (item.entityId !== entityId));
     });
     logger.info(`Adding new version of intent ${JSON.stringify(intent)}`);
     intentUpdates.push(app.database.saveItem(intent, Model.Intent));

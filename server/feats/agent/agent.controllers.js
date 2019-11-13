@@ -22,10 +22,14 @@
  */
 
 const app = require('../../app');
+const Logger = require('../../common/logger');
+const Utils = require('../../common/utils');
 const FileBundle = require('../../core/file-bundle');
 const { UnknownFormatException } = require('../../exceptions');
 const { Model, RowType, exportSettings, Format } = require('../../constants');
 const { AgentStatus } = require('./agent.constants');
+
+const logger = Logger.getInstance();
 
 /**
  * Find by ide or returns an error.
@@ -115,12 +119,16 @@ async function findDomainsByAgentId(request) {
 async function deleteById(request) {
   const agentId = request.params.id;
   const domains = await app.database.find(Model.Domain, { agent: agentId });
+  const removePromisesList = [];
 
-  for(let domain of domains) {
+  domains.forEach(domain => {
     const domainId = domain._id;
-    await app.database.remove(Model.Intent, { domain: domainId });
-    await app.database.remove(Model.Scenario, { domain: domainId });
-  }
+
+    removePromisesList.push(app.database.remove(Model.Intent, { domain: domainId }));
+    removePromisesList.push(app.database.remove(Model.Scenario, { domain: domainId }));
+  });
+
+  await Promise.all(removePromisesList);
 
   await app.database.remove(Model.Entity, { agent: agentId });
   await app.database.remove(Model.Domain, { agent: agentId });
@@ -386,6 +394,91 @@ async function train(request) {
 }
 
 /**
+ * Method that performs replacements of entity values in the answer
+ * @param answer incoming from nlp.js result)
+ * @return {Promise<String>}
+ */
+async function processSlots(answer) {
+	const { srcAnswer, entities } = answer;
+
+	try {
+		const intent = await app.database.findOne(Model.Intent, {
+			'intentName': answer.intent
+		});
+
+		if (intent) {
+			const intentId = intent._id.toString();
+			const scenario = await app.database.findOne(Model.Scenario, {
+				'intent': intentId
+			});
+
+			let processedAnswer = srcAnswer;
+
+			scenario.slots.forEach(slot => {
+				const slotKeyName = `{{slots.${slot.slotName}.name}}`;
+				const slotKeyValue = `{{slots.${slot.slotName}.value}}`;
+				const slotKeySourceValue = `{{slots.${slot.slotName}.sourceText}}`;
+
+				if (slotKeyName.includes(slot.slotName)) {
+					logger.debug(`Replacing ${slotKeyName} by ${slot.slotName}`);
+					processedAnswer = processedAnswer.replace(new RegExp(slotKeyName, "gi"), slot.slotName);
+				}
+
+				let entity;
+
+				if (slotKeyValue.includes(slot.slotName)) {
+					entity = entities.find(item => item.entity === slot.entity);
+
+					if (entity) {
+						logger.debug(`Replacing ${slotKeyValue} by ${entity.option}`);
+						processedAnswer = processedAnswer.replace(new RegExp(slotKeyValue, "gi"), entity.option);
+					}
+				}
+
+				if (slotKeySourceValue.includes(slot.slotName)) {
+					entity = entity || entities.find(item => item.entity === slot.entity);
+
+					if (entity) {
+						logger.debug(`Replacing ${slotKeySourceValue} by ${entity.sourceText}`);
+						processedAnswer = processedAnswer.replace(new RegExp(slotKeySourceValue, "gi"), entity.sourceText);
+					}
+				}
+			});
+			return processedAnswer;
+		}
+		return srcAnswer;
+	} catch(error) {
+		logger.error(error);
+		return srcAnswer;
+	}
+}
+
+function isUsingSlots(srcAnswer) {
+	return srcAnswer.includes('{{slots.');
+}
+
+/**
+ * It returns a fallback response based on settings hierarchy (1st agent, 2nd global settings, 3rd default)
+ * @param agentId
+ * @return {Promise<string>}
+ */
+async function getFallbackResponse(agentId) {
+	let fallbackResponses;
+
+	const agent = await app.database.findById(Model.Agent, agentId);
+	if (agent && agent.fallbackResponses && agent.fallbackResponses.length) {
+		fallbackResponses = agent.fallbackResponses;
+	} else {
+		const settings = await app.database.findOne(Model.Settings);
+
+		fallbackResponses = settings.any.defaultAgentFallbackResponses;
+	}
+	const randomIndex = Utils.getRandomInt(0, fallbackResponses.length - 1);
+
+	return fallbackResponses.length ? fallbackResponses[randomIndex] : '...';
+}
+
+/**
  * Converse with an agent.
  * @param {object} request Request.
  */
@@ -422,8 +515,23 @@ async function converse(request) {
     };
   }
   const answer = await app.converse(agentId, sessionAny.any, text);
-  answer.textResponse = answer.answer;
+
+  logger.debug({ answer });
+
+  if (answer.intent === 'None') {
+    const fallbackResponse = await getFallbackResponse(agentId);
+
+    answer.srcAnswer = fallbackResponse;
+    answer.answer = fallbackResponse;
+    answer.textResponse = fallbackResponse;
+  } else if (answer.srcAnswer && isUsingSlots(answer.srcAnswer)) {
+    answer.textResponse = await processSlots(answer);
+  } else {
+    answer.textResponse = answer.answer;
+  }
+
   await app.database.save(Model.Session, sessionAny);
+
   return answer;
 }
 
@@ -433,13 +541,13 @@ async function readContentHierarchyFromDb(agentId, headers) {
   const domains = await app.database.find(Model.Domain, { agent: agentId });
   const agentsPrefix = [agent.agentName, agent._id];
 
-  for(let domain of domains) {
-    const { domainName, language, status } = domain;
+  for(const domain of domains) {
+    const { domainName, language } = domain;
     const domainPrefix = [...agentsPrefix, domainName, domain._id, language];
 
     const intents = await app.database.find(Model.Intent, { agent: agentId, domain: domain._id });
 
-    for(let intent of intents) {
+    for(const intent of intents) {
       const { intentName } = intent;
       const intentPrefix = [...domainPrefix, intentName, intent._id];
 

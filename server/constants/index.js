@@ -22,37 +22,47 @@
  */
 
 const Format = {
-  csv: 'csv'
+	csv: 'csv'
 };
 
 Format.default = Format.csv;
 
 module.exports = {
-  ENV: {
-    PRODUCTION: 'production',
-    DEVELOPMENT: 'development',
-    TEST: 'test'
-  },
-  Model: {
-    Settings: 'settings',
-    Training: 'training',
-    Session: 'session',
-    Agent: 'agent',
-    Domain: 'domain',
-    Intent: 'intent',
-    Entity: 'entity',
-    Scenario: 'scenario',
-    Users: 'users'
-  },
-  exportSettings: {
-    csv: {
-      sep: ';',
-      headers: ['Agent name', 'Agent id', 'Domain name', 'Domain id', 'Domain language', 'Intent name', 'Intent id', 'Example / Response', 'Text']
-    }
-  },
-  RowType: {
-    Example: 'EXAMPLE',
-    Response: 'RESPONSE'
-  },
-  Format
+	ENV: {
+		PRODUCTION: 'production',
+		DEVELOPMENT: 'development',
+		TEST: 'test'
+	},
+	Model: {
+		Settings: 'settings',
+		Training: 'training',
+		Session: 'session',
+		Agent: 'agent',
+		Domain: 'domain',
+		Intent: 'intent',
+		Entity: 'entity',
+		Scenario: 'scenario',
+		Users: 'users'
+	},
+	exportSettings: {
+		csv: {
+			sep: ';',
+			headers: [
+				'Agent name',
+				'Agent id',
+				'Domain name',
+				'Domain id',
+				'Domain language',
+				'Intent name',
+				'Intent id',
+				'Example / Response',
+				'Text'
+			]
+		}
+	},
+	RowType: {
+		Example: 'EXAMPLE',
+		Response: 'RESPONSE'
+	},
+	Format
 };

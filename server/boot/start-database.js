@@ -28,29 +28,23 @@ if (process.env.MY_AWS_ACCESS_KEY_ID) {
   Database = require('../core/database-mongo');
 }
 const app = require('../app');
-const {
-  AgentModel,
-  DomainModel,
-  IntentModel,
-  EntityModel,
-  ScenarioModel,
-} = require('../models');
+const { AgentModel, DomainModel, IntentModel, EntityModel, ScenarioModel } = require('../models');
 
 /**
  * Starts the database.
  * Initialize the models and connect.
  */
 async function startDatabase() {
-  app.database = new Database();
-  app.database.addModel('settings');
-  app.database.addModel('training');
-  app.database.addModel('session');
-  app.database.addModel('agent', AgentModel);
-  app.database.addModel('domain', DomainModel);
-  app.database.addModel('intent', IntentModel);
-  app.database.addModel('entity', EntityModel);
-  app.database.addModel('scenario', ScenarioModel);
-  return app.database.connect();
+	app.database = new Database();
+	app.database.addModel('settings');
+	app.database.addModel('training');
+	app.database.addModel('session');
+	app.database.addModel('agent', AgentModel);
+	app.database.addModel('domain', DomainModel);
+	app.database.addModel('intent', IntentModel);
+	app.database.addModel('entity', EntityModel);
+	app.database.addModel('scenario', ScenarioModel);
+	return app.database.connect();
 }
 
 module.exports = startDatabase;

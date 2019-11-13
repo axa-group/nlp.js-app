@@ -23,7 +23,7 @@
 
 require('dotenv').config();
 
-const Hapi = require('hapi');
+const Hapi = require('@hapi/hapi');
 const Lalalambda = require('lalalambda');
 const inert = require('inert');
 const path = require('path');
@@ -39,30 +39,30 @@ const logger = Logger.getInstance();
 const port = process.env.PORT || 3000;
 
 const server = new Hapi.Server({
-  port,
-  routes: {
-    cors: true,
-    files: {
-      relativeTo: path.join(__dirname, '../public'),
-    },
-  },
+	port,
+	routes: {
+		cors: true,
+		files: {
+			relativeTo: path.join(__dirname, '../public')
+		}
+	}
 });
 app.server = server;
 
 const swaggerOptions = {
-  info: {
-    title: 'Test API Documentation',
-    version: '1.0.0',
-  },
+	info: {
+		title: 'Test API Documentation',
+		version: '1.0.0'
+	}
 };
 
 if (process.env.HEROKU_APP_NAME) {
-  const name = process.env.HEROKU_APP_NAME;
-  if (name.includes('.')) {
-    swaggerOptions.host = process.env.HEROKU_APP_NAME;
-  } else {
-    swaggerOptions.host = `${process.env.HEROKU_APP_NAME}.herokuapp.com`;
-  }
+	const name = process.env.HEROKU_APP_NAME;
+	if (name.includes('.')) {
+		swaggerOptions.host = process.env.HEROKU_APP_NAME;
+	} else {
+		swaggerOptions.host = `${process.env.HEROKU_APP_NAME}.herokuapp.com`;
+	}
 }
 
 /**
@@ -109,8 +109,8 @@ async function startServer() {
 }
 
 async function start() {
-  await startDatabase();
-  await startServer();
+	await startDatabase();
+	await startServer();
 }
 
 if (process.env.SERVERLESS) {
@@ -121,5 +121,7 @@ if (process.env.SERVERLESS) {
     }
   };
 } else {
-  start();
+  module.exports = {
+	start
+  };
 }

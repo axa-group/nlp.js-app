@@ -27,6 +27,6 @@ const Joi = require('joi');
  * Example Entity Model
  */
 module.exports = {
-  value: Joi.string().trim(),
-  synonyms: Joi.array().items(Joi.string().trim()),
+	value: Joi.string().trim(),
+	synonyms: Joi.array().items(Joi.string().trim())
 };

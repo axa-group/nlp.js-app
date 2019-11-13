@@ -20,15 +20,13 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const { NlpManager } = require('node-nlp');
-const { NEURAL } = require('./nlpjs-settings');
 
-/**
- * Child process for training.
- */
-process.on('message', async json => {
-	const manager = new NlpManager({ useNeural: NEURAL });
-	manager.import(json);
-	await manager.train();
-	process.send(manager.export());
-});
+class Utils {
+	static  getRandomInt(min, max) {
+		min = Math.ceil(min);
+		max = Math.floor(max);
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+}
+
+module.exports = Utils;

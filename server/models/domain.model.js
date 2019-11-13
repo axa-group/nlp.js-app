@@ -27,14 +27,14 @@ const Joi = require('joi');
  * Domain model.
  */
 module.exports = {
-  id: Joi.number(),
-  agent: Joi.string().trim(),
-  domainName: Joi.string().trim(),
-  language: Joi.string().trim(),
-  enabled: Joi.boolean(),
-  intentThreshold: Joi.number(),
-  status: Joi.string().trim(),
-  lastTraining: Joi.date(),
-  model: Joi.string().trim(),
-  extraTrainingData: Joi.boolean(),
+	id: Joi.number(),
+	agent: Joi.string().trim(),
+	domainName: Joi.string().trim(),
+	language: Joi.string().trim(),
+	enabled: Joi.boolean(),
+	intentThreshold: Joi.number(),
+	status: Joi.string().trim(),
+	lastTraining: Joi.date(),
+	model: Joi.string().trim(),
+	extraTrainingData: Joi.boolean()
 };

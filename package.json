@@ -1,16 +1,52 @@
 {
   "name": "nlpjs-app",
-  "version": "1.1.4",
-  "description": "",
+  "version": "1.3.3",
+  "description": "Application to help you train your agents for bots, done using NLP.js.",
   "main": "./server/index.js",
   "scripts": {
     "lint": "eslint .",
     "lintfix": "eslint --fix .",
+    "pretty": "prettier --write server/**.js server/**/*.js",
     "test": "eslint lib/** && jest --coverage --maxWorkers=4",
     "start": "node ."
   },
-  "author": "",
-  "license": "ISC",
+  "author": {
+    "email": "jesus.seijas@axa.com",
+    "name": "Jesus Seijas"
+  },
+  "maintainers": [
+    {
+      "email": "jesus.seijas@axa.com",
+      "name": "Jesus Seijas"
+    },
+    {
+      "email": "eric.lara@axa.com",
+      "name": "Eric Lara"
+    }
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/axa-group/nlp.js-app.git"
+  },
+  "dependencies": {
+    "@hapi/hapi": "^18.4.0",
+    "aws-sdk": "^2.539.0",
+    "braces": "^2.3.2",
+    "dotenv": "^6.1.0",
+    "hapi-swagger": "^9.1.2",
+    "hapi-swagger-static": "^2.0.12",
+    "inert": "^5.1.3",
+    "joi": "^14.3.1",
+    "joigoose": "^4.0.8",
+    "lalalambda": "^1.0.0",
+    "lodash": "^4.17.15",
+    "mongoose": "^5.7.8",
+    "node-nlp": "^3.10.2",
+    "pino": "^5.13.4",
+    "pino-pretty": "^3.2.2",
+    "vision": "^5.4.4"
+  },
   "devDependencies": {
     "coveralls": "^3.0.6",
     "cz-conventional-changelog": "^2.1.0",
@@ -43,24 +79,5 @@
       "eslint --fix",
       "git add"
     ]
-  },
-  "dependencies": {
-    "aws-sdk": "^2.539.0",
-    "braces": "^2.3.2",
-    "dotenv": "^6.1.0",
-    "hapi": "^17.6.0",
-    "hapi-swagger": "^9.1.2",
-    "hapi-swagger-static": "^2.0.12",
-    "inert": "^5.1.3",
-    "joi": "^14.3.1",
-    "joigoose": "^4.0.8",
-    "lalalambda": "^1.0.0",
-    "lodash": "^4.17.15",
-    "mongoose": "^5.3.4",
-    "node-nlp": "^3.10.0",
-    "pino": "^5.13.4",
-    "pino-pretty": "^3.2.2",
-    "uuid": "^3.3.3",
-    "vision": "^5.4.4"
   }
 }

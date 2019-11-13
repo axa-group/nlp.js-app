@@ -96,4 +96,12 @@ export default defineMessages({
     id: 'containers.EntityPage.create_agent.success_message',
     defaultMessage: 'Entity updated',
   },
+  errorMissingName: {
+    id: 'containers.EntityPage.create_agent.error_name',
+    defaultMessage: 'Please, add a valid Entity name'
+  },
+  errorWrongRegex: {
+    id: 'containers.EntityPage.create_agent.error_regex',
+    defaultMessage: 'Invalid regex, please follow the suggested format /regex/[i|g|m|u]'
+  }
 });

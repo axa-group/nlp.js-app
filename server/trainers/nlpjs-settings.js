@@ -23,11 +23,11 @@
 
 const NEURAL = 'brain';
 const useNeuralSettings = {
-  useNeural: NEURAL,
-  useLRC: false
+	useNeural: NEURAL,
+	useLRC: false
 };
 
 module.exports = {
-  useNeuralSettings,
-  NEURAL
+	useNeuralSettings,
+	NEURAL
 };

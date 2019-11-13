@@ -28,9 +28,9 @@ const feats = require('../feats');
  * Register all the feats.
  */
 function registerFeats() {
-  Object.keys(feats).forEach(feat => {
-    feats[feat](app);
-  });
+	Object.keys(feats).forEach(feat => {
+		feats[feat](app);
+	});
 }
 
 module.exports = registerFeats;

@@ -39,6 +39,9 @@
     "text": "Basque",
     "value": "eu"
   }, {
+    "text": "Bengali",
+    "value": "bn"
+  }, {
     "text": "Catala",
     "value": "ca"
   }, {
@@ -59,6 +62,15 @@
   }, {
     "text": "Finnish",
     "value": "fi"
+  }, {
+    "text": "Galician",
+    "value": "ga"
+  }, {
+    "text": "Greek",
+    "value": "el"
+  }, {
+    "text": "Hindi",
+    "value": "hi"
   }, {
     "text": "Hungarian",
     "value": "hu"
@@ -90,12 +102,24 @@
     "text": "Swedish",
     "value": "sv"
   }, {
+    "text": "Russian",
+    "value": "ru"
+  }, {
+    "text": "Tagalog",
+    "value": "tl"
+  }, {
     "text": "Tamil",
     "value": "ta"
   }, {
+    "text": "Thai",
+    "value": "th"
+  }, {
     "text": "Turkish",
     "value": "tr"
+  }, {
+    "text": "Ukrainian",
+    "value": "uk"
   }
   ],
-  "defaultAgentFallbackResponses": ["Sorry can you rephrase that?", "I'm still learning to speak with humans. What you mean"]
+  "defaultAgentFallbackResponses": ["Sorry can you rephrase that?", "I'm still learning to speak with humans. What you mean?"]
 }

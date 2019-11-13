@@ -27,6 +27,6 @@ const Joi = require('joi');
  * Postformat model.
  */
 module.exports = {
-  id: Joi.string().trim(),
-  postFormatPayload: Joi.string().trim(),
+	id: Joi.string().trim(),
+	postFormatPayload: Joi.string().trim()
 };
