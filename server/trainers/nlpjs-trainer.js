@@ -233,10 +233,10 @@ class NlpjsTrainer {
 	 */
 	loadTraining(agentId, model) {
 		this.managers[agentId] = new NlpManager(useNeuralSettings);
-		if (!model.nerManager.settings) {
+		if (model.nerManager && !model.nerManager.settings) {
 			model.nerManager.settings = {};
 		}
-		if (!model.nerManager.namedEntities) {
+		if (model.nerManager && !model.nerManager.namedEntities) {
 			model.nerManager.namedEntities = {};
 		}
 		this.managers[agentId].import(model);
