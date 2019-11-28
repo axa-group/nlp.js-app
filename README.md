@@ -120,6 +120,30 @@ Example of multiple slot filling used in the same intent:
 <img src="./screenshots/slot-filling-2.png" width="auto" height="auto"/>
 </div>
 
+## Docker Compose
+
+A docker-compose receipt is available to allow a quick-start easily. Just execute:
+
+**Start:**
+
+```docker
+docker-compose up
+```
+
+**Start detached:**
+
+```docker
+docker-compose up -d
+```
+
+**Stop:**
+
+```docker
+docker-compose down
+```
+
+It will start the Mongo database, [NLP.js](http://localhost:3000 "NLP.js app at localhost") application and a [Mongo Express](http://localhost:8081 "Mongo-Express at localhost") to allow inspect the collections.
+
 ## Software Used
 
 This project is based on the Articulate Project from Samtec, that you can find here: https://github.com/samtecspg/articulate
