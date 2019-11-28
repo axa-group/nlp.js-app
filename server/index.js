@@ -110,7 +110,7 @@ server.ext('onPostStop', server => {
 });
 
 async function shutDown() {
-  const lapse = process.env.STOP_SERVER_WAIT ? process.env.STOP_SERVER_WAIT : 5;
+  const lapse = process.env.STOP_SERVER_WAIT_SECONDS ? process.env.STOP_SERVER_WAIT_SECONDS : 5;
   await server.stop({ timeout: lapse * 1000 });
 }
 
