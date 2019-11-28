@@ -8,6 +8,7 @@ injectGlobal`
     font-family: 'Montserrat', sans-serif;
     font-size: 1em;
     line-height: 1em;
+    background-color: white;
     color: #4e4e4e; }
 
   * {

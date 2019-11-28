@@ -287,10 +287,8 @@ export function* putIntent(payload) {
       }
     }
 
-
     yield put(push('/intents'));
   } catch (err) {
-    console.log(err)
     const errObject = { err };
     if (errObject.err && errObject.err.message === 'Failed to fetch') {
       yield put(updateIntentError({ message: 'Can\'t find a connection with the API. Please check your API is alive and configured properly.' }));
@@ -298,9 +296,10 @@ export function* putIntent(payload) {
     else {
       if (errObject.err.response.obj && errObject.err.response.obj.message) {
         yield put(updateIntentError({ message: errObject.err.response.obj.message }));
-      }
-      else {
-        yield put(updateIntentError({ message: 'Unknow API error' }));
+      } else if(err.message) {
+        yield put(updateIntentError({ message: err.message }));
+      } else {
+        yield put(updateIntentError({ message: 'Unknown API error' }));
       }
     }
   }

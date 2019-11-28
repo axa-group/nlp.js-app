@@ -6,3 +6,5 @@ mongo_data
 .env
 .vscode
 .idea
+npm-debug.log
+

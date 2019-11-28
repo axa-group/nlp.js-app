@@ -28,11 +28,11 @@ const ExampleModel = require('./example.entity.model');
  * Entity model.
  */
 module.exports = {
-  id: Joi.number(),
-  agent: Joi.string().trim(),
-  entityName: Joi.string().trim(),
-  uiColor: Joi.string().trim(),
-  examples: Joi.array().items(ExampleModel),
-  regex: Joi.string().trim(),
-  type: Joi.string().trim(),
+	id: Joi.number(),
+	agent: Joi.string().trim(),
+	entityName: Joi.string().trim(),
+	uiColor: Joi.string().trim(),
+	examples: Joi.array().items(ExampleModel),
+	regex: Joi.string().trim(),
+	type: Joi.string().trim()
 };

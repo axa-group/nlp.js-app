@@ -20,15 +20,31 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const { NlpManager } = require('node-nlp');
-const { NEURAL } = require('./nlpjs-settings');
 
-/**
- * Child process for training.
- */
-process.on('message', async json => {
-	const manager = new NlpManager({ useNeural: NEURAL });
-	manager.import(json);
-	await manager.train();
-	process.send(manager.export());
-});
+const pino = require('pino');
+
+const { ENV } = require('../../constants');
+
+let defaultLogger = null;
+
+class Logger {
+	static getInstance() {
+		if (!defaultLogger) {
+			const logLevel = process.env.LOG_LEVEL || 'info';
+			const currentEnv = process.env.NODE_ENV;
+			const prettySettings = {
+				colorize: true,
+				translateTime: true
+			};
+			const settings = {
+				prettyPrint: currentEnv !== ENV.PRODUCTION ? prettySettings : false,
+				level: logLevel
+			};
+			defaultLogger = pino(settings);
+			defaultLogger.info(`log level: ${logLevel}`);
+		}
+		return defaultLogger;
+	}
+}
+
+module.exports = Logger;

@@ -53,7 +53,7 @@ export default defineMessages({
   },
   agentResponseExample: {
     id: 'containers.IntentPage.create_intent.agent_responses_example',
-    defaultMessage: 'The weather in {{slots.location.value}} should be {{response.value}}.'
+    defaultMessage: 'The {{slots.location.name}} you said is {{slots.location.value}} but you originally said {{slots.location.sourceText}}'
   },
   userSaysInput: {
     id: 'containers.IntentPage.create_intent.user_says_input',
@@ -234,5 +234,9 @@ export default defineMessages({
   checkEntitiesOfSlots: {
     id: 'containers.IntentPage.create_agent.default_new_slot_name',
     defaultMessage: 'Please verify that every slot have an entity value',
-  }
+  },
+  checkDomain: {
+    id: 'containers.IntentPage.create_agent.check_domain',
+    defaultMessage: 'Please verify that the intent has a domain selected',
+  },
 });

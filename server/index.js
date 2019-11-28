@@ -22,77 +22,81 @@
  */
 
 require('dotenv').config();
-const Hapi = require('hapi');
+
+const Hapi = require('@hapi/hapi');
 const inert = require('inert');
 const path = require('path');
 const Vision = require('vision');
 const HapiSwagger = require('hapi-swagger');
+
+const Logger = require('./common/logger');
 const app = require('./app');
 const registerFeats = require('./boot/register-feats');
 const startDatabase = require('./boot/start-database');
 
+const logger = Logger.getInstance();
 const port = process.env.PORT || 3000;
 
 const server = new Hapi.Server({
-  port,
-  routes: {
-    cors: true,
-    files: {
-      relativeTo: path.join(__dirname, '../public'),
-    },
-  },
+	port,
+	routes: {
+		cors: true,
+		files: {
+			relativeTo: path.join(__dirname, '../public')
+		}
+	}
 });
 app.server = server;
 
 const swaggerOptions = {
-  info: {
-    title: 'Test API Documentation',
-    version: '1.0.0',
-  },
+	info: {
+		title: 'Test API Documentation',
+		version: '1.0.0'
+	}
 };
 
 if (process.env.HEROKU_APP_NAME) {
-  const name = process.env.HEROKU_APP_NAME;
-  if (name.includes('.')) {
-    swaggerOptions.host = process.env.HEROKU_APP_NAME;
-  } else {
-    swaggerOptions.host = `${process.env.HEROKU_APP_NAME}.herokuapp.com`;
-  }
+	const name = process.env.HEROKU_APP_NAME;
+	if (name.includes('.')) {
+		swaggerOptions.host = process.env.HEROKU_APP_NAME;
+	} else {
+		swaggerOptions.host = `${process.env.HEROKU_APP_NAME}.herokuapp.com`;
+	}
 }
 
 /**
  * Starts the server.
  */
 async function startServer() {
-  registerFeats();
-  await server.register([
-    inert,
-    Vision,
-    {
-      plugin: HapiSwagger,
-      options: swaggerOptions,
-    },
-  ]);
-  server.ext('onPreHandler', (request, h) => {
-    const host = request.info.hostname;
-    if (host.includes('herokuapp.com')) {
-      swaggerOptions.host = host;
-    }
-    return h.continue;
-  });
-  server.route({
-    method: 'GET',
-    path: '/{param*}',
-    handler: (request, h) => {
-      const { param } = request.params;
-      if (param.includes('.')) {
-        return h.file(param);
-      }
-      return h.file('index.html');
-    },
-  });
-  await server.start();
-  console.log(`Server running at: ${server.info.uri}`);
+	registerFeats();
+	await server.register([
+		inert,
+		Vision,
+		{
+			plugin: HapiSwagger,
+			options: swaggerOptions
+		}
+	]);
+	server.ext('onPreHandler', (request, h) => {
+		const host = request.info.hostname;
+		if (host.includes('herokuapp.com')) {
+			swaggerOptions.host = host;
+		}
+		return h.continue;
+	});
+	server.route({
+		method: 'GET',
+		path: '/{param*}',
+		handler: (request, h) => {
+			const { param } = request.params;
+			if (param.includes('.')) {
+				return h.file(param);
+			}
+			return h.file('index.html');
+		}
+	});
+	await server.start();
+	logger.info(`Server running at: ${server.info.uri}`);
 }
 
 eslint-disable-next-line no-shadow, no-unused-vars
@@ -118,8 +122,8 @@ process.on('SIGTERM', shutDown);
 process.on('SIGINT', shutDown);
 
 async function start() {
-  await startDatabase();
-  await startServer();
+	await startDatabase();
+	await startServer();
 }
 
 start();

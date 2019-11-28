@@ -40,6 +40,19 @@ async function add(request) {
   if (!domain) {
     return app.error(404, 'The domain was not found');
   }
+
+  if (!updateData.intentName) {
+    return app.error(400, 'Intent name is mandatory');
+  }
+
+  const intentWithTheSameName = await app.database.findOne(Model.Intent, {
+    intentName: updateData.intentName,
+  });
+
+  if (intentWithTheSameName) {
+    return app.error(400, 'Intent name already used');
+  }
+
   agent.status = AgentStatus.OutOfDate;
   await app.database.saveItem(agent);
   updateData.status = AgentStatus.Ready;
@@ -107,6 +120,19 @@ async function updateById(request) {
     }
   }
   const data = JSON.parse(request.payload);
+
+  if (!data.intentName) {
+    return app.error(400, 'Intent name is mandatory');
+  }
+
+  const intentWithTheSameName = await app.database.findOne(Model.Intent, {
+    intentName: data.intentName,
+  });
+
+  if (intentWithTheSameName) {
+    return app.error(400, 'Intent name already used');
+  }
+
   return app.database.updateById(Model.Intent, intentId, data);
 }
 

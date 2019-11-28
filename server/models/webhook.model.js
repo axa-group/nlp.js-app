@@ -27,11 +27,11 @@ const Joi = require('joi');
  * Webhook model
  */
 module.exports = {
-  id: Joi.string().trim(),
-  webhookUrl: Joi.string().trim(),
-  webhookVerb: Joi.string().trim(),
-  webhookPayloadType: Joi.string().trim(),
-  webhookPayload: Joi.string().trim(),
-  webhookUsername: Joi.string().trim(),
-  webhookPassword: Joi.string().trim(),
+	id: Joi.string().trim(),
+	webhookUrl: Joi.string().trim(),
+	webhookVerb: Joi.string().trim(),
+	webhookPayloadType: Joi.string().trim(),
+	webhookPayload: Joi.string().trim(),
+	webhookUsername: Joi.string().trim(),
+	webhookPassword: Joi.string().trim()
 };

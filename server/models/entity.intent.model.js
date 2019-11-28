@@ -27,10 +27,10 @@ const Joi = require('joi');
  * Entity intent model.
  */
 module.exports = {
-  start: Joi.number(),
-  end: Joi.number(),
-  value: Joi.string().trim(),
-  entity: Joi.string().trim(),
-  entityId: Joi.string().trim(),
-  extractor: Joi.string().trim(),
+	start: Joi.number(),
+	end: Joi.number(),
+	value: Joi.string().trim(),
+	entity: Joi.string().trim(),
+	entityId: Joi.string().trim(),
+	extractor: Joi.string().trim()
 };

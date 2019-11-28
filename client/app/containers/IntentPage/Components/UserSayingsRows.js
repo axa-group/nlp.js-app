@@ -22,6 +22,13 @@ function compareEntities(a, b) {
   return 0;
 }
 
+function str2regex(str) {
+  const index = str.lastIndexOf('/');
+  const flags = str.slice(index + 1) || 'ig';
+
+  return new RegExp(str.slice(1, index), flags);
+}
+
 export function UserSayingsRows(props) {
   const rows = props.examples.map((value, valueIndex) => {
     const textValue = value['userSays'];
@@ -44,18 +51,18 @@ export function UserSayingsRows(props) {
 
     if (entities.length > 0 || regexEntitiesDefinedAsSlot.length > 0) {
       regexEntitiesDefinedAsSlot.forEach((regexEntity) => {
-
         const entityName = regexEntity.entityName;
         const entityIsList = regexEntityIsList.indexOf(entityName) >= 0;
         let lastRegexMatch;
         let indexLastMatch = 0;
-        const  regexToTest = new RegExp(regexEntity.regex.replace(/\//g,''), 'ig');
+        const regexToTest = str2regex(regexEntity.regex);
         let match = regexToTest.exec(textValue);
  
-        while (match !==null) {
+        while (match !== null) {
           const startIndex = match.index;
           const endIndex = startIndex + match[0].length;
           const resultToSend = { value: match[0], entity: entityName, start: startIndex, end: endIndex };
+
           match = regexToTest.exec(textValue);
           if (entityIsList) {
             entities.push(_.cloneDeep(resultToSend));

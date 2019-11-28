@@ -356,10 +356,15 @@ export class IntentPage extends React.PureComponent { // eslint-disable-line rea
   submitForm(evt) {
     if (evt !== undefined && evt.preventDefault) evt.preventDefault();
     this.state.clickedSave = true;
-    const invalidSlotEntities = this.props.scenarioData.slots.map((slot) => {
+    
+    if (!this.props.intent.domain) {
+      return Alert.warning(messages.checkDomain.defaultMessage, {
+        position: 'bottom'
+      });
+    }
 
-      return !slot.entity;
-    });
+    const invalidSlotEntities = this.props.scenarioData.slots.map(slot => (!slot.entity));
+
     if (invalidSlotEntities.indexOf(true) > -1){
       Alert.warning(messages.checkEntitiesOfSlots.defaultMessage, {
         position: 'bottom'
@@ -524,7 +529,6 @@ export class IntentPage extends React.PureComponent { // eslint-disable-line rea
                 value={intent.intentName}
                 onChange={(evt) => this.onChangeInput(evt, 'intentName')}
                 required
-                disabled = {this.state.editMode}
               />
               <FormTextInput
                 label={messages.userSaysTitle}

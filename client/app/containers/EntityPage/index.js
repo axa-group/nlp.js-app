@@ -48,7 +48,6 @@ import {
   switchColorPickerDisplay
 } from './actions';
 import Examples from './Components/Examples';
-
 import messages from './messages';
 import {
   makeDisplayColorPicker,
@@ -152,14 +151,42 @@ export class EntityPage extends React.PureComponent { // eslint-disable-line rea
     }
   }
 
+  isValidRegexExpression(regexString) {
+    return /^\/(.*)+(\/$|(\/[i|g|m|u]+$))/.test(regexString);
+  }
+
   submitForm(evt) {
+    let hasErrors = false;
     if (evt !== undefined && evt.preventDefault) evt.preventDefault();
     this.state.clickedSave = true;
-    if (this.state.editMode) {
-      this.props.onUpdate();
-    } else {
-      this.props.onCreate();
+
+    const { entity } = this.props;
+
+    if (entity.entityName === '') {
+      hasErrors = true;
+      Alert.warning(messages.errorMissingName.defaultMessage, {
+          position: 'bottom'
+      });
     }
+
+    if (entity.type === 'regex') {
+      const isValidRegex = this.isValidRegexExpression(entity.regex);
+
+      if (!isValidRegex) {
+        hasErrors = true;
+        Alert.warning(messages.errorWrongRegex.defaultMessage, {
+            position: 'bottom'
+        });
+      }
+	}
+
+	if (!hasErrors) {
+	  if (this.state.editMode) {
+		this.props.onUpdate();
+	  } else {
+		this.props.onCreate();
+	  }
+	}
   }
 
   routerWillLeave(route) {
@@ -251,6 +278,7 @@ export class EntityPage extends React.PureComponent { // eslint-disable-line rea
                 s={2}
               />
               <Input
+                id={'entityType'}
                 s={12}
                 type="select"
                 label={messages.entityType.defaultMessage}
