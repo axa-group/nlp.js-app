@@ -20,6 +20,7 @@ Application to train your agents for bots, done using NLP.js.
 
 - [Installation](#installation)
 - [Example of Use](#example-of-use)
+- [Docker Compose](#docker-compose)
 - [Software Used](#software-used)
 - [Contributing](#contributing)
 - [Code of Conduct](#code-of-conduct)
