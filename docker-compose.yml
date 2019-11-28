@@ -1,0 +1,80 @@
+version: '3.7'
+
+networks:
+  nlpjs:
+
+services:
+  mongo:
+    image: mongo:4.0.11
+    container_name: nlpjs_mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=myadmin
+      - MONGO_INITDB_ROOT_PASSWORD=myadmin
+      - MONGO_INITDB_DATABASE=nlpjs
+    volumes:
+      - ${PWD}/mongo_data/data:/data/db
+      - ${PWD}/mongo_data/init:/docker-entrypoint-initdb.d/
+      # it is also possible to map the path "/data/configdb"
+      # use this mapping option just in case is required to setup a fine grained DB configuration
+    expose:
+      - 27017
+    networks:
+      - nlpjs
+    healthcheck:
+      # it is also possible/valid change the order "mongostat" with the order "mongotop"
+      test: ["CMD", "mongostat", "-u", "myadmin", "-p", "myadmin", "--authenticationDatabase=admin", "--json", "-n", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+  nlpjs-app:
+    image: node:8.9.4
+    container_name: nlpjs_app
+    environment:
+      - MONGO_URL=mongodb://nlpjs_user:nlpjs_pass@nlpjs_mongo:27017/nlpjs
+    volumes:
+      - ${PWD}/public:/opt/public
+      - ${PWD}/server:/opt/server
+      - ${PWD}/node_modules:/opt/node_modules
+      - ${PWD}/package.json:/opt/package.json
+    working_dir: /opt
+    ports:
+      - 3000:3000
+    networks:
+      - nlpjs
+    stop_signal: SIGTERM
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "-T", "2", "-t", "1", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      - mongo
+    # it is also possible add the command "npm cache clean --force" before the current commands
+    # this variant forces to erase and re-download the NPM dependencies, so more large process time,
+    # so may allow less sleep time lapse to be required
+    entrypoint: "/bin/bash -c 'npm install && sleep 40s && node .'"
+  mongo-express:
+    image: mongo-express:0.49.0
+    container_name: nlpjs_mongo_express
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=myadmin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=myadmin
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+      - ME_CONFIG_BASICAUTH_USERNAME=webadmin
+      - ME_CONFIG_BASICAUTH_PASSWORD=webadmin
+    ports:
+      - 8081:8081
+    networks:
+      - nlpjs
+    depends_on:
+      - mongo
+    stop_signal: SIGTERM
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http:///webadmin:webadmin@localhost:8081"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    entrypoint: "/bin/bash -c 'sleep 40s && tini -p SIGTERM -- /docker-entrypoint.sh mongo-express'"

@@ -1,6 +1,7 @@
 /coverage
 node_modules
 /client/build
+mongo_data
 
 .env
 .vscode
