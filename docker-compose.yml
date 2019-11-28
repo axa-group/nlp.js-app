@@ -14,14 +14,15 @@ services:
     volumes:
       - ${PWD}/mongo_data/data:/data/db
       - ${PWD}/mongo_data/init:/docker-entrypoint-initdb.d/
-      # - ${PWD}/mongo_data/configdb:/data/configdb
+      # it is also possible to map the path "/data/configdb"
+      # use this mapping option just in case is required to setup a fine grained DB configuration
     expose:
       - 27017
     networks:
       - nlpjs
     healthcheck:
+      # it is also possible/valid change the order "mongostat" with the order "mongotop"
       test: ["CMD", "mongostat", "-u", "myadmin", "-p", "myadmin", "--authenticationDatabase=admin", "--json", "-n", "1"]
-      # test: ["CMD", "mongotop", "-u", "myadmin", "-p", "myadmin", "--authenticationDatabase=admin", "--json", "-n", "1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -50,7 +51,9 @@ services:
       start_period: 30s
     depends_on:
       - mongo
-    # entrypoint: "/bin/bash -c 'npm cache clean --force && npm install && sleep 3s && node .'"
+    # it is also possible add the command "npm cache clean --force" before the current commands
+    # this variant forces to erase and re-download the NPM dependencies, so more large process time,
+    # so may allow less sleep time lapse to be required
     entrypoint: "/bin/bash -c 'npm install && sleep 40s && node .'"
   mongo-express:
     image: mongo-express:0.49.0
@@ -74,16 +77,4 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
-    # deploy:
-    #   restart_policy:
-    #     # condition: on-failure
-    #     condition: any
-    #     delay: 10s
-    #     max_attempts: 3
-    #     window: 60s
-    # OK
     entrypoint: "/bin/bash -c 'sleep 40s && tini -p SIGTERM -- /docker-entrypoint.sh mongo-express'"
-    # KO:
-    # entrypoint: "/bin/bash -c 'sleep 40s' && tini -p SIGTERM -- /docker-entrypoint.sh mongo-express"
-    # OK
-    # entrypoint: "tini -p SIGTERM -- /docker-entrypoint.sh mongo-express"
