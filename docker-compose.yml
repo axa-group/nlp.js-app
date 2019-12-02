@@ -17,7 +17,7 @@ services:
       # it is also possible to map the path "/data/configdb"
       # use this mapping option just in case is required to setup a fine grained DB configuration
     expose:
-      - 27017
+      - "27017"
     networks:
       - nlpjs
     healthcheck:
@@ -39,7 +39,7 @@ services:
       - ${PWD}/package.json:/opt/package.json
     working_dir: /opt
     ports:
-      - 3000:3000
+      - "3000:3000"
     networks:
       - nlpjs
     stop_signal: SIGTERM
@@ -65,7 +65,7 @@ services:
       - ME_CONFIG_BASICAUTH_USERNAME=webadmin
       - ME_CONFIG_BASICAUTH_PASSWORD=webadmin
     ports:
-      - 8081:8081
+      - "8081:8081"
     networks:
       - nlpjs
     depends_on:
