@@ -1,6 +1,4 @@
-<div align="center">
-<img src="./screenshots/nlplogo.gif" width="925" height="auto"/>
-</div>
+![NLP Logo](./screenshots/nlplogo.gif)
 
 # NLP.js App
 
@@ -10,11 +8,9 @@ Application to train your agents for bots, done using NLP.js.
 
 34 languages supported: Arabic (ar), Armenian (hy), Bengali (bn), Basque (eu), Catala (ca), Chinese (zh), Czech (cs), Danish (da), Dutch (nl), English (en), Farsi (fa), Finnish (fi), French (fr), Galician (gl), German (de), Greek (el), Hindi (hi), Hungarian (hu), Indonesian (id), Irish (ga), Italian (it), Japanese (ja), Norwegian (no), Portuguese (pt), Romanian (ro), Russian (ru), Slovene (sl), Spanish (es), Swedish (sv), Tagalog (tl), Tamil (ta), Thai (th), Turkish (tr), Ukrainian (uk)
 
-<div align="center">
-<img src="./screenshots/demonlp.gif" width="auto" height="auto"/>
-</div>
+![Demo NLP](./screenshots/demonlp.gif)
 
-### TABLE OF CONTENTS
+## TABLE OF CONTENTS
 
 <!--ts-->
 
@@ -49,7 +45,8 @@ If you want to generate a production version, run `npm run build` at the client 
 Example of application running in port 3010:
 
 ./.env
-```
+
+```shell
 NODE_ENV=development
 MONGO_URL=mongodb://localhost:27017/nlpjs
 LOG_LEVEL=debug
@@ -57,14 +54,16 @@ PORT=3010
 ```
 
 ./client/.env
-```
+
+```shell
 SETTINGS_URL=http://localhost:3010
 API_URL=http://localhost:3010
 PUBLIC_PATH_PREFIX=
 ```
 
 Then, replace "public" folder content:
-```
+
+```shell
 cd client
 npm run build
 cd ..
@@ -77,33 +76,23 @@ npm start
 
 You can create an agent:
 
-<div align="center">
-<img src="./screenshots/create-agent.png" width="auto" height="auto"/>
-</div>
+![Create agent](./screenshots/create-agent.png)
 
 Then create at least one domain:
 
-<div align="center">
-<img src="./screenshots/create-domain.png" width="auto" height="auto"/>
-</div>
+![Create domain](./screenshots/create-domain.png)
 
 Create some entities if you need them:
 
-<div align="center">
-<img src="./screenshots/create-entity.png" width="auto" height="auto"/>
-</div>
+![Create entity](./screenshots/create-entity.png)
 
 Create some intents:
 
-<div align="center">
-<img src="./screenshots/create-intent.png" width="auto" height="auto"/>
-</div>
+![Create intent](./screenshots/create-intent.png)
 
 Train and test:
 
-<div align="center">
-<img src="./screenshots/train.png" width="auto" height="auto"/>
-</div>
+![Train](./screenshots/train.png)
 
 ### Slot filling
 
@@ -111,15 +100,11 @@ It's also possible to check required entities within an intent.
 
 Example of basic slot filling:
 
-<div align="center">
-<img src="./screenshots/slot-filling.png" width="auto" height="auto"/>
-</div>
+![Basic slot filling](./screenshots/slot-filling.png)
 
 Example of multiple slot filling used in the same intent:
 
-<div align="center">
-<img src="./screenshots/slot-filling-2.png" width="auto" height="auto"/>
-</div>
+![Multiple slot filling](./screenshots/slot-filling-2.png)
 
 ## Docker Compose
 
@@ -145,9 +130,13 @@ docker-compose down
 
 It will start the Mongo database, [NLP.js](http://localhost:3000 "NLP.js app at localhost") application and a [Mongo Express](http://localhost:8081 "Mongo-Express at localhost") to allow inspect the collections.
 
+### Little disclaimer
+
+Consider the changes you may apply in the configuration as outlined in point [Installation](#installation) and take in mind the behaviour of Docker Compose as exposed in <https://docs.docker.com/compose/compose-file/#env_file>
+
 ## Software Used
 
-This project is based on the Articulate Project from Samtec, that you can find here: https://github.com/samtecspg/articulate
+This project is based on the Articulate Project from Samtec, that you can find here: <https://github.com/samtecspg/articulate>
 
 ## Contributing
 
@@ -157,7 +146,7 @@ You can read the guide of how to contribute at [Contributing](https://github.com
 
 You can read the Code of Conduct at [Code of Conduct](https://github.com/axa-group/nlp.js-app/blob/master/CODE_OF_CONDUCT.md).
 
-## Who is behind it?
+## Who is behind it
 
 This project is developed by AXA Group Operations Spain S.A.
 
