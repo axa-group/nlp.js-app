@@ -99,7 +99,7 @@ async function startServer() {
 	logger.info(`Server running at: ${server.info.uri}`);
 }
 
-eslint-disable-next-line no-shadow, no-unused-vars
+// eslint-disable-next-line no-shadow, no-unused-vars
 server.ext('onPostStop', server => {
   // onPostStop: called after the connection listeners are stopped
   // see: https://github.com/hapijs/hapi/blob/master/API.md#-serverextevents
