@@ -125,12 +125,16 @@ async function updateById(request) {
     return app.error(400, 'Intent name is mandatory');
   }
 
-  const intentWithTheSameName = await app.database.findOne(Model.Intent, {
-    intentName: data.intentName,
-  });
+  // Check if the intent name as changed.
+  // If yes, check if the intent name is unique.
+  if(intent.intentName !== data.intentName){
+    const intentWithTheSameName = await app.database.findOne(Model.Intent, {
+      intentName: data.intentName,
+    });
 
-  if (intentWithTheSameName) {
-    return app.error(400, 'Intent name already used');
+    if (intentWithTheSameName) {
+      return app.error(400, 'Intent name already used');
+    }
   }
 
   return app.database.updateById(Model.Intent, intentId, data);
