@@ -129,7 +129,7 @@ async function updateById(request) {
     intentName: data.intentName,
   });
 
-  if (intentWithTheSameName) {
+  if (intentWithTheSameName && intentWithTheSameName._id.toString() !== intentId) {
     return app.error(400, 'Intent name already used');
   }
 
