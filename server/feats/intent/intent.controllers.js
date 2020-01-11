@@ -24,6 +24,7 @@
 const app = require('../../app');
 const { Model } = require('../../constants');
 const { AgentStatus } = require('../agent/agent.constants');
+const { updateAgentStatus } = require('../agent/agent.controllers');
 
 /**
  * Adds a new intent.
@@ -32,10 +33,7 @@ const { AgentStatus } = require('../agent/agent.constants');
 async function add(request) {
   const updateData = JSON.parse(request.payload);
   const agentName = updateData.agent;
-  const agent = await app.database.findOne(Model.Agent, { agentName });
-  if (!agent) {
-    return app.error(404, 'The agent was not found');
-  }
+
   const domain = await app.database.findById(Model.Domain, updateData.domain);
   if (!domain) {
     return app.error(404, 'The domain was not found');
@@ -45,17 +43,17 @@ async function add(request) {
     return app.error(400, 'Intent name is mandatory');
   }
 
-  const intentWithTheSameName = await app.database.findOne(Model.Intent, {
+  const agent = await updateAgentStatus({ agentName }, AgentStatus.OutOfDate);
+
+  const itemWithTheSameName = await app.database.findOne(Model.Intent, {
     intentName: updateData.intentName,
+    agent: agent._id.toString()
   });
 
-  if (intentWithTheSameName) {
+  if (itemWithTheSameName) {
     return app.error(400, 'Intent name already used');
   }
 
-  agent.status = AgentStatus.OutOfDate;
-  await app.database.saveItem(agent);
-  updateData.status = AgentStatus.Ready;
   // eslint-disable-next-line no-underscore-dangle
   updateData.agent = agent._id.toString();
   // eslint-disable-next-line no-underscore-dangle
@@ -95,11 +93,7 @@ async function deleteById(request) {
   const intentId = request.params.id;
   const intent = await app.database.findById(Model.Intent, intentId);
   if (intent) {
-    const agent = await app.database.findById(Model.Agent, intent.agent);
-    if (agent) {
-      agent.status = AgentStatus.OutOfDate;
-      await app.database.saveItem(agent);
-    }
+    await updateAgentStatus({ _id: intent.agent }, AgentStatus.OutOfDate);
   }
   app.database.remove(Model.Scenario, { intent: intentId });
   return app.database.removeById(Model.Intent, intentId);
@@ -112,24 +106,26 @@ async function deleteById(request) {
 async function updateById(request) {
   const intentId = request.params.id;
   const intent = await app.database.findById(Model.Intent, intentId);
-  if (intent) {
-    const agent = await app.database.findById(Model.Agent, intent.agent);
-    if (agent) {
-      agent.status = AgentStatus.OutOfDate;
-      await app.database.saveItem(agent);
-    }
+
+  if (!intent) {
+    return app.error(400, 'Intent doesn\'t exist');
   }
+  await updateAgentStatus({ _id: intent.agent }, AgentStatus.OutOfDate);
+
   const data = JSON.parse(request.payload);
 
   if (!data.intentName) {
     return app.error(400, 'Intent name is mandatory');
   }
 
-  const intentWithTheSameName = await app.database.findOne(Model.Intent, {
-    intentName: data.intentName,
+  const itemsWithTheSameName = await app.database.find(Model.Intent, {
+    intentName: new RegExp(data.intentName, 'i'),
+    agent: intent.agent
   });
 
-  if (intentWithTheSameName && intentWithTheSameName._id.toString() !== intentId) {
+  const otherItems = itemsWithTheSameName.filter(sameNameItem => sameNameItem._id.toString() !== intentId);
+
+  if (otherItems.length) {
     return app.error(400, 'Intent name already used');
   }
 
@@ -143,6 +139,7 @@ async function updateById(request) {
 async function addScenario(request) {
   const updateData = JSON.parse(request.payload);
   const agentName = updateData.agent;
+
   let agent = await app.database.findOne(Model.Agent, { agentName });
   if (!agent) {
     agent = await app.database.findById(Model.Agent, agentName);
@@ -154,7 +151,11 @@ async function addScenario(request) {
   if (!domainName) {
     domainName = updateData.domain;
   }
-  let domain = await app.database.findOne(Model.Domain, { domainName });
+
+  let domain = await app.database.findOne(Model.Domain, {
+    domainName,
+    agent: agent._id.toString()
+  });
   if (!domain) {
     domain = await app.database.findById(Model.Domain, domainName);
     if (!domain) {
@@ -164,7 +165,7 @@ async function addScenario(request) {
   const intentName = updateData.intent;
   const intent = await app.database.findOne(Model.Intent, {
     intentName,
-    domain: domain._id,
+    domain: domain._id.toString()
   });
   if (!intent) {
     return app.error(404, 'The intent was not found');
@@ -193,11 +194,8 @@ async function updateScenario(request) {
   if (!scenario) {
     return app.error(404, 'The scenario was not found');
   }
-  const agent = await app.database.findById(Model.Agent, scenario.agent);
-  if (agent) {
-    agent.status = AgentStatus.OutOfDate;
-    await app.database.saveItem(agent);
-  }
+  await updateAgentStatus({ _id: scenario.agent }, AgentStatus.OutOfDate);
+
   // eslint-disable-next-line no-underscore-dangle
   return app.database.updateById(Model.Scenario, scenario._id, updateData);
 }
@@ -213,11 +211,8 @@ async function deleteScenario(request) {
   if (!scenario) {
     return app.error(404, 'The scenario was not found');
   }
-  const agent = await app.database.findById(Model.Agent, scenario.agent);
-  if (agent) {
-    agent.status = AgentStatus.OutOfDate;
-    await app.database.saveItem(agent);
-  }
+  await updateAgentStatus({ _id: scenario.agent }, AgentStatus.OutOfDate);
+
   return app.database.remove(Model.Scenario, intentFilter);
 }
 

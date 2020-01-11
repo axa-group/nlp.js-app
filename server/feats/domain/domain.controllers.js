@@ -24,22 +24,34 @@
 const app = require('../../app');
 const { Model } = require('../../constants');
 const { AgentStatus } = require('../agent/agent.constants');
+const { updateAgentStatus } = require('../agent/agent.controllers');
 
 /**
  * Adds a new domain.
  * @param {object} request Request
  */
 async function add(request) {
-  const updateData = JSON.parse(request.payload);
-  const agentName = updateData.agent;
+  const data = JSON.parse(request.payload);
+  const agentName = data.agent;
   const agent = await app.database.findOne(Model.Agent, { agentName });
+
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
-  updateData.status = AgentStatus.Ready;
+  const agentId = agent._id.toString();
+  const domain = await app.database.findOne(Model.Domain, {
+    agent: agentId,
+    domainName: new RegExp(data.domainName, 'i')
+  });
+
+  if (domain) {
+    return app.error(400, 'Domain name already used');
+  }
+
   // eslint-disable-next-line no-underscore-dangle
-  updateData.agent = agent._id.toString();
-  return app.database.save(Model.Domain, updateData);
+  data.agent = agentId;
+
+  return app.database.save(Model.Domain, data);
 }
 
 /**
@@ -68,12 +80,7 @@ async function deleteById(request) {
   const domainId = request.params.id;
 
   const domain = await app.database.findById(Model.Domain, domainId);
-  const agent = await app.database.findById(Model.Agent, domain.agent);
-
-  if (agent) {
-    agent.status = AgentStatus.OutOfDate;
-    await app.database.saveItem(agent);
-  }
+  await updateAgentStatus({ _id: domain.agent }, AgentStatus.OutOfDate);
   await app.database.remove(Model.Intent, { domain: domainId });
   await app.database.remove(Model.Scenario, { domain: domainId });
 
@@ -87,6 +94,17 @@ async function deleteById(request) {
 async function updateById(request) {
   const domainId = request.params.id;
   const data = JSON.parse(request.payload);
+  const domain = await app.database.findById(Model.Domain, domainId);
+  const itemsWithTheSameName = await app.database.find(Model.Domain, {
+    domainName: new RegExp(data.domainName, 'i'),
+    agent: domain.agent
+  });
+  const otherItems = itemsWithTheSameName.filter(sameNameItem => sameNameItem._id.toString() !== domainId);
+
+  if (otherItems.length) {
+    return app.error(400, 'Domain name already used');
+  }
+  
   return app.database.updateById(Model.Domain, domainId, data);
 }
 

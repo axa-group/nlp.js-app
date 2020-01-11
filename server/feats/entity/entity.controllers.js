@@ -25,24 +25,27 @@ const Logger = require('../../common/logger');
 const app = require('../../app');
 const { Model } = require('../../constants');
 const { AgentStatus } = require('../agent/agent.constants');
+const { updateAgentStatus } = require('../agent/agent.controllers');
 
 const logger = Logger.getInstance();
 
 async function add(request) {
   const updateData = JSON.parse(request.payload);
   const agentName = updateData.agent;
-  const agent = await app.database.findOne(Model.Agent, { agentName });
-  if (!agent) {
-    return app.error(404, 'The agent was not found');
+  const agent = await updateAgentStatus({ agentName }, AgentStatus.OutOfDate);
+
+  const agentId = agent._id.toString();
+  const entity = await app.database.findOne(Model.Entity, {
+    agent: agentId,
+    entityName: new RegExp(updateData.entityName, 'i')
+  });
+
+  if (entity) {
+    return app.error(400, 'Entity name already used');
   }
-  agent.status = AgentStatus.OutOfDate;
-  app.database.saveItem(agent);
-  updateData.status = AgentStatus.Ready;
   // eslint-disable-next-line no-underscore-dangle
-  updateData.agent = agent._id.toString();
-  if (!updateData.regex) {
-    delete updateData.regex;
-  }
+  updateData.agent = agentId;
+
   return app.database.save(Model.Entity, updateData);
 }
 
@@ -118,13 +121,8 @@ async function deleteById(request) {
   if (!entity) {
     return app.error(404, 'The entity was not found');
   }
-  const agent = await app.database.findById(Model.Agent, entity.agent);
 
-  if (agent) {
-    agent.status = AgentStatus.OutOfDate;
-    await app.database.saveItem(agent);
-  }
-
+  await updateAgentStatus({ _id: entity.agent }, AgentStatus.OutOfDate);
   await removeEntityFromIntents(entity);
   await removeEntityFromScenarios(entity);
 
@@ -169,8 +167,8 @@ async function findIntentsByEntityId(request) {
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
-  const intents = await app.database.find('intent', { agent: agentId });
-  const domains = await app.database.find('domain', { agent: agentId });
+  const intents = await app.database.find(Model.Intent, { agent: agentId });
+  const domains = await app.database.find(Model.Domain, { agent: agentId });
   const result = [];
   for (let i = 0; i < intents.length; i += 1) {
     const intent = intents[i];
@@ -183,18 +181,86 @@ async function findIntentsByEntityId(request) {
   return result;
 }
 
+async function updateDependingScenarios(agentId, oldEntityName, newEntityName) {
+  console.log('updateDependingScenarios agentId', agentId,' oldEntityName',oldEntityName,' newEntityName',newEntityName);
+  const dependingScenarios = await app.database.find(Model.Scenario, {
+    'slots.entity': oldEntityName,
+    agent: agentId
+  });
+  logger.info(`Depending scenarios... (${dependingScenarios.length})`);
+  if (dependingScenarios) {
+    for (const scenario of dependingScenarios) {
+      scenario.slots.forEach(slot => {
+        if (slot.entity === oldEntityName) {
+          slot.entity = newEntityName;
+        }
+      });
+      logger.info(`Updated scenario occurrence "${scenario.scenarioName}"`);
+      await app.database.updateById(Model.Scenario, scenario._id.toString(), scenario);
+    }
+  }
+}
+
+async function updateDependingIntents(entityId, newEntityName) {
+  const dependingIntents = await app.database.find(Model.Intent, {
+    'examples.entities.entityId': entityId
+  });
+
+  logger.info(`Depending intents... (${dependingIntents.length})`);
+  if (dependingIntents) {
+    for(const dependingIntent of dependingIntents) {
+      if (intentContainsEntity(dependingIntent, entityId)) {
+        dependingIntent.examples.forEach(example => {
+          if (example.entities && example.entities.length) {
+            example.entities.forEach(entityOccurrence => {
+              if (entityOccurrence.entityId === entityId) {
+                logger.info(`Updated entity occurrence in intent "${dependingIntent.intentName}"`);
+                entityOccurrence.entity = newEntityName;
+              }
+            });
+          }
+        });
+        const dependingIntentId = dependingIntent._id.toString();
+        await app.database.updateById(Model.Intent, dependingIntentId, dependingIntent);
+      }
+    }
+  }
+}
+
 async function updateById(request) {
   const entityId = request.params.id;
   const entity = await app.database.findById(Model.Entity, entityId);
-  if (entity) {
-    const agent = await app.database.findById(Model.Agent, entity.agent);
-    if (agent) {
-      agent.status = AgentStatus.OutOfDate;
-      await app.database.saveItem(agent);
-    }
+
+  if (!entity) {
+    return app.error(404, 'The entity was not found');
   }
+  const agent = await app.database.findById(Model.Agent, entity.agent);
+
   const data = JSON.parse(request.payload);
-  return app.database.updateById(Model.Entity, entityId, data);
+  const newEntityName = data.entityName;
+  const oldEntityName = entity.entityName;
+  const agentId = agent._id.toString();
+  logger.info(`Updating entity name: "${oldEntityName}" to "${newEntityName}"`);
+
+  await updateAgentStatus({ _id: agentId }, AgentStatus.OutOfDate);
+
+  const itemsWithTheSameName = await app.database.find(Model.Entity, {
+    entityName: new RegExp(newEntityName, 'i'),
+    agent: agentId
+  });
+  const otherItems = itemsWithTheSameName.filter(sameNameItem => sameNameItem._id.toString() !== entityId);
+
+  if (otherItems.length) {
+    if (agent.status === AgentStatus.OutOfDate) {
+      await updateAgentStatus({ _id: agentId }, agent.status);
+    }
+    return app.error(400, 'Entity name already used');
+  }
+
+  await updateDependingIntents(entityId, newEntityName);
+  await updateDependingScenarios(agentId, oldEntityName, newEntityName);
+
+  return await app.database.updateById(Model.Entity, entityId, data);
 }
 
 module.exports = {

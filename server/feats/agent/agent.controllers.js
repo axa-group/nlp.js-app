@@ -396,20 +396,23 @@ async function train(request) {
 /**
  * Method that performs replacements of entity values in the answer
  * @param answer incoming from nlp.js result)
+ * @param agentId to filter by agent
  * @return {Promise<String>}
  */
-async function processSlots(answer) {
+async function processSlots(answer, agentId) {
 	const { srcAnswer, entities } = answer;
 
 	try {
 		const intent = await app.database.findOne(Model.Intent, {
-			'intentName': answer.intent
+			intentName: answer.intent,
+      agent: agentId
 		});
 
 		if (intent) {
 			const intentId = intent._id.toString();
 			const scenario = await app.database.findOne(Model.Scenario, {
-				'intent': intentId
+				intent: intentId,
+        agent: agentId
 			});
 
 			let processedAnswer = srcAnswer;
@@ -421,7 +424,7 @@ async function processSlots(answer) {
 
 				if (slotKeyName.includes(slot.slotName)) {
 					logger.debug(`Replacing ${slotKeyName} by ${slot.slotName}`);
-					processedAnswer = processedAnswer.replace(new RegExp(slotKeyName, "gi"), slot.slotName);
+					processedAnswer = processedAnswer.replace(new RegExp(slotKeyName, 'gi'), slot.slotName);
 				}
 
 				let entity;
@@ -431,7 +434,7 @@ async function processSlots(answer) {
 
 					if (entity) {
 						logger.debug(`Replacing ${slotKeyValue} by ${entity.option}`);
-						processedAnswer = processedAnswer.replace(new RegExp(slotKeyValue, "gi"), entity.option);
+						processedAnswer = processedAnswer.replace(new RegExp(slotKeyValue, 'gi'), entity.option);
 					}
 				}
 
@@ -440,7 +443,7 @@ async function processSlots(answer) {
 
 					if (entity) {
 						logger.debug(`Replacing ${slotKeySourceValue} by ${entity.sourceText}`);
-						processedAnswer = processedAnswer.replace(new RegExp(slotKeySourceValue, "gi"), entity.sourceText);
+						processedAnswer = processedAnswer.replace(new RegExp(slotKeySourceValue, 'gi'), entity.sourceText);
 					}
 				}
 			});
@@ -520,7 +523,7 @@ async function converse(request) {
     answer.answer = fallbackResponse;
     answer.textResponse = fallbackResponse;
   } else if (answer.srcAnswer && isUsingSlots(answer.srcAnswer)) {
-    answer.textResponse = await processSlots(answer);
+    answer.textResponse = await processSlots(answer, agentId);
   } else {
     answer.textResponse = answer.answer;
   }
@@ -610,6 +613,18 @@ async function exportContent(request, h) {
   return responseBundle;
 }
 
+async function updateAgentStatus(query, newStatus) {
+	const agent = await app.database.findOne(Model.Agent, query);
+
+	console.log('agent > updateAgentStatus', agent);
+
+	if (!agent) {
+		return app.error(404, 'The agent was not found');
+	}
+	agent.status = newStatus;
+	return app.database.saveItem(agent);
+}
+
 module.exports = {
   findOrError,
   findAll,
@@ -630,5 +645,6 @@ module.exports = {
   findEntityByIdByAgentId,
   train,
   converse,
-  exportContent
+  exportContent,
+  updateAgentStatus
 };

@@ -22,8 +22,7 @@
  */
 
 const app = require('../../app');
-
-const modelName = 'session';
+const { Model } = require('../../constants');
 
 /**
  * Add acontext by id.
@@ -36,7 +35,7 @@ async function addById(request) {
     return app.error(404, 'The agent was not found');
   }
   const { sessionId } = request.query;
-  let sessionAny = await app.database.findOne(modelName, {
+  let sessionAny = await app.database.findOne(Model.Session, {
     'any.agentId': agentId,
     'any.sessionId': sessionId,
   });
@@ -49,7 +48,7 @@ async function addById(request) {
       },
     };
   }
-  return app.database.save(modelName, sessionAny.any);
+  return app.database.save(Model.Session, sessionAny.any);
 }
 
 /**
@@ -58,12 +57,12 @@ async function addById(request) {
  */
 async function findById(request) {
   const agentId = request.params.id;
-  const agent = app.database.findById('agent', agentId);
+  const agent = app.database.findById(Model.Agent, agentId);
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
   const { sessionId } = request.query;
-  const sessionAny = await app.database.findOne('session', {
+  const sessionAny = await app.database.findOne(Model.Session, {
     'any.agentId': agentId,
     'any.sessionId': sessionId,
   });
@@ -83,12 +82,12 @@ async function findById(request) {
  */
 async function deleteById(request) {
   const agentId = request.params.id;
-  const agent = app.database.findById('agent', agentId);
+  const agent = app.database.findById(Model.Agent, agentId);
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
   const { sessionId } = request.query;
-  return app.database.remove(modelName, {
+  return app.database.remove(Model.Session, {
     'any.agentId': agentId,
     'any.sessionId': sessionId,
   });
