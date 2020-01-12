@@ -240,25 +240,28 @@ async function updateById(request) {
   const newEntityName = data.entityName;
   const oldEntityName = entity.entityName;
   const agentId = agent._id.toString();
-  logger.info(`Updating entity name: "${oldEntityName}" to "${newEntityName}"`);
 
   await updateAgentStatus({ _id: agentId }, AgentStatus.OutOfDate);
 
-  const itemsWithTheSameName = await app.database.find(Model.Entity, {
-    entityName: new RegExp(newEntityName, 'i'),
-    agent: agentId
-  });
-  const otherItems = itemsWithTheSameName.filter(sameNameItem => sameNameItem._id.toString() !== entityId);
+  if (oldEntityName !== newEntityName) {
+    logger.info(`Updating entity name: "${oldEntityName}" to "${newEntityName}"`);
 
-  if (otherItems.length) {
-    if (agent.status === AgentStatus.OutOfDate) {
-      await updateAgentStatus({ _id: agentId }, agent.status);
+    const itemsWithTheSameName = await app.database.find(Model.Entity, {
+      entityName: new RegExp(newEntityName, 'i'),
+      agent: agentId
+    });
+    const otherItems = itemsWithTheSameName.filter(sameNameItem => sameNameItem._id.toString() !== entityId);
+  
+    if (otherItems.length) {
+      if (agent.status === AgentStatus.OutOfDate) {
+        await updateAgentStatus({ _id: agentId }, agent.status);
+      }
+      return app.error(400, 'Entity name already used');
     }
-    return app.error(400, 'Entity name already used');
+  
+    await updateDependingIntents(entityId, newEntityName);
+    await updateDependingScenarios(agentId, oldEntityName, newEntityName);
   }
-
-  await updateDependingIntents(entityId, newEntityName);
-  await updateDependingScenarios(agentId, oldEntityName, newEntityName);
 
   return await app.database.updateById(Model.Entity, entityId, data);
 }

@@ -94,17 +94,21 @@ async function deleteById(request) {
 async function updateById(request) {
   const domainId = request.params.id;
   const data = JSON.parse(request.payload);
-  const domain = await app.database.findById(Model.Domain, domainId);
-  const itemsWithTheSameName = await app.database.find(Model.Domain, {
-    domainName: new RegExp(data.domainName, 'i'),
-    agent: domain.agent
-  });
-  const otherItems = itemsWithTheSameName.filter(sameNameItem => sameNameItem._id.toString() !== domainId);
 
-  if (otherItems.length) {
-    return app.error(400, 'Domain name already used');
-  }
+  const domain = await app.database.findById(Model.Domain, domainId);
+
+  if (data.domainName !== domain.domainName) {
+    const itemsWithTheSameName = await app.database.find(Model.Domain, {
+      domainName: new RegExp(data.domainName, 'i'),
+      agent: domain.agent
+    });
+    const otherItems = itemsWithTheSameName.filter(sameNameItem => sameNameItem._id.toString() !== domainId);
   
+    if (otherItems.length) {
+      return app.error(400, 'Domain name already used');
+    }
+  }
+
   return app.database.updateById(Model.Domain, domainId, data);
 }
 

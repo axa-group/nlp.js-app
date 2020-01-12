@@ -118,15 +118,17 @@ async function updateById(request) {
     return app.error(400, 'Intent name is mandatory');
   }
 
-  const itemsWithTheSameName = await app.database.find(Model.Intent, {
-    intentName: new RegExp(data.intentName, 'i'),
-    agent: intent.agent
-  });
-
-  const otherItems = itemsWithTheSameName.filter(sameNameItem => sameNameItem._id.toString() !== intentId);
-
-  if (otherItems.length) {
-    return app.error(400, 'Intent name already used');
+  if (data.intentName !== intent.intentName) {
+    const itemsWithTheSameName = await app.database.find(Model.Intent, {
+      intentName: new RegExp(data.intentName, 'i'),
+      agent: intent.agent
+    });
+  
+    const otherItems = itemsWithTheSameName.filter(sameNameItem => sameNameItem._id.toString() !== intentId);
+  
+    if (otherItems.length) {
+      return app.error(400, 'Intent name already used');
+    }
   }
 
   return app.database.updateById(Model.Intent, intentId, data);
