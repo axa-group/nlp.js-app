@@ -67,7 +67,7 @@ module.exports = {
       id: EntityModel.id.required().description('Id of the entity'),
     }))(),
     payload: (() => ({
-      entityName: EntityModel.entityName,
+      entityName: EntityModel.entityName.required(),
       uiColor: EntityModel.uiColor,
       regex: EntityModel.regex.allow('').allow(null),
       type: EntityModel.type

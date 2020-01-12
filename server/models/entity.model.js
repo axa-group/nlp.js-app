@@ -33,6 +33,6 @@ module.exports = {
 	entityName: Joi.string().trim(),
 	uiColor: Joi.string().trim(),
 	examples: Joi.array().items(ExampleModel),
-	regex: Joi.string().trim(),
+	regex: Joi.string().trim().allow('').allow(null),
 	type: Joi.string().trim()
 };

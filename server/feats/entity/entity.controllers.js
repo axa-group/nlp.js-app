@@ -115,12 +115,12 @@ async function removeEntityFromScenarios(entity) {
 async function deleteById(request) {
   const entityId = request.params.id;
   const entity = await app.database.findById(Model.Entity, entityId);
-
-  logger.info(`Deleting entity ${entity.entityName} (${entityId})...`);
+  logger.info(`Trying to delete entityId ${entityId}...`);
 
   if (!entity) {
     return app.error(404, 'The entity was not found');
   }
+  logger.info(`Deleting entity ${entity.entityName} (${entityId})...`);
 
   await updateAgentStatus({ _id: entity.agent }, AgentStatus.OutOfDate);
   await removeEntityFromIntents(entity);
