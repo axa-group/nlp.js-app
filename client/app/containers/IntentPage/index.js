@@ -356,7 +356,7 @@ export class IntentPage extends React.PureComponent { // eslint-disable-line rea
   submitForm(evt) {
     if (evt !== undefined && evt.preventDefault) evt.preventDefault();
     this.state.clickedSave = true;
-    
+
     if (!this.props.intent.domain) {
       return Alert.warning(messages.checkDomain.defaultMessage, {
         position: 'bottom'
@@ -528,6 +528,13 @@ export class IntentPage extends React.PureComponent { // eslint-disable-line rea
                 placeholder={messages.intentNamePlaceholder.defaultMessage}
                 value={intent.intentName}
                 onChange={(evt) => this.onChangeInput(evt, 'intentName')}
+                required
+              />
+              <FormTextInput
+                label={messages.actionDescription}
+                placeholder={messages.actionDescriptionPlaceholder.defaultMessage}
+                value={intent.actionDescription}
+                onChange={(evt) => this.onChangeInput(evt, 'actionDescription')}
                 required
               />
               <FormTextInput

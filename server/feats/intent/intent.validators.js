@@ -53,6 +53,7 @@ module.exports = {
       intentName: IntentModel.intentName
         .required()
         .error(new Error('The intent name is required')),
+      actionDescription: IntentModel.actionDescription,
       useWebhook: IntentModel.useWebhook
         .required()
         .error(
@@ -121,6 +122,7 @@ module.exports = {
     }))(),
     payload: (() => ({
       intentName: IntentModel.intentName,
+      actionDescription: IntentModel.actionDescription,
       useWebhook: IntentModel.useWebhook,
       usePostFormat: IntentModel.usePostFormat,
       examples: Joi.array()

@@ -39,6 +39,14 @@ export default defineMessages({
     id: 'containers.IntentPage.create_intent.intent_name_placeholder',
     defaultMessage: 'Type a name here',
   },
+  actionDescription: {
+    id: 'containers.IntentPage.create_intent.actionDescription',
+    defaultMessage: 'Action description',
+  },
+  actionDescriptionPlaceholder: {
+    id: 'containers.IntentPage.create_intent.action_description_placeholder',
+    defaultMessage: 'Type the description of the action here, for example "To ask for a resource"',
+  },
   userSaysTitle: {
     id: 'containers.IntentPage.create_intent.user_says',
     defaultMessage: 'User Says',
