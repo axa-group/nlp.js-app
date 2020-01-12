@@ -22,9 +22,12 @@
  */
 
 const app = require('../../app');
+const Logger = require('../../common/logger');
 const { Model } = require('../../constants');
 const { AgentStatus } = require('../agent/agent.constants');
 const { updateAgentStatus } = require('../agent/agent.controllers');
+
+const logger = Logger.getInstance();
 
 /**
  * Adds a new domain.
@@ -87,6 +90,24 @@ async function deleteById(request) {
   return app.database.removeById(Model.Domain, domainId);
 }
 
+async function updateDependingIntents(agentId, domainId, newDomainName) {
+  const dependingIntents = await app.database.find(Model.Intent, {
+    domain: domainId,
+    agent: agentId
+  });
+
+  logger.info(`Depending intents... (${dependingIntents.length})`);
+
+  if (dependingIntents) {
+    for (const dependingIntent of dependingIntents) {
+      const dependingIntentId = dependingIntent._id.toString();
+
+      dependingIntent.domainName = newDomainName;
+      await app.database.updateById(Model.Intent, dependingIntentId, dependingIntent);
+    }
+  }
+}
+
 /**
  * Update domain by id.
  * @param {object} request Request
@@ -94,12 +115,14 @@ async function deleteById(request) {
 async function updateById(request) {
   const domainId = request.params.id;
   const data = JSON.parse(request.payload);
+  const newDomainName = data.domainName;
 
   const domain = await app.database.findById(Model.Domain, domainId);
 
-  if (data.domainName !== domain.domainName) {
+  if (newDomainName !== domain.domainName) {
+    logger.info(`updateDependingIntent agentId ${domain.agent} old: ${domain.domainName} new: ${newDomainName}`);
     const itemsWithTheSameName = await app.database.find(Model.Domain, {
-      domainName: new RegExp(data.domainName, 'i'),
+      domainName: new RegExp(newDomainName, 'i'),
       agent: domain.agent
     });
     const otherItems = itemsWithTheSameName.filter(sameNameItem => sameNameItem._id.toString() !== domainId);
@@ -107,6 +130,7 @@ async function updateById(request) {
     if (otherItems.length) {
       return app.error(400, 'Domain name already used');
     }
+    await updateDependingIntents(domain.agent, domainId, newDomainName);
   }
 
   return app.database.updateById(Model.Domain, domainId, data);

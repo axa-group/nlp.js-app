@@ -182,7 +182,7 @@ async function findIntentsByEntityId(request) {
 }
 
 async function updateDependingScenarios(agentId, oldEntityName, newEntityName) {
-  console.log('updateDependingScenarios agentId', agentId,' oldEntityName',oldEntityName,' newEntityName',newEntityName);
+  logger.info(`updateDependingScenarios agentId ${agentId} old: ${oldEntityName} new: ${newEntityName}`);
   const dependingScenarios = await app.database.find(Model.Scenario, {
     'slots.entity': oldEntityName,
     agent: agentId

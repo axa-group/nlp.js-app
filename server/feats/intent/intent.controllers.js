@@ -22,9 +22,12 @@
  */
 
 const app = require('../../app');
+const Logger = require('../../common/logger');
 const { Model } = require('../../constants');
 const { AgentStatus } = require('../agent/agent.constants');
 const { updateAgentStatus } = require('../agent/agent.controllers');
+
+const logger = Logger.getInstance();
 
 /**
  * Adds a new intent.
