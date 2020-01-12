@@ -112,10 +112,14 @@ server.ext('onPostStop', server => {
 			process.exit(1);
 		});
 });
-
+let isStopping = false;
 async function shutDown() {
-	const lapse = process.env.STOP_SERVER_WAIT_SECONDS ? process.env.STOP_SERVER_WAIT_SECONDS : 5;
-	await server.stop({ timeout: lapse * 1000 });
+	if (!isStopping) {
+		logger.info('shutDown...');
+		isStopping = true;
+		const lapse = process.env.STOP_SERVER_WAIT_SECONDS ? process.env.STOP_SERVER_WAIT_SECONDS : 5;
+		await server.stop({ timeout: lapse * 1000 });
+	}
 }
 
 process.on('SIGTERM', shutDown);
