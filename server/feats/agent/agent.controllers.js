@@ -616,7 +616,7 @@ async function exportContent(request, h) {
 async function updateAgentStatus(query, newStatus) {
 	const agent = await app.database.findOne(Model.Agent, query);
 
-	console.log('agent > updateAgentStatus', agent);
+	logger.debug(`agent > updateAgentStatus ${newStatus}`);
 
 	if (!agent) {
 		return app.error(404, 'The agent was not found');
