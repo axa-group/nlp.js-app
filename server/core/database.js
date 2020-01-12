@@ -35,6 +35,7 @@ class Database {
 	constructor(url) {
 		this.url = url || process.env.MONGO_URL_URI || process.env.MONGO_URL;
 		mongoose.set('useFindAndModify', false);
+		mongoose.set('useUnifiedTopology', true);
 		this.joigoose = Joigoose(mongoose);
 		this.schemas = {};
 		this.schemas.default = mongoose.Schema({ any: Object });
@@ -55,34 +56,34 @@ class Database {
 		});
 	}
 
-  /**
-   * Disconnect from the database using mongoose.
-   * @returns {Promise} Promise for disconnecting.
-   */
-  disconnect() {
-    return new Promise((resolve, reject) => {
-      const finalLambda = err => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      };
-      // mongoose.disconnect(finalLambda);
-      mongoose.connection.close(finalLambda);
-    });
-  }
+	/**
+	 * Disconnect from the database using mongoose.
+	 * @returns {Promise} Promise for disconnecting.
+	 */
+	disconnect() {
+		return new Promise((resolve, reject) => {
+			const finalLambda = err => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve();
+				}
+			};
+			// mongoose.disconnect(finalLambda);
+			mongoose.connection.close(finalLambda);
+		});
+	}
 
-  /**
-   * Add a mongoose schema based on the Joi schema.
-   * @param {string} name Schema name.
-   * @param {object} joiSchema Joi Schema.
-   */
-  addSchema(name, joiSchema) {
-    this.schemas[name] = new mongoose.Schema(this.joigoose.convert(joiSchema));
-  }
+	/**
+	 * Add a mongoose schema based on the Joi schema.
+	 * @param {string} name Schema name.
+	 * @param {object} joiSchema Joi Schema.
+	 */
+	addSchema(name, joiSchema) {
+		this.schemas[name] = new mongoose.Schema(this.joigoose.convert(joiSchema));
+	}
 
-  /**
+	/**
 	 * Add a mongoose schema based on the Joi schema.
 	 * @param {string} name Schema name.
 	 * @param {object} joiSchema Joi Schema.
