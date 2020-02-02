@@ -229,8 +229,13 @@ class NlpjsTrainer {
 		this.addIntents(manager, data);
 		this.addAnswers(manager, data);
 		this.addSlots(manager, data);
-		const result = await this.trainProcess(manager.export());
-		manager.import(result);
+
+		await manager.train();
+
+		const result = manager.export();
+		// TO-DO: adapt v4 to work in background
+		// const result = await this.trainProcess(manager);
+		// manager.import(result);
 		return result;
 	}
 
