@@ -23,7 +23,11 @@
 
 const childProcess = require('child_process');
 const { NlpManager } = require('node-nlp');
+
 const { useNeuralSettings } = require('./nlpjs-settings');
+const Logger = require('../common/logger');
+
+const logger = Logger.getInstance();
 
 /**
  * Class for a NLP.JS trainer
@@ -42,9 +46,11 @@ class NlpjsTrainer {
 	 * @param {object} data Training data.
 	 */
 	addEntities(manager, data) {
+		logger.debug('adding entities...');
 		data.entities.forEach(entity => {
 			const { entityName } = entity;
 			if (entity.type === 'enum') {
+				logger.debug(`adding named entity ${entityName}, ${entity.examples.length} examples`);
 				for (let i = 0; i < entity.examples.length; i += 1) {
 					const example = entity.examples[i];
 					const optionName = example.value;
@@ -56,6 +62,7 @@ class NlpjsTrainer {
 				}
 			} else if (entity.type === 'regex') {
 				const languages = entity.languages || manager.settings.languages;
+				logger.debug(`adding regex entity ${entityName} (${languages})`);
 				manager.addRegexEntity(entityName, languages, entity.regex);
 			}
 		});
@@ -112,14 +119,17 @@ class NlpjsTrainer {
 	 * @param {object} data Training data.
 	 */
 	addIntents(manager, data) {
+		logger.debug(`adding intents... ${data.intents.length}`);
 		data.intents.forEach(intent => {
 			const domain = this.getDomain(intent.domain, data);
+			const language = domain.language || manager.settings.languages[0];
 			const { intentName } = intent;
-			manager.assignDomain(domain.language || manager.settings.languages[0], intentName, domain.domainName);
+			manager.assignDomain(language, intentName, domain.domainName);
+
+			logger.trace(`assigning intent ${intentName} (${language}) to domain ${domain.domainName}`);
 
 			for (let i = 0; i < intent.examples.length; i += 1) {
 				const example = intent.examples[i];
-				const language = domain.language || manager.settings.languages[0];
 				const utterance = example.userSays;
 				manager.addDocument(language, utterance, intentName);
 			}
@@ -132,11 +142,13 @@ class NlpjsTrainer {
 	 * @param {object} data Training data.
 	 */
 	addAnswers(manager, data) {
+		logger.debug(`adding answers...`);
 		data.scenarios.forEach(scenario => {
 			const domain = this.getDomain(scenario.domain, data);
 			const language = domain.language || manager.settings.languages[0];
 			const intentName = this.getIntentName(scenario.intent, data);
 
+			logger.trace(`adding answers (${scenario.intentResponses.length}) to intent ${intentName} (${language})`);
 			for (let i = 0; i < scenario.intentResponses.length; i += 1) {
 				const answer = scenario.intentResponses[i];
 				manager.addAnswer(language, intentName, answer);
@@ -150,6 +162,7 @@ class NlpjsTrainer {
 	 * @param {object} data Training data.
 	 */
 	addSlots(manager, data) {
+		logger.debug(`adding slots...`);
 		data.scenarios.forEach(scenario => {
 			const domain = this.getDomain(scenario.domain, data);
 			const language = domain.language || manager.settings.languages[0];
@@ -157,8 +170,10 @@ class NlpjsTrainer {
 			if (scenario.slots && scenario.slots.length > 0) {
 				scenario.slots.forEach(slot => {
 					if (slot.isRequired) {
-						const managerSlot = manager.slotManager.getSlot(intentName, slot.entity);
+						const slotManager = manager.container.get('SlotManager');
+						const managerSlot = slotManager.getSlot(intentName, slot.entity);
 						if (managerSlot) {
+							logger.debug(`using slot for intent ${intentName} for entity ${slot.entity}`);
 							const texts = managerSlot.locales;
 							const text = slot.textPrompts[0];
 							texts[language] = text;
@@ -166,7 +181,8 @@ class NlpjsTrainer {
 							const texts = {};
 							const text = slot.textPrompts[0];
 							texts[language] = text;
-							manager.slotManager.addSlot(intentName, slot.entity, true, texts);
+							logger.debug(`adding slot to intent ${intentName} for entity ${slot.entity}`);
+							slotManager.addSlot(intentName, slot.entity, true, texts);
 						}
 					}
 				});
@@ -209,12 +225,17 @@ class NlpjsTrainer {
 		});
 		// eslint-disable-next-line no-underscore-dangle
 		this.managers[data.agent._id] = manager;
+
 		this.addEntities(manager, data);
 		this.addIntents(manager, data);
 		this.addAnswers(manager, data);
 		this.addSlots(manager, data);
-		const result = await this.trainProcess(manager.export());
+
+		const json = manager.export();
+		const result = await this.trainProcess(json);
+
 		manager.import(result);
+
 		return result;
 	}
 
@@ -239,6 +260,7 @@ class NlpjsTrainer {
 		if (model.nerManager && !model.nerManager.namedEntities) {
 			model.nerManager.namedEntities = {};
 		}
+		logger.debug(`importing model in manager ${agentId}`);
 		this.managers[agentId].import(model);
 	}
 

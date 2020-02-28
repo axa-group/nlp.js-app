@@ -33,7 +33,9 @@ module.exports = {
 	domain: Joi.string().trim(),
 	domainName: Joi.string().trim(),
 	intentName: Joi.string().trim(),
-	actionDescription: Joi.string().optional().trim(),
+	actionDescription: Joi.string()
+		.optional()
+		.trim(),
 	examples: Joi.array().items(ExampleIntentModel),
 	useWebhook: Joi.boolean(),
 	usePostFormat: Joi.boolean()

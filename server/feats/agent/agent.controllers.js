@@ -353,15 +353,22 @@ async function train(request) {
   const agentId = request.params.id;
 
   if (!app.existsTraining(agentId)) {
+    logger.debug(`training of agent ${agentId} is not in memory, getting training from db...`);
     const training = await app.database.findOne(Model.Training, {
       'any.agentId': agentId
     });
     if (training) {
       const model = JSON.parse(training.any.model);
       app.loadTraining(agentId, model);
+    } else {
+      logger.debug('there\'s no training in db');
     }
+  } else {
+    logger.debug(`reusing training from agent ${agentId} (already in memory)`);
   }
+
   const agent = await app.database.findById(Model.Agent, agentId);
+
   if (!agent) {
     return app.error(404, 'The agent was not found');
   }
@@ -377,20 +384,29 @@ async function train(request) {
     scenarios,
     entities
   };
+
   if (agent.status !== AgentStatus.Training) {
     agent.status = AgentStatus.Training;
     app.database.saveItem(agent);
-    let model = await app.train(data);
-    if (model) {
-      await app.database.deleteMany(Model.Training, { 'any.agentId': agentId });
-      model = JSON.stringify(model);
-      await app.database.save(Model.Training, { any: { agentId, model } });
-    }
-    agent.lastTraining = new Date();
-    agent.status = AgentStatus.Ready;
-    return app.database.saveItem(agent);
+    
+    await trainAsync(data, agent, agentId);
   }
   return {};
+}
+
+async function trainAsync(data, agent, agentId) {
+  logger.debug(`starting async training...`);
+  let model = await app.train(data);
+  logger.debug(`end training`);
+  if (model) {
+    await app.database.deleteMany(Model.Training, { 'any.agentId': agentId });
+    model = JSON.stringify(model);
+    logger.debug(`replacing training in db`);
+    await app.database.save(Model.Training, { any: { agentId, model } });
+  }
+  agent.lastTraining = new Date();
+  agent.status = AgentStatus.Ready;
+  return app.database.saveItem(agent);
 }
 
 /**

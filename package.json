@@ -1,6 +1,6 @@
 {
   "name": "nlpjs-app",
-  "version": "1.4.7",
+  "version": "1.5.0",
   "description": "Application to help you train your agents for bots, done using NLP.js.",
   "main": "./server/index.js",
   "scripts": {
@@ -30,7 +30,7 @@
     "url": "https://github.com/axa-group/nlp.js-app.git"
   },
   "dependencies": {
-    "@hapi/hapi": "^18.4.0",
+    "@hapi/hapi": "^18.4.1",
     "braces": "^2.3.2",
     "dotenv": "^6.1.0",
     "hapi-swagger": "^9.1.2",
@@ -40,7 +40,7 @@
     "joigoose": "^4.0.8",
     "lodash": "^4.17.15",
     "mongoose": "^5.8.7",
-    "node-nlp": "^3.10.2",
+    "node-nlp": "^4.2.0",
     "pino": "^5.13.4",
     "pino-pretty": "^3.2.2",
     "vision": "^5.4.4"
