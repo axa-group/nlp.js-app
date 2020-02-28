@@ -119,14 +119,14 @@ class NlpjsTrainer {
 	 * @param {object} data Training data.
 	 */
 	addIntents(manager, data) {
-		logger.debug(`adding intents...`);
+		logger.debug(`adding intents... ${data.intents.length}`);
 		data.intents.forEach(intent => {
 			const domain = this.getDomain(intent.domain, data);
 			const language = domain.language || manager.settings.languages[0];
 			const { intentName } = intent;
 			manager.assignDomain(language, intentName, domain.domainName);
 
-			logger.debug(`assigning intent ${intentName} (${language}) to domain ${domain.domainName}`);
+			logger.trace(`assigning intent ${intentName} (${language}) to domain ${domain.domainName}`);
 
 			for (let i = 0; i < intent.examples.length; i += 1) {
 				const example = intent.examples[i];
@@ -148,7 +148,7 @@ class NlpjsTrainer {
 			const language = domain.language || manager.settings.languages[0];
 			const intentName = this.getIntentName(scenario.intent, data);
 
-			logger.debug(`adding answers (${scenario.intentResponses.length}) to intent ${intentName} (${language})`);
+			logger.trace(`adding answers (${scenario.intentResponses.length}) to intent ${intentName} (${language})`);
 			for (let i = 0; i < scenario.intentResponses.length; i += 1) {
 				const answer = scenario.intentResponses[i];
 				manager.addAnswer(language, intentName, answer);
@@ -225,17 +225,17 @@ class NlpjsTrainer {
 		});
 		// eslint-disable-next-line no-underscore-dangle
 		this.managers[data.agent._id] = manager;
+
 		this.addEntities(manager, data);
 		this.addIntents(manager, data);
 		this.addAnswers(manager, data);
 		this.addSlots(manager, data);
 
-		await manager.train();
+		const json = manager.export();
+		const result = await this.trainProcess(json);
 
-		const result = manager.export();
-		// TO-DO: adapt v4 to work in background
-		// const result = await this.trainProcess(manager);
-		// manager.import(result);
+		manager.import(result);
+
 		return result;
 	}
 
@@ -260,6 +260,7 @@ class NlpjsTrainer {
 		if (model.nerManager && !model.nerManager.namedEntities) {
 			model.nerManager.namedEntities = {};
 		}
+		logger.debug(`importing model in manager ${agentId}`);
 		this.managers[agentId].import(model);
 	}
 
