@@ -30,7 +30,7 @@
     "url": "https://github.com/axa-group/nlp.js-app.git"
   },
   "dependencies": {
-    "@hapi/hapi": "^18.4.0",
+    "@hapi/hapi": "^18.4.1",
     "aws-sdk": "^2.539.0",
     "braces": "^2.3.2",
     "dotenv": "^6.1.0",
@@ -48,21 +48,16 @@
     "vision": "^5.4.4"
   },
   "devDependencies": {
-    "coveralls": "^3.0.6",
-    "cz-conventional-changelog": "^2.1.0",
-    "eslint": "^5.16.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-config-prettier": "^3.1.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-jest": "^21.22.0",
-    "eslint-plugin-prettier": "^3.0.0",
-    "husky": "^1.1.0",
-    "jest": "^24.9.0",
-    "jsdoc": "^3.6.3",
-    "lint-staged": "^7.3.0",
-    "merge": "^1.2.1",
-    "prettier": "^1.14.3",
-    "serverless": "^1.53.0"
+    "coveralls": "^3.0.11",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-jest": "^23.8.2",
+    "eslint-plugin-prettier": "^3.1.2",
+    "jest": "^25.2.4",
+    "prettier": "^2.0.2",
+    "serverless": "^1.67.0"
   },
   "jest": {
     "verbose": true,

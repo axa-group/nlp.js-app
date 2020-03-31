@@ -109,7 +109,9 @@ async function startServer() {
 }
 
 async function start() {
-	await startDatabase();
+  console.log('Starting database');
+  await startDatabase();
+  console.log('Starting server');
 	await startServer();
 }
 
@@ -121,7 +123,5 @@ if (process.env.SERVERLESS) {
     }
   };
 } else {
-  module.exports = {
-	start
-  };
+  start();
 }

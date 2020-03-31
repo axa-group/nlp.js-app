@@ -22,10 +22,12 @@
  */
 
 let Database;
-if (process.env.MY_AWS_ACCESS_KEY_ID) {
-  Database = require('../core/database-dynamo');
-} else {
+if (process.env.MONGO_URL) {
+	console.log('Database is mongo');
   Database = require('../core/database-mongo');
+} else {
+	console.log('Database is dynamodb')
+  Database = require('../core/database-dynamo');
 }
 const app = require('../app');
 const { AgentModel, DomainModel, IntentModel, EntityModel, ScenarioModel } = require('../models');
