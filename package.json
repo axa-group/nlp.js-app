@@ -52,24 +52,7 @@
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-jest": "^23.8.2",
     "eslint-plugin-prettier": "^3.1.2",
-    "jest": "^25.2.7",
     "merge": "^1.2.1",
     "prettier": "^2.0.2"
-  },
-  "jest": {
-    "verbose": true,
-    "testURL": "http://localhost/",
-    "collectCoverageFrom": [
-      "src/**.js"
-    ],
-    "coverageDirectory": "coverage",
-    "testEnvironment": "node"
-  },
-  "lint-staged": {
-    "*.js": [
-      "prettier --write",
-      "eslint --fix",
-      "git add"
-    ]
   }
 }
