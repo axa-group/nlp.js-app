@@ -32,3 +32,15 @@ When you finish you will have all the tables created like this:
 <img src="https://github.com/axa-group/nlp.js-app/raw/master/docs/screenshots/dynamo03.png" width="925" height="auto"/>
 </div>
 
+# 2. Clone this repo and install dependencies
+
+Execute this in a folder where you want to work:
+
+```bash
+$ git clone https://github.com/axa-group/nlp.js-app.git
+$ cd nlp.js-app
+$ git checkout feature/serverless
+$ npm install
+```
+
+This will download all the code and install the dependencies
