@@ -102,7 +102,7 @@ async function startServer() {
       return h.file('index.html');
     },
   });
-  if (!process.env.SERVERLESS) {
+  if (process.env.SERVERLESS !== undefined && !process.env.SERVERLESS) {
     await server.start();
     logger.info(`Server running at: ${server.info.uri}`);
   }
@@ -115,7 +115,7 @@ async function start() {
 	await startServer();
 }
 
-if (process.env.SERVERLESS) {
+if (process.env.SERVERLESS === undefined || process.env.SERVERLESS) {
   module.exports = {
     deployment: async () => {
       await start();

@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
-  "basePath": "http://localhost:3000/api/",
-  "schemes": ["http"],
+  "basePath": "/dev/api/",
+  "schemes": ["https"],
   "info": {
     "title": "NLP.js API Documentation",
     "version": "0.0.1"
