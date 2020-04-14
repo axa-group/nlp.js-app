@@ -17,6 +17,8 @@ Application to train your agents for bots, done using NLP.js.
 - [Installation](#installation)
 - [Example of Use](#example-of-use)
 - [Docker Compose](#docker-compose)
+- [Serverless Deployment](#serverless-deployment)
+  - [AWS Lambda](https://github.com/axa-group/nlp.js-app/blob/master/docs/serverless-aws.md)
 - [Software Used](#software-used)
 - [Contributing](#contributing)
 - [Code of Conduct](#code-of-conduct)
@@ -133,6 +135,12 @@ It will start the Mongo database, [NLP.js](http://localhost:3000 "NLP.js app at 
 ### Little disclaimer
 
 Consider the changes you may apply in the configuration as outlined in point [Installation](#installation) and take in mind the behaviour of Docker Compose as exposed in <https://docs.docker.com/compose/compose-file/#env_file>
+
+## Serverless Deployment
+
+### AWS Lambda
+
+See docs at: https://github.com/axa-group/nlp.js-app/blob/master/docs/serverless-aws.md
 
 ## Software Used
 
