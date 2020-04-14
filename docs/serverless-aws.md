@@ -39,7 +39,7 @@ Execute this in a folder where you want to work:
 ```bash
 $ git clone https://github.com/axa-group/nlp.js-app.git
 $ cd nlp.js-app
-$ git checkout feature/serverless
+$ git checkout feature/serverless-lambda
 $ npm install
 ```
 
