@@ -12,17 +12,19 @@ import {
   loadAgents,
   resetCurrentAgent,
   loadCurrentAgent,
+  setLoginNeeded
 } from '../../containers/App/actions';
 import {
   makeSelectAgents,
   makeSelectCurrentAgent,
+  makeSelectLoginStatus
 } from '../../containers/App/selectors';
 import entity from '../../img/entity-icon.svg';
 import folder from '../../img/folder-icon.svg';
 import intent from '../../img/intent-icon.svg';
 import logo from '../../img/nlpjs.svg';
+import Logout from '../../components/LogOutButton';
 import messages from './messages';
-
 import Settings from './Settings';
 
 class NavSideBar extends React.Component { // eslint-disable-line react/prefer-stateless-function
@@ -35,6 +37,7 @@ class NavSideBar extends React.Component { // eslint-disable-line react/prefer-s
     this.props.onComponentMounted();
     this.renderAgentSelectOptions = this.renderAgentSelectOptions.bind(this);
     this.onSelectAgent = this.onSelectAgent.bind(this);
+    this.handleLogOut = this.handleLogOut.bind(this);
   }
 
   onSelectAgent(evt) {
@@ -55,6 +58,12 @@ class NavSideBar extends React.Component { // eslint-disable-line react/prefer-s
         {option.text}
       </option>
     ));
+  }
+
+  handleLogOut() {
+    localStorage.removeItem('nlp_dashboard');
+    this.props.onLogout();
+    this.props.onChangeUrl(`/`);
   }
 
   render() {
@@ -112,6 +121,12 @@ class NavSideBar extends React.Component { // eslint-disable-line react/prefer-s
               <p>Built with <a target="_blank" href="https://github.com/axa-group/nlp.js">NLP.js</a></p>
             </li>
           </ul>}
+          <ul className="bottom-nav">
+            <Logout text="Log out" handleLogOut={this.handleLogOut} />
+            <li>
+              <p>Built with{' '}<a target="_blank" href="https://github.com/axa-group/nlp.js">NLP.js</a></p>
+            </li>
+          </ul>}
         </nav>
       </aside>
     )
@@ -139,6 +154,7 @@ export function mapDispatchToProps(dispatch) {
       }
     },
     onChangeUrl: (url) => dispatch(push(url)),
+    onLogout: () => dispatch(setLoginNeeded()),
     onComponentMounted: () => dispatch(loadAgents()),
   };
 }
@@ -146,6 +162,7 @@ export function mapDispatchToProps(dispatch) {
 const mapStateToProps = createStructuredSelector({
   agents: makeSelectAgents(),
   currentAgent: makeSelectCurrentAgent(),
+  credentials: makeSelectLoginStatus()
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(NavSideBar);

@@ -21,50 +21,51 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+const featsHelper = require('../feats.helper');
 const validators = require('./intent.validators');
 const controllers = require('./intent.controllers');
 
-const routes = {
-  add: [
-    'POST',
-    '/intent',
-    'Create a new instance of the model and persist it into the data source',
-  ],
-  findById: [
-    'GET',
-    '/intent/{id}',
-    'Find a model instance by id from the datasource',
-  ],
-  updateById: [
-    'PUT',
-    '/intent/{id}',
-    'Update attributes for a model instance and persist it into the data source',
-  ],
-  deleteById: [
-    'DELETE',
-    '/intent/{id}',
-    'Delete a model instance by id from the data source',
-  ],
-  addScenario: [
-    'POST',
-    '/intent/{id}/scenario',
-    'Create a new instance of a scenario for the intent and persist it into the data source',
-  ],
-  findScenario: [
-    'GET',
-    '/intent/{id}/scenario',
-    'Find a scenario by intent id from the data source',
-  ],
-  updateScenario: [
-    'PUT',
-    '/intent/{id}/scenario',
-    'Update attributes of the scenario of the intent and persist it into the data source',
-  ],
-  deleteScenario: [
-    'DELETE',
-    '/intent/{id}/scenario',
-    'Delete a scenario instance by id from the data source',
-  ],
+const rawRoutes = {
+  add: {
+    method: 'POST',
+    path: '/intent',
+    description: 'Create a new instance of the model and persist it into the data source',
+  },
+  findById: {
+    method: 'GET',
+    path: '/intent/{id}',
+    description: 'Find a model instance by id from the datasource',
+  },
+  updateById: {
+    method: 'PUT',
+    path: '/intent/{id}',
+    description: 'Update attributes for a model instance and persist it into the data source',
+  },
+  deleteById: {
+    method: 'DELETE',
+    path: '/intent/{id}',
+    description: 'Delete a model instance by id from the data source',
+  },
+  addScenario: {
+    method: 'POST',
+    path: '/intent/{id}/scenario',
+    description: 'Create a new instance of a scenario for the intent and persist it into the data source',
+  },
+  findScenario: {
+    method: 'GET',
+    path: '/intent/{id}/scenario',
+    description: 'Find a scenario by intent id from the data source',
+  },
+  updateScenario: {
+    method: 'PUT',
+    path: '/intent/{id}/scenario',
+    description: 'Update attributes of the scenario of the intent and persist it into the data source',
+  },
+  deleteScenario: {
+    method: 'DELETE',
+    path: '/intent/{id}/scenario',
+    description: 'Delete a scenario instance by id from the data source',
+  },
 };
 
 /**
@@ -72,6 +73,13 @@ const routes = {
  * @param {object} app Application.
  */
 function register(app) {
+  const authDefault = {
+    strategy: 'main',
+    scope: ['collaborator', 'admin']
+  };
+
+  const routes = featsHelper.applyAuthRules(rawRoutes, authDefault);
+
   app.register('intent', routes, validators, controllers);
 }
 

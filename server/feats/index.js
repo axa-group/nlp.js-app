@@ -26,11 +26,13 @@ const agent = require('./agent/agent.feat');
 const domain = require('./domain/domain.feat');
 const intent = require('./intent/intent.feat');
 const entity = require('./entity/entity.feat');
+const auth = require('./auth/auth.feat');
 
 module.exports = {
 	settings,
 	agent,
 	domain,
 	intent,
-	entity
+	entity,
+	auth
 };

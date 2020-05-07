@@ -29,24 +29,33 @@ const path = require('path');
 const Vision = require('vision');
 const HapiSwagger = require('hapi-swagger');
 
+const settings = require('./settings');
 const Logger = require('./common/logger');
 const app = require('./app');
 const registerFeats = require('./boot/register-feats');
 const startDatabase = require('./boot/start-database');
+const { authSetup } = require('./auth');
+const { ENV } = require('./constants');
 
 const logger = Logger.getInstance();
-const port = process.env.PORT || 3000;
 
-const server = new Hapi.Server({
-	port,
-	routes: {
-		cors: true,
-		files: {
-			relativeTo: path.join(__dirname, '..', 'public')
-		}
-	}
-});
-app.server = server;
+function bootstrap(settings = {}) {
+	const port = settings.port;
+
+	const server = new Hapi.Server({
+	  port,
+	  routes: {
+		 cors: true,
+		 files: {
+			relativeTo: settings.dashboardPath || path.join(__dirname, '..', 'public')
+		 }
+	  }
+	});
+
+	app.server = server;
+
+	return server;
+}
 
 const swaggerOptions = {
 	info: {
@@ -67,7 +76,10 @@ if (process.env.HEROKU_APP_NAME) {
 /**
  * Starts the server.
  */
-async function startServer() {
+async function startServer(server, settings = {}) {
+
+	await authSetup(server, settings.auth);
+
 	registerFeats();
 	await server.register([
 		inert,
@@ -97,37 +109,41 @@ async function startServer() {
 	});
 	await server.start();
 	logger.info(`Server running at: ${server.info.uri}`);
+
+	// eslint-disable-next-line no-shadow, no-unused-vars
+	server.ext('onPostStop', server => {
+		// onPostStop: called after the connection listeners are stopped
+		// see: https://github.com/hapijs/hapi/blob/master/API.md#-serverextevents
+		app.database
+			.disconnect()
+			.then(() => process.exit(0))
+			.catch(err => {
+				// eslint-disable-next-line no-console
+				console.error(err);
+				process.exit(1);
+			});
+	});
 }
 
-// eslint-disable-next-line no-shadow, no-unused-vars
-server.ext('onPostStop', server => {
-	// onPostStop: called after the connection listeners are stopped
-	// see: https://github.com/hapijs/hapi/blob/master/API.md#-serverextevents
-	app.database
-		.disconnect()
-		.then(() => process.exit(0))
-		.catch(err => {
-			// eslint-disable-next-line no-console
-			console.error(err);
-			process.exit(1);
-		});
-});
 let isStopping = false;
 async function shutDown() {
 	if (!isStopping) {
 		logger.info('shutDown...');
 		isStopping = true;
 		const lapse = process.env.STOP_SERVER_WAIT_SECONDS ? process.env.STOP_SERVER_WAIT_SECONDS : 5;
-		await server.stop({ timeout: lapse * 1000 });
+		await app.server.stop({ timeout: lapse * 1000 });
 	}
 }
 
 process.on('SIGTERM', shutDown);
 process.on('SIGINT', shutDown);
 
-async function start() {
-	await startDatabase();
-	await startServer();
+async function start(settings) {
+
+	await startDatabase(settings.db);
+	const server = bootstrap(settings);
+
+	return await startServer(server, settings);
 }
 
-start();
+start(settings);

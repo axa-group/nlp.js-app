@@ -32,8 +32,9 @@ class Database {
 	 * Constructor of the class.
 	 * @param {string} url URL to the database.
 	 */
-	constructor(url) {
+	constructor({ url }) {
 		this.url = url || process.env.MONGO_URL_URI || process.env.MONGO_URL;
+
 		mongoose.set('useFindAndModify', false);
 		mongoose.set('useUnifiedTopology', true);
 		this.joigoose = Joigoose(mongoose);
@@ -72,15 +73,6 @@ class Database {
 			// mongoose.disconnect(finalLambda);
 			mongoose.connection.close(finalLambda);
 		});
-	}
-
-	/**
-	 * Add a mongoose schema based on the Joi schema.
-	 * @param {string} name Schema name.
-	 * @param {object} joiSchema Joi Schema.
-	 */
-	addSchema(name, joiSchema) {
-		this.schemas[name] = new mongoose.Schema(this.joigoose.convert(joiSchema));
 	}
 
 	/**
@@ -135,11 +127,11 @@ class Database {
 	 * @param {object} options Options for the search.
 	 * @return {Promise<object[]>} Array of documents found.
 	 */
-	find(name, condition, projection, options) {
+	find(name, condition, projection = {}, options = {})  {
 		return new Promise((resolve, reject) => {
 			const Model = this.models[name];
 			if (!Model) {
-				return reject(new Error(`Model not found ${name}`));
+				return reject(new Error(`Model not found ${JSON.stringify(name)}`));
 			}
 			Model.find(condition || {}, projection, options, (err, docs) => {
 				if (err) {
@@ -160,7 +152,7 @@ class Database {
 	 * @param {object} criteria Criteria instance.
 	 * @returns {Promise<object>} Found document.
 	 */
-	findOne(name, criteria = {}) {
+		findOne(name, criteria = {}) {
 		return new Promise((resolve, reject) => {
 			const Model = this.models[name];
 			if (!Model) {

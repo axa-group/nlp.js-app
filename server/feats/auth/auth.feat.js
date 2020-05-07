@@ -1,5 +1,5 @@
 /*
- * Copyright (c) AXA Group Operations Spain S.A.
+ * Copyright (c) AXA Shared Services Spain S.A.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -22,50 +22,32 @@
  */
 
 const featsHelper = require('../feats.helper');
-const validators = require('./entity.validators');
-const controllers = require('./entity.controllers');
+const validators = require('./auth.validators');
+const controllers = require('./auth.controllers');
 
 const rawRoutes = {
-  add: {  method: 'POST',
-    path: '/entity',
-    description: 'Create a new instance of the model and persist it into the data source',
+  register: {
+      method: 'POST',
+      path: '/auth/register',
+      description: 'Auth register',
   },
-  findById: {
-    method: 'GET',
-    path: '/entity/{id}',
-    description: 'Find a model instance by id from the data source',
-  },
-  findIntentsByEntityId: {
-    method: 'GET',
-    path: '/entity/{id}/intent',
-    description: 'Find a model instance by id from the data source',
-  },
-  updateById: {
-    method: 'PUT',
-    path: '/entity/{id}',
-    description: 'Update attributes for a model instance and persist it into the data source',
-  },
-  deleteById: {
-    method: 'DELETE',
-    path: '/entity/{id}',
-    description: 'Delete a model instance by id from the data source',
-  },
+  login: {
+      method: 'POST',
+      path: '/auth/login',
+      description: 'Auth login',
+  }
 };
 
 /**
- * Register endpoints.
- * @param {object} app Application.
+ * Register the routes
  */
 function register(app) {
 
-  const authDefault = {
-    strategy: 'main',
-    scope: ['collaborator', 'admin']
-  };
+	const authDefault = false;
 
-  const routes = featsHelper.applyAuthRules(rawRoutes, authDefault);
+	const routes = featsHelper.applyAuthRules(rawRoutes, authDefault);
 
-  app.register('entity', routes, validators, controllers);
+	app.register('auth', routes, validators, controllers);
 }
 
 module.exports = register;

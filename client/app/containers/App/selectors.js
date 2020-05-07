@@ -48,6 +48,9 @@ const makeSelectLoadingConversation = () => createSelector(
   (globalState) => globalState.loadingConversation,
 );
 
+const makeSelectLoginStatus = () =>
+  createSelector(selectGlobal, globalState => globalState.isLoginSuccess);
+
 const makeSelectMissingAPI = () => createSelector(
   selectGlobal,
   (globalState) => globalState.missingAPI,
@@ -158,4 +161,5 @@ export {
   makeSelectRoute,
   makeSelectEntityIntents,
   makeSelectSettingsData,
+  makeSelectLoginStatus
 };

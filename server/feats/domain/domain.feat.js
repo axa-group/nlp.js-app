@@ -21,35 +21,36 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+const featsHelper = require('../feats.helper');
 const validators = require('./domain.validators');
 const controllers = require('./domain.controllers');
 
-const routes = {
-  add: [
-    'POST',
-    '/domain',
-    'Create a new instance of the model and persist it into the data source',
-  ],
-  findById: [
-    'GET',
-    '/domain/{id}',
-    'Find a model instance by id from the data source',
-  ],
-  deleteById: [
-    'DELETE',
-    '/domain/{id}',
-    'Delete a model instance by id from the data source',
-  ],
-  updateById: [
-    'PUT',
-    '/domain/{id}',
-    'Update attributes for a model instance and persist it into the data source',
-  ],
-  findIntentsByDomainId: [
-    'GET',
-    '/domain/{id}/intent',
-    'Find list of intents linked with a domain',
-  ],
+const rawRoutes = {
+  add: {
+    method: 'POST',
+    path: '/domain',
+    description: 'Create a new instance of the model and persist it into the data source',
+  },
+  findById: {
+    method: 'GET',
+    path: '/domain/{id}',
+    description: 'Find a model instance by id from the data source',
+  },
+  deleteById: {
+    method: 'DELETE',
+    path: '/domain/{id}',
+    description: 'Delete a model instance by id from the data source',
+  },
+  updateById: {
+    method: 'PUT',
+    path: '/domain/{id}',
+    description: 'Update attributes for a model instance and persist it into the data source',
+  },
+  findIntentsByDomainId: {
+    method: 'GET',
+    path: '/domain/{id}/intent',
+    description: 'Find list of intents linked with a domain',
+  },
 };
 
 /**
@@ -57,6 +58,14 @@ const routes = {
  * @param {object} app Application.
  */
 function register(app) {
+
+  const authDefault = {
+    strategy: 'main',
+    scope: ['collaborator', 'admin']
+  };
+
+  const routes = featsHelper.applyAuthRules(rawRoutes, authDefault);
+
   app.register('domain', routes, validators, controllers);
 }
 

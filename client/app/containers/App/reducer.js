@@ -78,6 +78,7 @@ import {
   UPDATE_SCENARIO_SUCCESS,
   UPDATE_WEBHOOK_ERROR,
   RESET_MISSING_API,
+  LOGIN_SUCCESS,
   MISSING_API,
   CHECK_API,
   LOAD_CURRENT_AGENT_STATUS,
@@ -89,7 +90,8 @@ import {
   LOAD_SETTINGS_SUCCESS,
   CHANGE_SETTINGS_DATA,
   RESET_SETTINGS_DATA,
-  REMOVE_SETTINGS_FALLBACK
+  REMOVE_SETTINGS_FALLBACK,
+  LOGIN_NEEDED
 } from './constants';
 
 // The initial state of the App
@@ -498,6 +500,10 @@ function appReducer(state = initialState, action) {
         .set('loading', false);
     case CHECK_API:
       return state;
+    case LOGIN_NEEDED:
+      return state.set('isLoginSuccess', false);
+    case LOGIN_SUCCESS:
+      return state.set('isLoginSuccess', true);
     case MISSING_API:
       return state
         .set('missingAPI', true);

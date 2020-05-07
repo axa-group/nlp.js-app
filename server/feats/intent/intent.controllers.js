@@ -70,6 +70,7 @@ async function add(request) {
  * @param {object} request Request.
  */
 async function findById(request) {
+  console.log('request.auth ->',request.auth.credentials);
   const intentId = request.params.id;
   const intent = await app.database.findById(Model.Intent, intentId);
   if (!intent) {
@@ -126,9 +127,9 @@ async function updateById(request) {
       intentName: new RegExp(data.intentName, 'i'),
       agent: intent.agent
     });
-  
+
     const otherItems = itemsWithTheSameName.filter(sameNameItem => sameNameItem._id.toString() !== intentId);
-  
+
     if (otherItems.length) {
       return app.error(400, 'Intent name already used');
     }

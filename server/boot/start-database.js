@@ -21,25 +21,33 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+const Logger = require('../common/logger');
 const Database = require('../core/database');
 const app = require('../app');
-const { AgentModel, DomainModel, IntentModel, EntityModel, ScenarioModel } = require('../models');
+const { AgentModel, DomainModel, IntentModel, EntityModel, ScenarioModel, UsersModel } = require('../models');
+const { Model } = require('../constants');
+
+const logger = Logger.getInstance();
 
 /**
  * Starts the database.
  * Initialize the models and connect.
  */
-async function startDatabase() {
-	app.database = new Database();
-	app.database.addModel('settings');
-	app.database.addModel('training');
-	app.database.addModel('session');
-	app.database.addModel('agent', AgentModel);
-	app.database.addModel('domain', DomainModel);
-	app.database.addModel('intent', IntentModel);
-	app.database.addModel('entity', EntityModel);
-	app.database.addModel('scenario', ScenarioModel);
-	return app.database.connect();
+async function startDatabase(settings = {}) {
+	logger.info('start database');
+	app.database = new Database(settings);
+
+	app.database.addModel(Model.Settings);
+	app.database.addModel(Model.Training);
+	app.database.addModel(Model.Session);
+	app.database.addModel(Model.Agent, AgentModel);
+	app.database.addModel(Model.Domain, DomainModel);
+	app.database.addModel(Model.Intent, IntentModel);
+	app.database.addModel(Model.Entity, EntityModel);
+	app.database.addModel(Model.Scenario, ScenarioModel);
+	app.database.addModel(Model.Users, UsersModel);
+	const result = await app.database.connect();
+	return result;
 }
 
 module.exports = startDatabase;
