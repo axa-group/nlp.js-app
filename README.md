@@ -108,6 +108,39 @@ Example of multiple slot filling used in the same intent:
 
 ![Multiple slot filling](./screenshots/slot-filling-2.png)
 
+## Auth
+
+Added a jwt auth using [hapi-auth-jwt2](https://github.com/dwyl/hapi-auth-jwt2)
+
+Auth endpoints:
+
+/api/auth/register (POST with email & password fields) <-- foreign scope as default. To be able to login, admin needs to change it to 'collaborator'
+/api/auth/login (POST with email & password fields)
+
+If you need to check some information inside token payload, you can access through request.auth field.
+
+.env cfg
+```
+JWT_SECRET=
+EXPIRY_TIME_SECONDS=
+```
+
+To modify scopes, check [Hapi documentation about scope](https://hapi.dev/api/?v=19.1.1#-serverauthapi) in the code, you can set scopes through feat files (server/feats/{resource}/{resource}.feat.js). Example:
+
+```
+...
+add: {
+    method: 'POST',
+    path: '/intent',
+    description: 'Create a new instance of the model and persist it into the data source',
+    auth: { <-- auth cfg handled by Hapi
+      strategy: 'main',
+      scope: ['collaborator']
+    }
+  },
+  ...
+```
+
 ## Docker Compose
 
 A docker-compose receipt is available to allow a quick-start easily. Just execute:
