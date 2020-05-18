@@ -108,6 +108,75 @@ Example of multiple slot filling used in the same intent:
 
 ![Multiple slot filling](./screenshots/slot-filling-2.png)
 
+## Auth
+
+Added a jwt auth using [hapi-auth-jwt2](https://github.com/dwyl/hapi-auth-jwt2)
+
+Auth endpoints:
+
+/api/auth/register (POST with email & password fields) <-- foreign scope as default. To be able to login, admin needs to change it to 'collaborator'
+```
+curl -i 'http://localhost:3000/api/auth/register' \
+  -H 'Connection: keep-alive' \
+  -H 'Pragma: no-cache' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Accept: application/json' \
+  -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36' \
+  -H 'Content-Type: application/json' \
+  -H 'Origin: http://localhost:3000' \
+  -H 'Accept-Language: es-ES,es;q=0.9,en-US;q=0.8,en;q=0.7,ca-ES;q=0.6,ca;q=0.5' \
+  --data-binary '{"email":"dummy.user@mail.com","password":"dummy-password"}' \
+  --compressed
+```
+/api/auth/login (POST with email & password fields)
+
+
+```
+curl 'http://localhost:3000/api/auth/login' \
+  -H 'Connection: keep-alive' \
+  -H 'Pragma: no-cache' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Accept: application/json' \
+  -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36' \
+  -H 'Content-Type: application/json' \
+  -H 'Origin: http://localhost:3000' \
+  -H 'Accept-Language: es-ES,es;q=0.9,en-US;q=0.8,en;q=0.7,ca-ES;q=0.6,ca;q=0.5' \
+  --data-binary '{"email":"dummy.user@mail.com","password":"dummy-password"}' \
+  --compressed
+
+```
+Example of authenticated request:
+
+```
+curl -I -H "Authorization: <jwt token provided in login>" \
+http://localhost:3000/api/intent/<intent id>
+
+```
+
+If you need to check some information inside token payload, you can access through request.auth field.
+
+.env cfg
+```
+JWT_SECRET=
+EXPIRY_TIME_SECONDS=
+```
+
+To modify scopes, check [Hapi documentation about scope](https://hapi.dev/api/?v=19.1.1#-serverauthapi) in the code, you can set scopes through feat files (server/feats/{resource}/{resource}.feat.js). Example:
+
+```
+...
+add: {
+    method: 'POST',
+    path: '/intent',
+    description: 'Create a new instance of the model and persist it into the data source',
+    auth: { <-- auth cfg handled by Hapi
+      strategy: 'main',
+      scope: ['collaborator']
+    }
+  },
+  ...
+```
+
 ## Docker Compose
 
 A docker-compose receipt is available to allow a quick-start easily. Just execute:

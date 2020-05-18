@@ -30,6 +30,7 @@ const IntentModel = require('./intent.model');
 const IntentExampleModel = require('./example.intent.model');
 const IntentEntityModel = require('./entity.intent.model');
 const ScenarioModel = require('./scenario.model');
+const UsersModel = require('./users.model');
 const SlotModel = require('./slot.scenario.model');
 const WebhookModel = require('./webhook.model');
 const PostFormatModel = require('./postFormat.model');
@@ -46,5 +47,6 @@ module.exports = {
 	ScenarioModel,
 	SlotModel,
 	WebhookModel,
-	PostFormatModel
+	PostFormatModel,
+	UsersModel
 };

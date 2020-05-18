@@ -63,6 +63,7 @@ import {
   RESET_SESSION_SUCCESS,
   RESET_STATUS_FLAGS,
   RESET_MISSING_API,
+  LOGIN_SUCCESS,
   SELECT_CURRENT_AGENT,
   SET_IN_WIZARD,
   UPDATE_AGENT,
@@ -92,6 +93,8 @@ import {
   CHANGE_SETTINGS_DATA,
   RESET_SETTINGS_DATA,
   REMOVE_SETTINGS_FALLBACK,
+  LOGIN_NEEDED,
+	TRAIN_AGENT_ERROR
 } from './constants';
 
 export function loadAgents() {
@@ -689,6 +692,14 @@ export function checkAPI(refURL) {
     apiCall: true,
     refURL,
   };
+}
+
+export function setLoginNeeded() {
+	return { type: LOGIN_NEEDED };
+}
+
+export function setLoginSuccess() {
+	return { type: LOGIN_SUCCESS };
 }
 
 export function resetMissingAPI() {

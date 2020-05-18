@@ -9,19 +9,24 @@ import { push } from 'react-router-redux';
 
 import NavSideBar from '../../components/NavSideBar';
 import withProgressBar from '../../components/ProgressBar';
-import { checkAPI, loadSettings } from '../../containers/App/actions';
+import { checkAPI, loadSettings, setLoginNeeded } from '../../containers/App/actions';
 import {
   makeSelectAgents,
   makeSelectError,
   makeSelectLoading,
   makeSelectMissingAPI,
+  makeSelectLoginStatus
 } from '../../containers/App/selectors';
 import ConversationBar from '../ConversationBar';
+import Login from '../Login';
 
 // import normalizeCSS from 'stylesheets/normalize-min.css';
 
 export class App extends React.PureComponent {
 
+  constructor(props) {
+    super(props);
+  }
 
   componentWillMount(){
     this.props.onLoadSettings();
@@ -45,15 +50,19 @@ export class App extends React.PureComponent {
   }
 
   render() {
-    const { children } = this.props;
+    const { children, isLoginSuccess } = this.props;
     return (
       <div>
-        <Alert stack={false} timeout={3000} />
-        <NavSideBar />
-        <main className="group" role="main">
-          {React.Children.toArray(children)}
-        </main>
-        <ConversationBar />
+        {isLoginSuccess ? 
+          (<div>
+            <Alert stack={false} timeout={3000} />
+            <NavSideBar />
+            <main className="group" role="main">
+              {React.Children.toArray(children)}
+            </main>
+            <ConversationBar />
+          </div>)
+        : <Login />}
       </div>
     );
   }
@@ -71,6 +80,9 @@ App.propTypes = {
 
 export function mapDispatchToProps(dispatch) {
   return {
+    onFailedCredentials: () => {
+      dispatch(setLoginNeeded());
+    },
     onMissingAPI: (refURL) => {
       if (refURL !== '/missing-api'){
         dispatch(push('/missing-api'));
@@ -93,6 +105,7 @@ const mapStateToProps = createStructuredSelector({
   error: makeSelectError(),
   agents: makeSelectAgents(),
   missingAPI: makeSelectMissingAPI(),
+  isLoginSuccess: makeSelectLoginStatus(),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(withProgressBar(App));

@@ -21,35 +21,35 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+const featsHelper = require('../feats.helper');
 const validators = require('./entity.validators');
 const controllers = require('./entity.controllers');
 
-const routes = {
-  add: [
-    'POST',
-    '/entity',
-    'Create a new instance of the model and persist it into the data source',
-  ],
-  findById: [
-    'GET',
-    '/entity/{id}',
-    'Find a model instance by id from the data source',
-  ],
-  findIntentsByEntityId: [
-    'GET',
-    '/entity/{id}/intent',
-    'Find a model instance by id from the data source',
-  ],
-  updateById: [
-    'PUT',
-    '/entity/{id}',
-    'Update attributes for a model instance and persist it into the data source',
-  ],
-  deleteById: [
-    'DELETE',
-    '/entity/{id}',
-    'Delete a model instance by id from the data source',
-  ],
+const rawRoutes = {
+  add: {  method: 'POST',
+    path: '/entity',
+    description: 'Create a new instance of the model and persist it into the data source',
+  },
+  findById: {
+    method: 'GET',
+    path: '/entity/{id}',
+    description: 'Find a model instance by id from the data source',
+  },
+  findIntentsByEntityId: {
+    method: 'GET',
+    path: '/entity/{id}/intent',
+    description: 'Find a model instance by id from the data source',
+  },
+  updateById: {
+    method: 'PUT',
+    path: '/entity/{id}',
+    description: 'Update attributes for a model instance and persist it into the data source',
+  },
+  deleteById: {
+    method: 'DELETE',
+    path: '/entity/{id}',
+    description: 'Delete a model instance by id from the data source',
+  },
 };
 
 /**
@@ -57,6 +57,14 @@ const routes = {
  * @param {object} app Application.
  */
 function register(app) {
+
+  const authDefault = {
+    strategy: 'main',
+    scope: ['collaborator', 'admin']
+  };
+
+  const routes = featsHelper.applyAuthRules(rawRoutes, authDefault);
+
   app.register('entity', routes, validators, controllers);
 }
 

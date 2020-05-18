@@ -21,25 +21,26 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+const featsHelper = require('../feats.helper');
 const validators = require('./context.validators');
 const controllers = require('./context.controllers');
 
-const routes = {
-  addById: [
-    'POST',
-    '/agent/{id}/context/{sessionId}',
-    'Create a new instance of session context and persist it into the data source',
-  ],
-  findById: [
-    'GET',
-    '/agent/{id}/context/{sessionId}',
-    'Find an instance of session context from the data source',
-  ],
-  deleteById: [
-    'DELETE',
-    '/agent/{id}/context/{sessionId}',
-    'Deletes an instance of session context from the data source',
-  ],
+const rawRoutes = {
+  addById: {
+    method: 'POST',
+    path: '/agent/{id}/context/{sessionId}',
+    description: 'Create a new instance of session context and persist it into the data source',
+  },
+  findById: {
+    method: 'GET',
+    path: '/agent/{id}/context/{sessionId}',
+    description: 'Find an instance of session context from the data source',
+  },
+  deleteById: {
+    method: 'DELETE',
+    path: '/agent/{id}/context/{sessionId}',
+    description: 'Deletes an instance of session context from the data source',
+  },
 };
 
 /**
@@ -47,6 +48,14 @@ const routes = {
  * @param {object} app Application.
  */
 function register(app) {
+
+  const authDefault = {
+    strategy: 'main',
+    scope: ['collaborator', 'admin']
+  };
+
+  const routes = featsHelper.applyAuthRules(rawRoutes, authDefault);
+
   app.register('context', routes, validators, controllers);
 }
 

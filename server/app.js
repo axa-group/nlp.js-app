@@ -92,8 +92,7 @@ class App {
 	 */
 	async handle(operation, request, h) {
 		const fn = operation.controller || this.defaultHandle;
-
-		try {
+		// try {
 			const result = await fn(request, h);
 
 			if (result instanceof Error) {
@@ -104,10 +103,12 @@ class App {
 			}
 
 			return this.database.processResponse(result);
+		/*
 		} catch (error) {
 			logger.error(`main error captured: ${error}`);
 			return h.response('Unknown error').code(500);
 		}
+		*/
 	}
 
 	/**
@@ -117,8 +118,9 @@ class App {
 	 * @param {string} method Operation method.
 	 * @param {string} path Operation path.
 	 * @param {string} description Operation description.
+	 * @param {object} auth scopes & strategy cfg.
 	 */
-	registerRoute(featName, operationName, method, path, description) {
+	registerRoute(featName, operationName, { method, path, description, auth }) {
 		const operation = this.getOperation(featName, operationName);
 		operation.route = {
 			method,
@@ -127,8 +129,9 @@ class App {
 				description,
 				tags: ['api'],
 				validate: this.validate(operation),
-				handler: this.handle.bind(this, operation)
-			}
+				handler: this.handle.bind(this, operation),
+				auth
+			},
 		};
 		return operation.route;
 	}
@@ -165,9 +168,10 @@ class App {
 	register(featName, routes, validators, controllers) {
 		const approutes = [];
 		const operationNames = Object.keys(routes);
+
 		operationNames.forEach(operationName => {
 			const route = routes[operationName];
-			approutes.push(this.registerRoute(featName, operationName, route[0], route[1], route[2]));
+			approutes.push(this.registerRoute(featName, operationName, route)); // [ROUTE_IDX.VERB], route[ROUTE_IDX.PATH], route[ROUTE_IDX.DESC], route[ROUTE_IDX.AUTH]
 			this.registerValidator(featName, operationName, validators[operationName]);
 			this.registerController(featName, operationName, controllers[operationName]);
 		});

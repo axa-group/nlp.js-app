@@ -21,17 +21,26 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+const featsHelper = require('../feats.helper');
 const validators = require('./settings.validators.js');
 const controllers = require('./settings.controllers');
 
-const routes = {
-  update: ['PUT', '/settings', 'Modifies the settings'],
-  findAll: ['GET', '/settings', 'Return all the settings of the system'],
-  findSettingsByName: [
-    'GET',
-    '/settings/{name}',
-    'Return the settings value for the specified name',
-  ],
+const rawRoutes = {
+  update: {
+    method: 'PUT',
+    path: '/settings',
+    description: 'Modifies the settings'
+  },
+  findAll: {
+    method: 'GET',
+    path: '/settings',
+    description: 'Return all the settings of the system'
+  },
+  findSettingsByName: {
+    method: 'GET',
+    path: '/settings/{name}',
+    description: 'Return the settings value for the specified name',
+  },
 };
 
 /**
@@ -39,6 +48,14 @@ const routes = {
  * @param {object} app Application.
  */
 function register(app) {
+
+  const authDefault = {
+    strategy: 'main',
+    scope: ['collaborator', 'admin']
+  };
+
+  const routes = featsHelper.applyAuthRules(rawRoutes, authDefault);
+
   app.register('settings', routes, validators, controllers);
 }
 
