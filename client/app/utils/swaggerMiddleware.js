@@ -16,11 +16,11 @@ export default function swaggerMiddleware(opts) {
       ...opts,
       requestInterceptor(request) {
           if (request.url.includes('/api/')) {
-			  const rawNlpAuth = localStorage.getItem('nlp_dashboard');
-			  if (rawNlpAuth) {
-				  const nlpAuth = JSON.parse(rawNlpAuth);
-				  request.headers.Authorization = nlpAuth.token;
-			  }
+            const rawNlpAuth = localStorage.getItem('nlp_dashboard');
+            if (rawNlpAuth) {
+              const nlpAuth = JSON.parse(rawNlpAuth);
+              request.headers.Authorization = nlpAuth.token;
+            }
           }
 
           return request;
