@@ -21,27 +21,17 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-require('dotenv').config();
-const serverless = require('serverless-http');
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const mountDirectline = require('./router');
+const {
+  getToken, createConversation, getActivities, createActivity,
+} = require('./controller');
 
-const app = express();
-app.use(cors());
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
-app.use('/', express.static(path.join(__dirname, '../public')));
-mountDirectline(app);
-
-const isServerless = process.env.SERVERLESS === undefined ? true : !(process.env.SERVERLESS.toLowerCase() === 'false');
-if (isServerless) {
-  module.exports.handler = serverless(app);
-} else {
-  const port = process.env.PORT || process.env.port || 3000;
-  app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
-  });
-  module.exports = app;
+function mountDirectline(app) {
+  app.get('/directline/getToken', getToken);
+  app.get('/directline/getToken/:agentId', getToken);
+  app.options('/directline', (req, res) => res.status(200).end());
+  app.post('/directline/conversations', createConversation);
+  app.get('/directline/conversations/:conversationId/activities', getActivities);
+  app.post('/directline/conversations/:conversationId/activities', createActivity);
 }
+
+module.exports = mountDirectline;

@@ -21,99 +21,155 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const AWS = require('aws-sdk');
-const uuid = require('uuid');
 const jwt = require('jsonwebtoken');
 const { NlpManager } = require('node-nlp');
 
 const jwtSecret = process.env.CONVERSATION_JWT_SECRET || 'Th1s 1s V3ry S3cr3t';
 
-AWS.config.update({
-  region: process.env.MY_AWS_REGION,
-  accessKeyId: process.env.MY_AWS_USER_ID,
-  secretAccessKey: process.env.MY_AWS_USER_PASSWORD,
-});
+const {
+  save,
+  getAllAgents,
+  getAgentByIdOrName,
+  getConversation,
+  getTraining,
+  findActivities,
+} = require('./data');
 
-const docClient = new AWS.DynamoDB.DocumentClient();
-
-function getAllAgents() {
-  return new Promise((resolve, reject) => {
-    const params = { TableName: 'agents' };
-    docClient.scan(params, (err, data) => {
-      if (err) {
-        return reject(err);
-      }
-      return resolve(data.Items);
-    })
-  });
-}
-
-function getAgentByIdOrName(agents, agentId) {
-  for (let i = 0; i < agents.length; i += 1) {
-    const agent = agents[i];
-    if (agent.id === agentId || agent.agentName.toLowerCase() === agentId.toLowerCase()) {
-      return agent;
-    }
+async function getToken(req, res) {
+  let { agentId } = req.params;
+  if (agentId === 'null') {
+    agentId = undefined;
   }
-  return undefined;
-}
-
-function getTraining(agentId) {
-  return new Promise((resolve, reject) => {
-    const params = {
-      TableName: 'trainings',
-      FilterExpression: '#agentid = :agentid',
-      ExpressionAttributeValues: {
-        ':agentid': agentId,
-      },
-      ExpressionAttributeNames: {
-        '#agentid': 'agentId',
-      },
-    }
-    docClient.scan(params, (err, data) => {
-      if (err) {
-        return reject(err);
-      }
-      return resolve(data.Items[0]);
-    });
-  });
-}
-
-async function getToken(agentId, res) {
   const allAgents = await getAllAgents();
   const agent = agentId ? getAgentByIdOrName(allAgents, agentId) : allAgents[0];
-  if (!agentId) {
+  if (!agent) {
     return res.status(404).send('Agent not found');
   }
-  const conversationId = uuid.v4();
+  const conversation = await getConversation(agent.id, undefined, true);
   const payload = {
     sub: 'chatbot-user',
     agentId: agent.id,
-    conversationId: conversationId,
-  };
+    conversationId: conversation.id,
+  }
   const token = jwt.sign(payload, jwtSecret, { algorithm: 'HS256' });
   return res.status(200).send({ token });
 }
 
-async function converse(token, text, res) {
+async function createConversation(req, res) {
+  const { authorization } = req.headers;
+  if (!authorization) {
+    return res.status(403).send('No authorization header');
+  }
+  const bearer = authorization.slice(7);
   try {
-    const payload = jwt.verify(token, jwtSecret);
-    const training = await getTraining(payload.agentId);
+    const payload = jwt.verify(bearer, jwtSecret);
+    const { agentId, conversationId } = payload;
+    const conversation = await getConversation(agentId, conversationId, false);
+    if (!conversation) {
+      return res.status(404).send('Conversation not found');
+    }
+    return res.status(200).send({ conversationId, token: bearer});
+  } catch (err) {
+    return res.status(403).send('Invalid Authorization Header');   
+  }
+}
+
+async function getActivities(req, res) {
+  const { conversationId } = req.params;
+  const { authorization } = req.headers;
+  const watermark = parseInt(req.query.watermark || 0, 10);
+  if (!authorization) {
+    return res.status(403).send('No authorization header');
+  }
+  const bearer = authorization.slice(7);
+  try {
+    const payload = jwt.verify(bearer, jwtSecret);
+    const { agentId, conversationId: payloadConversationId } = payload;
+    const conversation = await getConversation(agentId, conversationId, false);
+    if (!conversation || conversationId !== payloadConversationId) {
+      return res.status(404).send('Conversation not found');
+    }
+    if (watermark >= conversation.watermark) {
+      return res.status(200).send({ activities: [], watermark });
+    }
+    const activities = [];
+    const allActivities = await findActivities(conversationId);
+    let maxWatermark = watermark;
+    for (let i = 0; i < allActivities.length; i += 1) {
+      const activity = allActivities[i];
+      if (activity.watermark > watermark) {
+        if (activity.watermark > maxWatermark) {
+          maxWatermark = activity.watermark;
+        }
+        activities.push(activity);
+      }
+    }
+    return res.status(200).send({ activities, watermark: maxWatermark});
+  } catch (err) {
+    return res.status(403).send('Invalid Authorization Header');   
+  }
+}
+
+async function createActivity(req, res) {
+  const { conversationId } = req.params;
+  const { authorization } = req.headers;
+  if (!authorization) {
+    return res.status(403).send('No authorization header');
+  }
+  const bearer = authorization.slice(7);
+  let conversation;
+  let agentId;
+  try {
+    const payload = jwt.verify(bearer, jwtSecret);
+    agentId = payload.agentId;
+    const { conversationId: payloadConversationId } = payload;
+    conversation = await getConversation(agentId, conversationId, false);
+    if (!conversation || conversationId !== payloadConversationId) {
+      return res.status(404).send('Conversation not found');
+    }
+  } catch (err) {
+    return res.status(403).send('Invalid Authorization Header');   
+  }
+  if (conversation) {
+    conversation.watermark += 1;
+    await save('conversations', conversation);
+    const activity = req.body;
+    activity.watermark = conversation.watermark;
+    activity.conversationId = conversationId;
+    activity.agentId = agentId;
+    await save('activities', activity);
+    const training = await getTraining(agentId);
     if (!training || !training.model) {
       return res.status(200).send('I have problems connecting to my brain');
     }
     const manager = new NlpManager();
     manager.import(training.model);
-    const result = await manager.process(text);
-    return res.status(200).send(result.answer);
-  } catch(err) {
-    return res.status(404).send('Agent not found');
+    const result = await manager.process(activity.text);
+    conversation.watermark += 1;
+    await save('conversations', conversation);
+    const answerActivity = {
+      type: 'message',
+      serviceUrl: activity.serviceUrl,
+      channelId: activity.channelId,
+      conversation: {
+        id: conversationId,
+      },
+      recipient: activity.from,
+      locale: activity.locale,
+      text: result.answer || 'Sorry, I don\'t understand',
+      inputHint : "acceptingInput",
+      conversationId,
+      agentId,
+      watermark: conversation.watermark,
+    }
+    await save('activities', answerActivity);
+    return res.status(200).send({});
   }
 }
 
 module.exports = {
   getToken,
-  converse,
+  createConversation,
+  getActivities,
+  createActivity,
 }
-
-
