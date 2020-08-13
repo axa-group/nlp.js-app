@@ -18,6 +18,7 @@ phases:
       - echo "Begin build phase..."
       - npm install
       - cd client
+      - npm install
       - npm run build
 
 artifacts:
