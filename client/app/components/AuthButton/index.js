@@ -18,6 +18,8 @@ export default function ButtonLogIn(props) {
   return (
     <Button
       onClick={() => {
+        console.log("ButtonLogIn(): validating credentials...");
+
         props.validateForm();
       }}
     >

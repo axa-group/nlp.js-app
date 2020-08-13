@@ -26,6 +26,7 @@ import logo from '../../img/nlpjs.svg';
 import Logout from '../../components/LogOutButton';
 import messages from './messages';
 import Settings from './Settings';
+import {Auth} from 'aws-amplify';
 
 class NavSideBar extends React.Component { // eslint-disable-line react/prefer-stateless-function
 
@@ -61,7 +62,21 @@ class NavSideBar extends React.Component { // eslint-disable-line react/prefer-s
   }
 
   handleLogOut() {
+    var username=localStorage.getItem('username');
+    console.log('username: ', username);
+
+    console.log("Logging out user...");
+
+    try {
+       Auth.signOut();
+    } catch(error) {
+       console.log("Error signing out ", error);
+    }
+
+    localStorage.removeItem('user');
     localStorage.removeItem('nlp_dashboard');
+
+
     this.props.onLogout();
     this.props.onChangeUrl(`/`);
   }
@@ -122,7 +137,7 @@ class NavSideBar extends React.Component { // eslint-disable-line react/prefer-s
             </li>
           </ul>}
           <ul className="bottom-nav">
-            <Logout text="Log out" handleLogOut={this.handleLogOut} />
+            <Logout text={localStorage.getItem('username')} handleLogOut={this.handleLogOut} />
             <li>
               <p>Built with{' '}<a target="_blank" href="https://github.com/axa-group/nlp.js">NLP.js</a></p>
             </li>

@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
-  "basePath": "/api/",
-  "schemes": ["http"],
+  "basePath": "https://bww8myk4l5.execute-api.us-west-2.amazonaws.com/dev/api",
+  "schemes": ["https"],
   "info": {
     "title": "NLP.js API Documentation",
     "version": "0.0.1"

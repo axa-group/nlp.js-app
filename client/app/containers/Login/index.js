@@ -9,7 +9,7 @@ import Button from '../../components/AuthButton';
 import Img from '../../components/AuthImage';
 import TextValidation from '../../components/TextValidation';
 
-import AuthService from '../../utils/auth/auth.service';
+import AuthService from '../../utils/Auth/auth.service';
 import { setLoginSuccess, loadAgents } from '../App/actions'
 import { makeSelectLoginStatus } from '../App/selectors'
 
