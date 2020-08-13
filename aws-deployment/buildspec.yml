@@ -9,7 +9,10 @@ phases:
       nodejs: 12.x
       python: 3.7
     commands:
-      - echo "Build environment install phase complete"
+      - echo "Received environment variables..."
+      - echo "Region: $AWS_REGION"
+      - echo "User Pool Id: $USER_POOL_ID"
+      - echo "USER_POOL_ID:
       - python --version
       - node -v
       - npm -v
