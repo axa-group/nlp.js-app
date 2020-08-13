@@ -10,8 +10,8 @@ phases:
       python: 3.7
     commands:
       - echo "Received environment variables..."
-      - echo "Region: $AWS_REGION"
-      - echo "User Pool Id: $USER_POOL_ID"
+      - echo $AWS_REGION
+      - echo $USER_POOL_ID
       - python --version
       - node -v
       - npm -v
