@@ -1,19 +1,36 @@
 import Request from '../request';
+import {Auth} from 'aws-amplify';
 
 class AuthService {
-  login(email, password) {
-    return this.fetch((process.env.API_URL) + '/api/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({
-        email,
-        password
-      })
-    }).then(response => {
-      return Promise.resolve(response);
-    }).catch(err => {
-      Promise.reject(err);
-    });
+    async signIn() {
+        try {
+            const user = await Auth.signIn(username, password);
+        } catch (error) {
+            console.log('error signing in', error);
+        }
+
+    } // signIn()
+
+  logout() {
+    console.log("AuthService: logout(): logging out current user...")
   }
+
+  login(email, password) {
+    console.log("Auth.service: logging in user " + email + "... ");
+
+    var user;
+
+    // login with Cognito API
+    try {
+        user = Auth.signIn(email, password);
+    } catch (error) {
+        console.log('error signing in', error);
+    }
+
+    // return the Cognito user object
+    return(Promise.resolve(user));
+
+  } // login()
 
   fetch(url, options) {
     const headers = {
@@ -23,7 +40,9 @@ class AuthService {
 
     return Request(url, { headers, ...options });
   }
-}
+
+
+} // class AuthService
 
 const authService = new AuthService();
 

@@ -9,7 +9,7 @@ import Button from '../../components/AuthButton';
 import Img from '../../components/AuthImage';
 import TextValidation from '../../components/TextValidation';
 
-import AuthService from '../../utils/auth/auth.service';
+import AuthService from '../../utils/Auth/auth.service';
 import { setLoginSuccess, loadAgents } from '../App/actions'
 import { makeSelectLoginStatus } from '../App/selectors'
 
@@ -48,7 +48,8 @@ export class Auth extends Component {
     password: '',
     hasValidEmail: true,
     hasValidPassword: true,
-    wrongCredentials: false
+    wrongCredentials: false,
+
   };
 
   handleInputChange = event => {
@@ -58,29 +59,45 @@ export class Auth extends Component {
 
   validateForm = () => {
     let { email, password } = this.state;
+
+    console.log("validateForm(): validating credentials... " + email)
+
     const hasValidPassword = !!password;
     const hasValidEmail = !!email;
+
+    console.log("Login: hasValidPassword: " + hasValidPassword)
+    console.log("Login: hasValidEmail: " + hasValidEmail)
 
     this.setState({
       hasValidEmail,
       hasValidPassword
     });
 
+
     if (hasValidPassword && hasValidEmail) {
       AuthService.login(email, password)
         .then(response => {
           if (!response) {
+            console.log("Login: no response from AuthService.login()!")
             return this.setState({ wrongCredentials: true });
           }
-          console.log('login response', response);
-          localStorage.setItem('nlp_dashboard', JSON.stringify(response));
+
+          console.log('Login: login response', response);
+
+          // set the jwt tokens in localStorage so we can use them in requests to the API
+          // localStorage.setItem('nlp_dashboard', JSON.stringify(response));
+          localStorage.setItem('username', response.username);
+          localStorage.setItem('id_token', response.signInUserSession.idToken.jwtToken); // works in us-east-1
+//          localStorage.setItem('id_token', response.storage.id_token); // works in us-west-2
+
           this.props.onLoadAgents();
           this.props.onLoginSuccess();
           browserHistory.push(`${prefix}/`);
         })
         .catch(error => {
-          console.error(error);
-					this.setState({ wrongCredentials: true });
+          console.error("Login error! " + error.message);
+          localStorage.setItem('errorMessage', error.message);
+          this.setState({ wrongCredentials: true });
         });
     }
   };
@@ -96,17 +113,18 @@ export class Auth extends Component {
     let hasValidPasswordContainer;
     let hasValidEmailContainer;
     let textCredentials;
+    let errorMessage=localStorage.getItem('errorMessage')
 
     if (wrongCredentials) {
-      textCredentials = <TextValidation text="Wrong Credentials" />;
+      textCredentials = <TextValidation text={errorMessage} />;
     }
 
     if (!hasValidPassword) {
-      hasValidPasswordContainer = <TextValidation text="Please introduce a password" />;
+      hasValidPasswordContainer = <TextValidation text="Please enter a password" />;
     }
 
     if (!hasValidEmail) {
-      hasValidEmailContainer = <TextValidation text="Please introduce a email" />;
+      hasValidEmailContainer = <TextValidation text="Please enter your login" />;
     }
 
     return (

@@ -3,9 +3,11 @@ import Swagger from 'swagger-client';
 import { MISSING_API, CHECK_API, RESET_MISSING_API, LOGIN_NEEDED } from '../containers/App/constants';
 import { resetMissingAPI, loadAgents, setLoginSuccess } from '../containers/App/actions';
 import { push } from 'react-router-redux';
+import {Auth} from 'aws-amplify';
 
 export default function swaggerMiddleware(opts) {
   let api;
+
   return ({ dispatch, getState }) => next => action => {
 
     if (!action.apiCall) {
@@ -15,17 +17,32 @@ export default function swaggerMiddleware(opts) {
     return new Swagger({
       ...opts,
       requestInterceptor(request) {
-          if (request.url.includes('/api/')) {
-            const rawNlpAuth = localStorage.getItem('nlp_dashboard');
-            if (rawNlpAuth) {
-              const nlpAuth = JSON.parse(rawNlpAuth);
-              request.headers.Authorization = nlpAuth.token;
-            }
-          }
+        // console.log("(swaggermiddleware) localstorage username: ", localStorage.getItem('username'));
+        // console.log("(swaggermiddleware) localstorage id_token: ", localStorage.getItem('id_token'));
 
-          return request;
-      },
+        // todo: add the idToken to the Authorization header for requests to API Gateway
+        // API Gateway will use the Cognito Authorizer to validate the token
+        // API Gateway: use no OAuth scopes, id_token
+
+        if (request.url.includes('/api/')) {
+            request.headers['Authorization']="Bearer " + localStorage.getItem('id_token');
+            request.headers['Content-Type']='text/plain';
+            request.headers['Content-Length']='356';
+            request.headers['Host']='*';
+//            request.headers['User-Agent']='training_app';
+            request.headers['Accept']='*/*';
+            request.headers['Accept-Encoding']='gzip, deflate, tar';
+            request.headers['Connection']='keep-alive';
+
+            console.log("***** new request: ", JSON.stringify(request));
+
+        } // if request.url.includes()
+
+        return request;
+      }, // requestInterceptor
       responseInterceptor(response) {
+        console.log("responseInterceptor: " + JSON.stringify(response));
+
         if (response.url.includes(`${process.env.API_URL}/api/`)) {
           if (response.status === 200 && response.status < 400) {
             dispatch(setLoginSuccess());
