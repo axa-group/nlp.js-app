@@ -6,7 +6,7 @@ env:
 phases:
   install:
     runtime-versions:
-      nodejs: 12.13.0
+      nodejs: 12.x
       python: 3.7
     commands:
       - echo "Build environment install phase complete"
