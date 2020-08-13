@@ -16,10 +16,10 @@ phases:
   build:
     commands:
       - echo "Begin build phase..."
-      - cd client
       - npm install
+      - cd client
       - npm run build
 
 artifacts:
   files:
-    - client/build/*
+    - public/*

@@ -1,0 +1,668 @@
+
+AWSTemplateFormatVersion: "2010-09-09"
+Description: (SOxxxx) - The AWS CloudFormation template for deployment of the nlp.js solution. v1.0, May 2020.
+
+Mappings:
+  SourceCode:
+    General:
+      S3Bucket: "dixonaws-solutions" # note that the source code must be in s3://<S3Bucket>-<region> where region is the AWS region where the template is launched, e.g., us-east-1
+      KeyPrefix: "nlpjs/v1.0"
+#  ResourceServer:
+#    Configuration:
+#      Identifier: "nlpjsResourceServer"
+#      ScopeName: "TrainingApp.admin"
+
+Parameters:
+  AdminEmail:
+    Description: Enter a valid email address to receive the initial admin password for the Training Application
+    Type: String
+  AdminPassword:
+    Description: Enter an 8-character password with a special character
+    Type: String
+
+
+Resources:
+  # --- Lambda functions and related IAM policies
+
+  ServerLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: "nlp.js serverless Lambda function"
+      Code:
+        S3Bucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
+        S3Key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"],  "nlpjs-serverless.zip"]]
+      Handler: _lalalambda/server.handler
+      Role:
+        Fn::GetAtt: [ nlpjsLambdaExecutionRole , "Arn" ]
+      Runtime: nodejs12.x
+      Timeout: 6
+      MemorySize: 1024
+
+  nlpjsLambdaExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - "sts:AssumeRole"
+      Path: /
+      Policies:
+        - PolicyName: nlpjsLambdaExecutionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "dynamodb:GetItem"
+                  - "dynamodb:UpdateItem"
+                  - "dynamodb:PutItem"
+                  - "dynamodb:Query"
+                  - "dynamodb:Scan"
+                Resource:
+                  - !GetAtt agentsTable.Arn
+                  - !GetAtt domainsTable.Arn
+                  - !GetAtt entitysTable.Arn
+                  - !GetAtt intentsTable.Arn
+                  - !GetAtt scenariosTable.Arn
+                  - !GetAtt sessionsTable.Arn
+                  - !GetAtt settingsTable.Arn
+                  - !GetAtt trainingsTable.Arn
+              - Effect: Allow
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource:
+                  - "arn:aws:logs:*:*:*"
+
+  InvokeDeployTrainingApp:
+    Type: Custom::InvokeDeployTrainingApp
+#    DependsOn: TrainingAppBucket
+    DeletionPolicy: Delete
+    Properties:
+      ServiceToken: !GetAtt CustomResource.Arn
+      SrcBucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
+      SrcPath: !FindInMap ["SourceCode", "General", "KeyPrefix"]
+      TrainingAppPackage: nlpjs-trainingapp.zip
+      NewBaseApiPath: !Join ["", ["https://", Ref: ApiGatewayRestApi, ".execute-api.", Ref: "AWS::Region", ".amazonaws.com/dev/api"]]
+#      SigninUrl: !Join ["", ["https://", !Ref 'AWS::StackName', ".auth.us-west-2.amazoncognito.com/login?client_id=", !Ref NLPCognitoUserPoolClient, "&response_type=token&scope=aws.cognito.signin.user.admin+email+", !Join ["/", [ !FindInMap [ResourceServer, Configuration, Identifier], !FindInMap [ResourceServer, Configuration, ScopeName] ] ], "+openid+phone+profile&redirect_uri=", !Join ["", [ "https://", !GetAtt CloudFrontDistribution.DomainName , "/auth.html"] ] ] ]
+      DestBucket: !Ref TrainingAppBucket
+
+  CustomResource:
+#    DependsOn: TrainingAppBucket
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: CFN Lambda backed custom resource to deploy assets to s3
+      Handler: lambda_function.lambda_handler
+      Role: !GetAtt LambdaCustomRole.Arn
+      Code:
+        S3Bucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
+        S3Key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"],  "lambda_function.zip"]]
+      Runtime:  python3.7
+      Timeout: 120
+      Tags:
+        - Key: SolutionId
+          Value: Sxxxxx
+
+  LambdaCustomRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: !Sub ${AWS::StackName}-custom-resource-policy
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource:
+                  !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/*
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                Resource:
+                  - !Sub ${TrainingAppBucket.Arn}/*
+              - Effect: Allow
+                Action:
+                  - s3:PutBucketNotification
+                Resource:
+                  - !Sub ${TrainingAppBucket.Arn}
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource:
+                  - !Join ["", ["arn:aws:s3:::",!FindInMap ["SourceCode", "General", "S3Bucket"], "-", Ref: "AWS::Region","/*"]]
+              - Effect: Allow
+                Action:
+                  - cloudformation:SignalResource
+                Resource: !Ref AWS::StackId
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W11
+            reason: "/* required to get/put objects to Amazon S3"
+
+
+  # --- API Gateway resources
+
+  ApiGatewayRestApi:
+    Type: 'AWS::ApiGateway::RestApi'
+    Properties:
+      Name: dev-nlpjs-serverless
+      EndpointConfiguration:
+        Types:
+          - EDGE
+      Policy: ''
+
+  ApiGatewayResourceProxyVar:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      ParentId: !GetAtt
+        - ApiGatewayRestApi
+        - RootResourceId
+      PathPart: '{proxy+}'
+      RestApiId: !Ref ApiGatewayRestApi
+
+  ApiGatewayMethodProxyVarAny:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      HttpMethod: ANY
+      RequestParameters: {}
+      ResourceId: !Ref ApiGatewayResourceProxyVar
+      RestApiId: !Ref ApiGatewayRestApi
+      ApiKeyRequired: false
+      AuthorizationType: COGNITO_USER_POOLS
+      AuthorizerId: !Ref APIGatewayCognitoAuthorizer
+      #AuthorizationScopes:
+      #  - !Join ["/", [ !FindInMap [ResourceServer, Configuration, Identifier], !FindInMap [ResourceServer, Configuration, ScopeName] ] ]
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Join
+          - ''
+          - - 'arn:'
+            - !Ref 'AWS::Partition'
+            - ':apigateway:'
+            - !Ref 'AWS::Region'
+            - ':lambda:path/2015-03-31/functions/'
+            - !GetAtt
+              - ServerLambdaFunction
+              - Arn
+            - /invocations
+      MethodResponses: []
+
+  ApiGatewayMethodProxyVarOptions:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      RestApiId: !Ref ApiGatewayRestApi
+      ResourceId: !Ref ApiGatewayResourceProxyVar
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            method.response.header.Access-Control-Allow-Methods: "'DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT'"
+            method.response.header.Access-Control-Allow-Origin: "'*'"
+          ResponseTemplates:
+            application/json: ''
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+
+  ApiGatewayAnyOptionsMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      RestApiId: !Ref ApiGatewayRestApi
+      ResourceId: !GetAtt
+        - ApiGatewayRestApi
+        - RootResourceId
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            method.response.header.Access-Control-Allow-Methods: "'DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT'"
+            method.response.header.Access-Control-Allow-Origin: "'*'"
+          ResponseTemplates:
+            application/json: ''
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+
+  ApiGatewayModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      ContentType: 'application/json'
+      RestApiId: !Ref ApiGatewayRestApi
+      Schema: {}
+
+  ApiGatewayMethodAny:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      HttpMethod: ANY
+      RequestParameters: {}
+      ResourceId: !GetAtt
+        - ApiGatewayRestApi
+        - RootResourceId
+      RestApiId: !Ref ApiGatewayRestApi
+      ApiKeyRequired: false
+      AuthorizationType: COGNITO_USER_POOLS
+      AuthorizerId: !Ref APIGatewayCognitoAuthorizer
+#      AuthorizationScopes:
+#        - !Join ["/", [ !FindInMap [ResourceServer, Configuration, Identifier], !FindInMap [ResourceServer, Configuration, ScopeName] ] ]
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Join
+          - ''
+          - - 'arn:'
+            - !Ref 'AWS::Partition'
+            - ':apigateway:'
+            - !Ref 'AWS::Region'
+            - ':lambda:path/2015-03-31/functions/'
+            - !GetAtt
+              - ServerLambdaFunction
+              - Arn
+            - /invocations
+      MethodResponses: []
+
+  ApiGatewayDeployment:
+    Type: 'AWS::ApiGateway::Deployment'
+    Properties:
+      RestApiId: !Ref ApiGatewayRestApi
+      StageName: dev
+    DependsOn:
+      - ApiGatewayMethodProxyVarAny
+      - ApiGatewayMethodAny
+
+  ServerLambdaPermissionApiGateway:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: !GetAtt
+        - ServerLambdaFunction
+        - Arn
+      Action: 'lambda:InvokeFunction'
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Join
+        - ''
+        - - 'arn:'
+          - !Ref 'AWS::Partition'
+          - ':execute-api:'
+          - !Ref 'AWS::Region'
+          - ':'
+          - !Ref 'AWS::AccountId'
+          - ':'
+          - !Ref ApiGatewayRestApi
+          - /*/*
+
+  APIGatewayCognitoAuthorizer:
+    Type: AWS::ApiGateway::Authorizer
+    Properties:
+      AuthorizerResultTtlInSeconds: 300
+      IdentitySource: method.request.header.Authorization
+      Name: NlpjsCognitoAuthorizer
+      ProviderARNs:
+        - !GetAtt NLPCognitoUserPool.Arn
+      RestApiId: !Ref ApiGatewayRestApi
+      Type: COGNITO_USER_POOLS
+
+  # --- S3 resources
+
+  TrainingAppBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: True
+        BlockPublicPolicy: True
+        IgnorePublicAcls: True
+        RestrictPublicBuckets: True
+      CorsConfiguration:
+        CorsRules:
+          - AllowedOrigins:
+              - "*"
+            AllowedMethods:
+              - POST
+              - GET
+              - PUT
+              - DELETE
+              - HEAD
+            AllowedHeaders:
+              - "*"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      AccessControl: Private
+      #BucketName: !Join ["", ["nlpjs-training-app-", Ref: "AWS::Region", "-", Ref: "AWS::AccountId"]]
+
+  # --- Cloudfront resources
+
+# temporarily commented out for quick create stack
+#  CloudFrontOriginAccessIdentity:
+#    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+#    Properties:
+#      CloudFrontOriginAccessIdentityConfig:
+#        Comment: !Sub 'CloudFront OAI for nlp.js training app hosting bucket'
+#
+#  CloudFrontDistribution:
+##    DependsOn: InvokeDeployTrainingApp
+#    Type: AWS::CloudFront::Distribution
+#    Properties:
+#      DistributionConfig:
+#        DefaultCacheBehavior:
+#          Compress: true
+#          ForwardedValues:
+#            QueryString: false
+#          TargetOriginId: !Ref TrainingAppBucket
+#          ViewerProtocolPolicy: redirect-to-https
+#          CachedMethods:
+#            - GET
+#            - HEAD
+#          AllowedMethods:
+#            - GET
+#            - HEAD
+#            - OPTIONS
+#            - PUT
+#            - POST
+#            - DELETE
+#            - PATCH
+#        DefaultRootObject: index.html
+#        Enabled: true
+#        HttpVersion: http2
+#        Origins:
+#          - DomainName: !Join ['', [!Ref TrainingAppBucket, '.s3.amazonaws.com']]
+#            Id: !Ref TrainingAppBucket
+#            S3OriginConfig:
+#              OriginAccessIdentity:
+#                !Join ['', ['origin-access-identity/cloudfront/', !Ref CloudFrontOriginAccessIdentity]]
+#        PriceClass: PriceClass_All
+
+  # --- S3 resources
+
+# temporarily commented out for quick create stack
+#  BucketPolicy:
+#    Type: AWS::S3::BucketPolicy
+#    Properties:
+#      Bucket: !Ref TrainingAppBucket
+#      PolicyDocument:
+#        Statement:
+#          - Action:
+#              - s3:GetObject
+#            Effect: Allow
+#            Resource: !Join ['', ['arn:aws:s3:::', !Ref TrainingAppBucket, '/*']]
+#            Principal:
+#              CanonicalUser: !GetAtt CloudFrontOriginAccessIdentity.S3CanonicalUserId
+
+  # --- DynamoDB resources
+
+  agentsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: agents
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH # partition key
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+  domainsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: domains
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH # partition key
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+  entitysTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: entitys
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH # partition key
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+  intentsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: intents
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH # partition key
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+  scenariosTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: scenarios
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH # partition key
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+  sessionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: sessions
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH # partition key
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+  settingsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: settings
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH # partition key
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+  trainingsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: trainings
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH # partition key
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+  # --- Cognito resources
+  NLPCognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: True
+        InviteMessageTemplate:
+          EmailMessage: "Your NLP.js admin username is {username} and the temporary password is {####}. Refer to the Cloudformation Stack's outputs for the TrainingAppUrl to login and access the application."
+          EmailSubject: "Your temporary password for NLP.js Training Application"
+      AutoVerifiedAttributes:
+        - email
+
+  NLPCognitoUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      UserPoolId: !Ref NLPCognitoUserPool
+      Domain: !Ref AWS::StackName
+
+  NLPCognitoUserPoolClient:
+    # DependsOn: CloudFrontDistribution
+#    DependsOn: NLPUserPoolResourceServer
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ExplicitAuthFlows:
+        - ALLOW_ADMIN_USER_PASSWORD_AUTH
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+        - ALLOW_USER_SRP_AUTH
+      AllowedOAuthFlows:
+        - implicit
+      AllowedOAuthScopes:
+        - phone
+        - email
+        - openid
+        - aws.cognito.signin.user.admin
+        - profile
+        # - !Join ["/", [ !FindInMap [ResourceServer, Configuration, Identifier], !FindInMap [ResourceServer, Configuration, ScopeName] ] ]
+      AllowedOAuthFlowsUserPoolClient: true
+      ClientName: nlpjswebauthclient
+      GenerateSecret: false
+#      CallbackURLs:
+#        - !Join ["", [ "https://", !GetAtt CloudFrontDistribution.DomainName , "/auth.html"] ]
+#
+#      LogoutURLs:
+#        - !Join ["", ["https://", !GetAtt CloudFrontDistribution.DomainName, "/logout.html"] ]
+#
+      CallbackURLs:
+        - !Join ["", [ "https://", "localhost" , "/auth.html"] ]
+
+      LogoutURLs:
+        - !Join ["", ["https://", "localhost", "/logout.html"] ]
+
+
+
+      SupportedIdentityProviders:
+        - COGNITO
+      UserPoolId: !Ref NLPCognitoUserPool
+
+#  NLPUserPoolResourceServer:
+#    Type: AWS::Cognito::UserPoolResourceServer
+#    Properties:
+#      Identifier: !FindInMap [ResourceServer, Configuration, Identifier]
+#      Name: "NLPJS Training App API"
+#      UserPoolId: !Ref NLPCognitoUserPool
+#      Scopes:
+#        - ScopeName: !FindInMap [ResourceServer, Configuration, ScopeName]
+#          ScopeDescription: "API endpoint to configure and test the NLP.js training app"
+
+  CognitoUserPoolAdmin:
+    Type: AWS::Cognito::UserPoolUser
+    Properties:
+      Username: admin
+      DesiredDeliveryMediums:
+        - EMAIL
+      UserPoolId:
+        Ref: NLPCognitoUserPool
+      UserAttributes:
+        - Name: email
+          Value:
+            Ref: AdminEmail
+
+# --- Outputs section
+
+Outputs:
+  TrainingBucket:
+    Description: S3 bucket that hosts the training application
+    Value: !Ref TrainingAppBucket
+
+# temporarily commented out for quick create stack
+#  TrainingAppUrl:
+#    Description: Public Cloudfront URL to access the training application
+#    Value: !GetAtt CloudFrontDistribution.DomainName
+
+  APIEndpoint:
+    Description: URL of the API Gateway service endpoint
+    Value: !Join ["", ["https://", Ref: ApiGatewayRestApi, ".execute-api.", Ref: "AWS::Region", ".amazonaws.com/dev"]]
+
+  CognitoUserPool:
+    Description: Cognito User Pool for the training application
+    Value: !Ref NLPCognitoUserPool
+
+  CognitoUserPoolClient:
+    Description: Cognito User Pool client for the training application
+    Value: !Ref NLPCognitoUserPoolClient
+
+#  Identifier:
+#    Description: Identifier
+#    Value: !FindInMap [ResourceServer, Configuration, Identifier]
+
+#  ScopeName:
+#    Description: ScopeName
+#    Value: !FindInMap [ResourceServer, Configuration, ScopeName]
+#
+#  AllowedCustomScope:
+#    Description: Combined custom scope
+#    Value: !Join ["/", [ !FindInMap [ResourceServer, Configuration, Identifier], !FindInMap [ResourceServer, Configuration, ScopeName] ] ]
+#
+#  SigninUrl:
+#    Description: URL for Cognito Signin
+#    Value: !Join ["", ["https://", !Ref 'AWS::StackName', ".auth.", Ref: "AWS::Region", ".amazoncognito.com/login?client_id=", !Ref NLPCognitoUserPoolClient, "&response_type=token&scope=aws.cognito.signin.user.admin+email+", !Join ["/", [ !FindInMap [ResourceServer, Configuration, Identifier], !FindInMap [ResourceServer, Configuration, ScopeName] ] ], "+openid+phone+profile&redirect_uri=", !Join ["", [ "https://", !GetAtt CloudFrontDistribution.DomainName , "/auth.html"] ] ] ]
+
