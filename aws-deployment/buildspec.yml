@@ -25,4 +25,4 @@ phases:
 
 artifacts:
   files:
-    - public/*
+    - client/build/*
