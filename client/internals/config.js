@@ -1,10 +1,15 @@
 const resolve = require('path').resolve;
 const pullAll = require('lodash/pullAll');
 const uniq = require('lodash/uniq');
+const UglifyJSPlugin=require('uglifyjs-webpack-pugin')
 
 const ReactBoilerplate = {
   // This refers to the react-boilerplate version this project is based on.
   version: '3.4.0',
+
+  plugins: [
+    new UglifyJSPlugin()
+  ],
 
   /**
    * The DLL Plugin provides a dramatic speed increase to webpack build and hot module reloading
