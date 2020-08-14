@@ -16,10 +16,41 @@ Parameters:
     Description: Enter an 8-character password with a special character for the admin user
     Type: String
 
-
 Resources:
-  # --- Lambda functions and related IAM policies
+  # --- CodeBuild resources
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Description: "Project to build the NLP.js training and client applications"
+      Source:
+        Type: "GITHUB"
+        Location: "https://github.com/dixonaws/nlp.js-app.git"
+        SourceIdentifier: feature\/jwt\-auth
+        BuildSpec: "aws-deployment/buildspec.yml"
+      Artifacts:
+        EncryptionDisabled: true
+        Location: "dixonaws-solutions-us-west-2"
+        Name: "training_app"
+        NamespaceType: "none"
+        Packaging: "zip"
+        Type: "s3"
+      ServiceRole: "arn:aws:iam::477157386854:role/CodeBuild-God"
+      Environment:
+        Type: "LINUX_CONTAINER"
+        ComputeType: "BUILD_GENERAL1_SMALL"
+        Image: "aws/codebuild/amazonlinux2-x86_64-standard:3.0"
+        EnvironmentVariables:
+            - Name: "USER_POOL_ID"
+              Type: "PLAINTEXT"
+              Value: !Ref NLPCognitoUserPool
+            - Name: "WEB_CLIENT_ID"
+              Type: "PLAINTEXT"
+              Value: !Ref NLPCognitoUserPoolClient
+            - Name: "BASEPATH"
+              Type: "PLAINTEXT"
+              Value: !Join ["", ["https://", Ref: ApiGatewayRestApi, ".execute-api.", Ref: "AWS::Region", ".amazonaws.com/dev"]]
 
+  # --- Lambda functions and related IAM policies
   ServerLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
