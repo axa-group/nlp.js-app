@@ -12,12 +12,13 @@ phases:
       - echo "Received environment variables..."
       - echo $AWS_REGION
       - echo $USER_POOL_ID
+      - echo $WEB_CLIENT_ID
+      - echo $BASEPATH
       - python --version
       - node -v
       - npm -v
   build:
     commands:
-      - echo "Begin build phase..."
       - npm install
       - cd client
       - npm install
