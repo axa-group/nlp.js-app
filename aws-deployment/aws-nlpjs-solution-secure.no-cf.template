@@ -26,9 +26,7 @@ Resources:
         Type: "GITHUB"
         Location: "https://github.com/dixonaws/nlp.js-app.git"
         BuildSpec: "aws-deployment/buildspec.yml"
-        SourceIdentifer: "feature_jwt_auth"
       SourceVersion: "feature/jwt-auth"
-
       Artifacts:
         EncryptionDisabled: true
         Location: "dixonaws-solutions-us-west-2"
@@ -41,16 +39,17 @@ Resources:
         Type: "LINUX_CONTAINER"
         ComputeType: "BUILD_GENERAL1_SMALL"
         Image: "aws/codebuild/amazonlinux2-x86_64-standard:3.0"
+#        EnvironmentVariables: [{Name: "USER_POOL_ID", Type: "PLAINTEXT", Value: !Ref NLPCognitoUserPool}]
         EnvironmentVariables:
-            - Name: "USER_POOL_ID"
-              Type: "PLAINTEXT"
-              Value: !Ref NLPCognitoUserPool
-            - Name: "WEB_CLIENT_ID"
-              Type: "PLAINTEXT"
-              Value: !Ref NLPCognitoUserPoolClient
-            - Name: "BASEPATH"
-              Type: "PLAINTEXT"
-              Value: !Join ["", ["https://", Ref: ApiGatewayRestApi, ".execute-api.", Ref: "AWS::Region", ".amazonaws.com/dev"]]
+          - Name: "USER_POOL_ID"
+            Type: "PLAINTEXT"
+            Value: !Ref NLPCognitoUserPool
+          - Name: "WEB_CLIENT_ID"
+            Type: "PLAINTEXT"
+            Value: !Ref NLPCognitoUserPoolClient
+          - Name: "BASEPATH"
+            Type: "PLAINTEXT"
+            Value: !Join ["", ["https://", Ref: ApiGatewayRestApi, ".execute-api.", Ref: "AWS::Region", ".amazonaws.com/dev"]]
 
 
   # --- Lambda functions and related IAM policies
