@@ -29,12 +29,10 @@ phases:
       - npm install
       - npm run build
 
-
-
 artifacts:
   EncryptionDisabled: "true"
-  location: "dixonaws-solutions-us-west-2"
-  name: "build"
+  location: $TRAINING_APP_BUCKET
+  name: "/"
   Packaging: "NONE"
   Type: s3
   files:

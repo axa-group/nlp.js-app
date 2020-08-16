@@ -16,6 +16,8 @@ Parameters:
     Description: Enter an 8-character password with a special character for the admin user
     Type: String
 
+# todo: create IAM role for CodeBuild project... log, write to S3 bucket
+
 Resources:
   # --- CodeBuild resources to download the nlp.js-app form github and build it
   CodeBuildProject:
@@ -50,9 +52,13 @@ Resources:
           - Name: "BASEPATH"
             Type: "PLAINTEXT"
             Value: !Join ["", ["https://", Ref: ApiGatewayRestApi, ".execute-api.", Ref: "AWS::Region", ".amazonaws.com/dev/api"]]
+          - Name: "TRAINING_APP_BUCKET"
+            Type: "PLAINTEXT"
+            Value: !Ref TrainingAppBucket
 
 
   # --- Lambda functions and related IAM policies
+  # todo: use codebuild for the server lambda function
   ServerLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
@@ -109,32 +115,10 @@ Resources:
                 Resource:
                   - "arn:aws:logs:*:*:*"
 
-  InvokeDeployTrainingApp:
-    Type: Custom::InvokeDeployTrainingApp
-    DeletionPolicy: Delete
-    Properties:
-      ServiceToken: !GetAtt CustomResourceCopyToS3.Arn
-      SrcBucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
-      SrcPath: !FindInMap ["SourceCode", "General", "KeyPrefix"]
-      TrainingAppPackage: nlpjs-trainingapp.zip
-      NewBaseApiPath: !Join ["", ["https://", Ref: ApiGatewayRestApi, ".execute-api.", Ref: "AWS::Region", ".amazonaws.com/dev/api"]]
-      DestBucket: !Ref TrainingAppBucket
+  # todo: lambda function to trigger the codebuild project build
 
-  CustomResourceCopyToS3:
-    Type: AWS::Lambda::Function
-    Properties:
-      Description: CFN Lambda backed custom resource to deploy assets to s3
-      Handler: lambda_function.lambda_handler
-      Role: !GetAtt LambdaCustomRole.Arn
-      Code:
-        S3Bucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
-        S3Key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"],  "lambda_function.zip"]]
-      Runtime:  python3.7
-      Timeout: 120
-      Tags:
-        - Key: SolutionId
-          Value: Sxxxxx
-
+  # todo: create the cognito user in the codebuild project
+  
   CustomResourceAddCognitoUser:
     Type: AWS::Lambda::Function
     Properties:
