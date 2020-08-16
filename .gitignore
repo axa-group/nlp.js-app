@@ -2,6 +2,8 @@
 node_modules
 /client/build
 mongo_data
+aws-deployment/venv/
+aws-deployment/venv3/
 
 .env
 .vscode

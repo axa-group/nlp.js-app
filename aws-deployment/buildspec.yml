@@ -17,6 +17,10 @@ phases:
       - python --version
       - node -v
       - npm -v
+      - virtualenv -p `which python3` venv3
+      - source venv3/bin/activate
+      - python configure_aws_exports.py --user_pool_id=$USER_POOL_ID --client_id=$WEB_CLIENT_ID --region=AWS_REGION
+      - python configure_swagger.py --basepath=$BASEPATH
   build:
     commands:
       - npm install
