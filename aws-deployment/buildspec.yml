@@ -31,7 +31,7 @@ phases:
 
 artifacts:
   EncryptionDisabled: true
-  Location: s3
+  Location: dixonaws-solutions-us-west-2
   Name: "/build"
   Packaging: "NONE"
   Type: s3
