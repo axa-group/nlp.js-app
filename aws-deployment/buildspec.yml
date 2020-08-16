@@ -30,5 +30,10 @@ phases:
       - npm run build
 
 artifacts:
+  EncryptionDisabled: true
+  Location: s3
+  Name: "/build"
+  Packaging: "NONE"
+  Type: s3
   files:
     - client/build/*
