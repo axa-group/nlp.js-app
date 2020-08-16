@@ -4,9 +4,6 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const OfflinePlugin = require('offline-plugin');
 
-// added 16 Aug to fix build error
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
-
 require('dotenv').config();
 
 const publicPathPrefix = process.env.PUBLIC_PATH_PREFIX ? `${process.env.PUBLIC_PATH_PREFIX}/` : '/';
@@ -24,9 +21,6 @@ module.exports = require('./webpack.base.babel')({
   },
 
   plugins: [
-    // added 16 Aug to fix build error
-    new UglifyJSPlugin(),
-
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
       children: true,

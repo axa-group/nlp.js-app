@@ -118,7 +118,7 @@ Resources:
   # todo: lambda function to trigger the codebuild project build
 
   # todo: create the cognito user in the codebuild project
-  
+
   CustomResourceAddCognitoUser:
     Type: AWS::Lambda::Function
     Properties:
