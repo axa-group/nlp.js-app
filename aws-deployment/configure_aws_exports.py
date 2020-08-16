@@ -38,8 +38,8 @@ def configure_aws_exports(str_new_user_pool_id, str_new_client_id, str_new_regio
     with open(str_aws_exports_file, 'w') as aws_exports_file:
         print("Writing new aws-exports.js file with " + str_new_user_pool_id + " and " + str_new_client_id + "...", end="")
 
-        str_aws_exports="/* eslint - disable */"
-        str_aws_exports+="\n"
+        # str_aws_exports="/* eslint - disable */"
+        str_aws_exports="\n"
         str_aws_exports+="const awsmobile=" + json.dumps(dict_awsmobile, indent=4)
         str_aws_exports+=";"
         str_aws_exports+="\n"
