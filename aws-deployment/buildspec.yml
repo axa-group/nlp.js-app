@@ -29,11 +29,15 @@ phases:
       - npm install
       - npm run build
 
+
+
 artifacts:
-  EncryptionDisabled: true
-  Location: dixonaws-solutions-us-west-2
-  Name: "/build"
+  EncryptionDisabled: "true"
+  location: "dixonaws-solutions-us-west-2"
+  name: "build"
   Packaging: "NONE"
   Type: s3
   files:
     - client/build/*
+  discard-paths: yes
+
