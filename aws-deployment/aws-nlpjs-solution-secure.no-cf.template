@@ -49,7 +49,7 @@ Resources:
             Value: !Ref NLPCognitoUserPoolClient
           - Name: "BASEPATH"
             Type: "PLAINTEXT"
-            Value: !Join ["", ["https://", Ref: ApiGatewayRestApi, ".execute-api.", Ref: "AWS::Region", ".amazonaws.com/dev"]]
+            Value: !Join ["", ["https://", Ref: ApiGatewayRestApi, ".execute-api.", Ref: "AWS::Region", ".amazonaws.com/dev/api"]]
 
 
   # --- Lambda functions and related IAM policies
