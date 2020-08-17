@@ -15,6 +15,19 @@ Parameters:
   AdminPassword:
     Description: Enter an 8-character password with a special character for the admin user
     Type: String
+  SourceRepository:
+    Description: Enter the github repository to use as a source (artifacts will be built and deployed using CodeBuild)
+    Type: String
+    Default: "https://github.com/dixonaws/nlp.js-app.git"
+  SourceVersion:
+    Description: Enter the github repository's branch to use as a source
+    Type: String
+    Default: "feature/jwt-auth"
+  BuildspecPath:
+    Description: Path to the buildspec.yml file in the source directory
+    Type: String
+    Default: "aws-deployment/buildspec.yml"
+
 
 # todo: create IAM role for CodeBuild project... log, write to S3 bucket
 
@@ -26,22 +39,25 @@ Resources:
       Description: "Project to build the NLP.js training and client applications"
       Source:
         Type: "GITHUB"
-        Location: "https://github.com/dixonaws/nlp.js-app.git"
-        BuildSpec: "aws-deployment/buildspec.yml"
-      SourceVersion: "feature/jwt-auth"
+        Location: !Ref SourceRepository
+        BuildSpec: !Ref BuildspecPath
+#       Location: "https://github.com/dixonaws/nlp.js-app.git"
+#       BuildSpec: "aws-deployment/buildspec.yml"
+#       SourceVersion: "feature/jwt-auth"
+      SourceVersion: !Ref SourceVersion
       Artifacts:
         EncryptionDisabled: true
-        Location: "dixonaws-solutions-us-west-2"
-        Name: "training_app"
+        Location: !Ref TrainingAppBucket
+        Name: "/"
         NamespaceType: "none"
-        Packaging: "zip"
+        Packaging: "none"
         Type: "s3"
+        discard-paths: true
       ServiceRole: "arn:aws:iam::477157386854:role/CodeBuild-God"
       Environment:
         Type: "LINUX_CONTAINER"
         ComputeType: "BUILD_GENERAL1_SMALL"
         Image: "aws/codebuild/amazonlinux2-x86_64-standard:3.0"
-#        EnvironmentVariables: [{Name: "USER_POOL_ID", Type: "PLAINTEXT", Value: !Ref NLPCognitoUserPool}]
         EnvironmentVariables:
           - Name: "USER_POOL_ID"
             Type: "PLAINTEXT"
