@@ -1,3 +1,5 @@
+#!python
+
 import boto3
 import json
 import sys
@@ -53,7 +55,7 @@ def first_sign_in(str_client_id, str_user_pool_id, str_username, client):
 # first_sign_in
 
 def usage():
-    print("Syntax: create_user.py --username=<username> --pool-id=<user pool id> --client-id=<app client id> --email=user@domain --region=aws-region-code")
+    print("Syntax: configure_cognito_user.py --username=<username> --pool-id=<user pool id> --client-id=<app client id> --email=user@domain --region=aws-region-code")
     print("All variables are required.")
 def main(argv):
 

@@ -9,20 +9,15 @@ phases:
       nodejs: 12.x
       python: 3.7
     commands:
-      - echo "Received environment variables..."
-      - echo $AWS_REGION
-      - echo $USER_POOL_ID
-      - echo $WEB_CLIENT_ID
-      - echo $BASEPATH
       - python --version
       - node -v
       - npm -v
       - virtualenv -p `which python3` venv3
       - source venv3/bin/activate
       - pip install -r aws-deployment/requirements.txt
-      - python aws-deployment/configure_aws_exports.py --user_pool_id=$USER_POOL_ID --client_id=$WEB_CLIENT_ID --region=$AWS_REGION
-      - python aws-deployment/configure_swagger.py --basepath=$BASEPATH
-      - python aws-deployment/add_cognito_user.py --username=$ADMIN_USERNAME --pool-id=$USER_POOL_ID --client-id=$WEB_CLIENT_ID --email=$ADMIN_EMAIL --region=$AWS_REGION
+      - aws-deployment/configure_aws_exports.py --user_pool_id=$USER_POOL_ID --client_id=$WEB_CLIENT_ID --region=$AWS_REGION
+      - aws-deployment/configure_swagger.py --basepath=$BASEPATH
+      - aws-deployment/add_cognito_user.py --username=$ADMIN_USERNAME --pool-id=$USER_POOL_ID --client-id=$WEB_CLIENT_ID --email=$ADMIN_EMAIL --region=$AWS_REGION
   build:
     commands:
       - npm install
