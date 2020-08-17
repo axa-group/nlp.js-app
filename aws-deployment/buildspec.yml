@@ -7,13 +7,12 @@ phases:
   install:
     runtime-versions:
       nodejs: 12.x
-      python: 3.7
     commands:
-	  - npm install
+      - npm install
 
   build:
     commands:
-	  - npx serverless package
+      - npx serverless package
 
 artifacts:
   EncryptionDisabled: "true"
