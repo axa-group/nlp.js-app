@@ -15,13 +15,12 @@ phases:
       - virtualenv -p `which python3` venv3
       - source venv3/bin/activate
       - pip install -r aws-deployment/requirements.txt
-      - chmod +x aws-deployment/configure_aws_exports.py aws-deployment/configure_cognito_user.py aws-deployment/configure_swagger.py
-      - aws-deployment/configure_aws_exports.py --user_pool_id=$USER_POOL_ID --client_id=$WEB_CLIENT_ID --region=$AWS_REGION
-      - aws-deployment/configure_swagger.py --basepath=$BASEPATH
+      - python aws-deployment/configure_aws_exports.py --user_pool_id=$USER_POOL_ID --client_id=$WEB_CLIENT_ID --region=$AWS_REGION
+      - python aws-deployment/configure_swagger.py --basepath=$BASEPATH
 
   build:
     commands:
-      - aws-deployment/configure_cognito_user.py --username=$ADMIN_USERNAME --pool-id=$USER_POOL_ID --client-id=$WEB_CLIENT_ID --email=$ADMIN_EMAIL --region=$AWS_REGION
+      - python aws-deployment/configure_cognito_user.py --username=$ADMIN_USERNAME --pool-id=$USER_POOL_ID --client-id=$WEB_CLIENT_ID --email=$ADMIN_EMAIL --region=$AWS_REGION
       - npm install
       - cd client
       - npm install
