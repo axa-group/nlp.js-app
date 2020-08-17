@@ -17,7 +17,7 @@ phases:
 artifacts:
   EncryptionDisabled: "true"
   location: $TRAINING_APP_BUCKET
-  name: "api-build/nlpjs-lambda-api.zip"
+  name: "nlpjs-lambda-api.zip"
   Packaging: "NONE"
   Type: s3
   discard-paths: yes
