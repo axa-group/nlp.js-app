@@ -9,6 +9,7 @@ import getopt
 
 def create_new_user(str_user_pool_id, str_username, str_email, client):
 
+    # call the cognito API to create a new user with a temporary password
     create_new_user_response=client.admin_create_user(
         UserPoolId=str_user_pool_id,
         Username=str_username,
@@ -27,12 +28,12 @@ def create_new_user(str_user_pool_id, str_username, str_email, client):
 
 # create_new_user()
 
-def first_sign_in(str_client_id, str_user_pool_id, str_username, client):
+def first_sign_in(str_client_id, str_user_pool_id, str_username, str_password, client):
     first_signin_response=client.initiate_auth(
         AuthFlow="USER_PASSWORD_AUTH",
         AuthParameters={
             "USERNAME": str_username,
-            "PASSWORD": "Password123@" # this is a temporary password that will be changed at first login
+            "PASSWORD": "Password123@" # this is the temporary password that will be changed at first login (set in create_new_user)
         },
         ClientId=str_client_id
     )
@@ -45,7 +46,7 @@ def first_sign_in(str_client_id, str_user_pool_id, str_username, client):
         ChallengeName="NEW_PASSWORD_REQUIRED",
         ChallengeResponses={
             "USERNAME": str_username,
-            "NEW_PASSWORD": "Password123#"
+            "NEW_PASSWORD": str_password
         },
         Session=first_signin_response['Session']
     )
@@ -55,14 +56,12 @@ def first_sign_in(str_client_id, str_user_pool_id, str_username, client):
 # first_sign_in
 
 def usage():
-    print("Syntax: configure_cognito_user.py --username=<username> --pool-id=<user pool id> --client-id=<app client id> --email=user@domain --region=aws-region-code")
+    print("Syntax: configure_cognito_user.py --username=<username> --pool-id=<user pool id> --client-id=<app client id> --email=user@domain --region=aws-region-code --password=<password>")
     print("All variables are required.")
 def main(argv):
 
-
-# todo: accept desired password as input
     try:
-        opts, args=getopt.getopt(argv, '', ["username=", "pool-id=", "client-id=", "region=", "email="])
+        opts, args=getopt.getopt(argv, '', ["username=", "pool-id=", "client-id=", "region=", "email=", "password="])
     except getopt.GetoptError as e:
         print(e.msg)
         usage()
@@ -78,6 +77,8 @@ def main(argv):
             str_region=arg
         elif opt in ("-e", "--email"):
             str_email=arg
+        elif opt in ("-pw", "--password"):
+            str_password=arg
         else:
             usage()
         # if opt
@@ -87,6 +88,7 @@ def main(argv):
     print("-----------")
     try:
         print('username: ' + str_username)
+        print('password: ' + str_password)
         print('user pool id: ' + str_user_pool_id)
         print('app client id: ' + str_client_id)
         print('email: ' + str_email)
@@ -101,7 +103,7 @@ def main(argv):
     create_new_user(str_user_pool_id, str_username, str_email, client)
 
     print("Performing first sign-in flow to set password... ")
-    first_sign_in(str_client_id, str_user_pool_id, str_username, client)
+    first_sign_in(str_client_id, str_user_pool_id, str_username, str_password, client)
 
 # main()
 
