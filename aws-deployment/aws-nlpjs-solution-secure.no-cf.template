@@ -134,7 +134,8 @@ Resources:
       Description: "nlp.js serverless Lambda function"
       Code:
         S3Bucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
-        S3Key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"],  "nlpjs-serverless.zip"]]
+        S3Key: "nlpjs/v1.0/nlpjs.zip"
+#        S3Key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"],  "nlpjs-serverless.zip"]]
       Handler: _lalalambda/server.handler
       Role:
         Fn::GetAtt: [ nlpjsLambdaExecutionRole , "Arn" ]
