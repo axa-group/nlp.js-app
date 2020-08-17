@@ -25,10 +25,14 @@ Parameters:
     Description: "Enter the github repository to use as a source (artifacts will be built and deployed using CodeBuild)"
     Type: String
     Default: "https://github.com/dixonaws/nlp.js-app.git"
-  SourceVersion:
-    Description: "Enter the github repository's branch to use as a source"
+  SourceVersionTrainingApp:
+    Description: "Enter the github repository's branch to use as a source for the training application"
     Type: String
     Default: "feature/jwt-auth"
+  SourceVersionApi:
+    Description: "Enter the github repository's branch to use as a source for the training application"
+    Type: String
+    Default: "feature/serverless-lambda"
   BuildspecPath:
     Description: "Path to the buildspec.yml file in the source directory"
     Type: String
@@ -36,7 +40,7 @@ Parameters:
 
 Resources:
   # --- CodeBuild resources to download the nlp.js-app from a github repo and build it
-  CodeBuildProject:
+  CodeBuildProjectTrainingApp:
     Type: AWS::CodeBuild::Project
     Properties:
       Description: "Project to build the NLP.js training and client applications"
@@ -44,7 +48,7 @@ Resources:
         Type: "GITHUB"
         Location: !Ref SourceRepository
         BuildSpec: !Ref BuildspecPath
-      SourceVersion: !Ref SourceVersion
+      SourceVersion: !Ref SourceVersionTrainingApp
       Artifacts:
         EncryptionDisabled: true
         Location: !Ref TrainingAppBucket
@@ -79,6 +83,28 @@ Resources:
           - Name: "ADMIN_EMAIL"
             Type: "PLAINTEXT"
             Value: !Ref AdminEmail
+
+  CodeBuildProjectApi:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Description: "Project to build the NLP.js backend API"
+      Source:
+        Type: "GITHUB"
+        Location: !Ref SourceRepository
+        BuildSpec: !Ref BuildspecPath
+      SourceVersion: !Ref SourceVersionApi
+      Artifacts:
+        EncryptionDisabled: true
+        Location: !Ref TrainingAppBucket
+        Name: "nlpjs.zip"
+        NamespaceType: "none"
+        Packaging: "none"
+        Type: "s3"
+      ServiceRole: !GetAtt CodebuildExecutionRole.Arn
+      Environment:
+        Type: "LINUX_CONTAINER"
+        ComputeType: "BUILD_GENERAL1_SMALL"
+        Image: "aws/codebuild/amazonlinux2-x86_64-standard:3.0"
 
   CodebuildExecutionRole:
     Type: AWS::IAM::Role
@@ -133,8 +159,8 @@ Resources:
     Properties:
       Description: "nlp.js serverless Lambda function"
       Code:
-        S3Bucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
-        S3Key: "nlpjs/v1.0/nlpjs.zip"
+        S3Bucket: !Ref TrainingAppBucket
+        S3Key: "build-api/nlpjs.zip"
 #        S3Key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"],  "nlpjs-serverless.zip"]]
       Handler: _lalalambda/server.handler
       Role:
