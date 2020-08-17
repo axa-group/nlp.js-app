@@ -1,0 +1,28 @@
+version: 0.2
+
+env:
+  shell: bash
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 12.x
+      python: 3.7
+    commands:
+		- npm install
+
+  build:
+    commands:
+	  - npx serverless package
+
+artifacts:
+  EncryptionDisabled: "true"
+  location: $TRAINING_APP_BUCKET
+  name: "/api-build"
+  Packaging: "NONE"
+  Type: s3
+  discard-paths: yes
+  files:
+    - .serverless/nlpjs.zip
+
+

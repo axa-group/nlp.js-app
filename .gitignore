@@ -7,4 +7,4 @@ node_modules
 .vscode
 .idea
 npm-debug.log
-
+.serverless
