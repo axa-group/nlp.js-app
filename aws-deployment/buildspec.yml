@@ -9,7 +9,7 @@ phases:
       nodejs: 12.x
       python: 3.7
     commands:
-		- npm install
+	  - npm install
 
   build:
     commands:
