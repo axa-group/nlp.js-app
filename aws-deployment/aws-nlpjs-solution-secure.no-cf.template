@@ -32,7 +32,7 @@ Parameters:
 # todo: create IAM role for CodeBuild project... log, write to S3 bucket
 
 Resources:
-  # --- CodeBuild resources to download the nlp.js-app form github and build it
+  # --- CodeBuild resources to download the nlp.js-app from a github repo and build it
   CodeBuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
@@ -41,9 +41,6 @@ Resources:
         Type: "GITHUB"
         Location: !Ref SourceRepository
         BuildSpec: !Ref BuildspecPath
-#       Location: "https://github.com/dixonaws/nlp.js-app.git"
-#       BuildSpec: "aws-deployment/buildspec.yml"
-#       SourceVersion: "feature/jwt-auth"
       SourceVersion: !Ref SourceVersion
       Artifacts:
         EncryptionDisabled: true
@@ -71,6 +68,46 @@ Resources:
           - Name: "TRAINING_APP_BUCKET"
             Type: "PLAINTEXT"
             Value: !Ref TrainingAppBucket
+
+  CodebuildExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - codebuild.amazonaws.com
+            Action:
+              - "sts:AssumeRole"
+        Policies:
+        - PolicyName: nlpjsCodebuildExecutionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "codebuild:StartBuild"
+                  - "codebuild:StopBuild"
+                  - "codebuild:List"
+                  - "codebuild:GetResourcePolicy"
+                Resource:
+                  - !GetAtt CodeBuildProject.Arn
+              - Effect: Allow
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                  - "logs:GetLogEvents"
+                Resource:
+                  - "arn:aws:logs:*:*:*"
+              - Effect: Allow
+                Action:
+                  - "s3:*"
+                Resource:
+                  - !GetAtt TrainingAppBucket.Arn
 
 
   # --- Lambda functions and related IAM policies
