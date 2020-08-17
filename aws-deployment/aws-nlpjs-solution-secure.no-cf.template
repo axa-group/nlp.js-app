@@ -9,27 +9,30 @@ Mappings:
       KeyPrefix: "nlpjs/v1.0"
 
 Parameters:
+  AdminUsername:
+    Description: "Enter a username for the training app (default: admin)"
+    Type: String
+    Default: "admin"
   AdminEmail:
     Description: Enter a valid email address to receive the initial admin password for the Training Application
     Type: String
+    Default: "jpdixon@gmail.com"
   AdminPassword:
-    Description: Enter an 8-character password with a special character for the admin user
+    Description: "Enter an 8-character password with a special character for the admin user"
     Type: String
+    Default: "Password123&"
   SourceRepository:
-    Description: Enter the github repository to use as a source (artifacts will be built and deployed using CodeBuild)
+    Description: "Enter the github repository to use as a source (artifacts will be built and deployed using CodeBuild)"
     Type: String
     Default: "https://github.com/dixonaws/nlp.js-app.git"
   SourceVersion:
-    Description: Enter the github repository's branch to use as a source
+    Description: "Enter the github repository's branch to use as a source"
     Type: String
     Default: "feature/jwt-auth"
   BuildspecPath:
-    Description: Path to the buildspec.yml file in the source directory
+    Description: "Path to the buildspec.yml file in the source directory"
     Type: String
     Default: "aws-deployment/buildspec.yml"
-
-
-# todo: create IAM role for CodeBuild project... log, write to S3 bucket
 
 Resources:
   # --- CodeBuild resources to download the nlp.js-app from a github repo and build it
@@ -49,8 +52,7 @@ Resources:
         NamespaceType: "none"
         Packaging: "none"
         Type: "s3"
-        discard-paths: true
-      ServiceRole: "arn:aws:iam::477157386854:role/CodeBuild-God"
+      ServiceRole: !GetAtt CodebuildExecutionRole.Arn
       Environment:
         Type: "LINUX_CONTAINER"
         ComputeType: "BUILD_GENERAL1_SMALL"
@@ -68,6 +70,15 @@ Resources:
           - Name: "TRAINING_APP_BUCKET"
             Type: "PLAINTEXT"
             Value: !Ref TrainingAppBucket
+          - Name: "ADMIN_USERNAME"
+            Type: "PLAINTEXT"
+            Value: !Ref AdminUsername
+          - Name: "ADMIN_PASSWORD"
+            Type: "PLAINTEXT"
+            Value: !Ref AdminPassword
+          - Name: "ADMIN_EMAIL"
+            Type: "PLAINTEXT"
+            Value: !Ref AdminEmail
 
   CodebuildExecutionRole:
     Type: AWS::IAM::Role
@@ -82,7 +93,7 @@ Resources:
                 - codebuild.amazonaws.com
             Action:
               - "sts:AssumeRole"
-        Policies:
+      Policies:
         - PolicyName: nlpjsCodebuildExecutionPolicy
           PolicyDocument:
             Version: "2012-10-17"
@@ -94,7 +105,7 @@ Resources:
                   - "codebuild:List"
                   - "codebuild:GetResourcePolicy"
                 Resource:
-                  - !GetAtt CodeBuildProject.Arn
+                  - "*"
               - Effect: Allow
                 Action:
                   - "logs:CreateLogGroup"
@@ -108,6 +119,11 @@ Resources:
                   - "s3:*"
                 Resource:
                   - !GetAtt TrainingAppBucket.Arn
+              - Effect: Allow
+                Action:
+                  - "cognito-idp:*"
+                Resource:
+                  - !GetAtt NLPCognitoUserPool.Arn
 
 
   # --- Lambda functions and related IAM policies
@@ -170,34 +186,32 @@ Resources:
 
   # todo: lambda function to trigger the codebuild project build
 
-  # todo: create the cognito user in the codebuild project
-
-  CustomResourceAddCognitoUser:
-    Type: AWS::Lambda::Function
-    Properties:
-      Description: CFN Lambda-backed custom resource to create an admin user in Cognito
-      Handler: add_cognito_user.lambda_handler
-      Role: !GetAtt LambdaCustomRole.Arn
-      Code:
-        S3Bucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
-        S3Key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"],  "add_cognito_user.zip"]]
-      Runtime:  python3.7
-      Timeout: 120
-      Tags:
-        - Key: SolutionId
-          Value: Sxxxxx
-
-  InvokeAddCognitoUser:
-    Type: Custom::Invoke-AddCognitoUser
-    DeletionPolicy: Delete
-    Properties:
-      ServiceToken: !GetAtt CustomResourceAddCognitoUser.Arn
-      Username: "admin"
-      Password: !Ref AdminPassword
-      UserPoolId: !Ref NLPCognitoUserPool
-      ClientId: !Ref NLPCognitoUserPoolClient
-      Region: !Ref AWS::Region
-      AdminEmail: !Ref AdminEmail
+#  CustomResourceAddCognitoUser:
+#    Type: AWS::Lambda::Function
+#    Properties:
+#      Description: CFN Lambda-backed custom resource to create an admin user in Cognito
+#      Handler: add_cognito_user.lambda_handler
+#      Role: !GetAtt LambdaCustomRole.Arn
+#      Code:
+#        S3Bucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
+#        S3Key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"],  "add_cognito_user.zip"]]
+#      Runtime:  python3.7
+#      Timeout: 120
+#      Tags:
+#        - Key: SolutionId
+#          Value: Sxxxxx
+#
+#  InvokeAddCognitoUser:
+#    Type: Custom::Invoke-AddCognitoUser
+#    DeletionPolicy: Delete
+#    Properties:
+#      ServiceToken: !GetAtt CustomResourceAddCognitoUser.Arn
+#      Username: "admin"
+#      Password: !Ref AdminPassword
+#      UserPoolId: !Ref NLPCognitoUserPool
+#      ClientId: !Ref NLPCognitoUserPoolClient
+#      Region: !Ref AWS::Region
+#      AdminEmail: !Ref AdminEmail
 
 
   LambdaCustomRole:
@@ -242,17 +256,6 @@ Resources:
                 Action:
                   - cloudformation:SignalResource
                 Resource: !Ref AWS::StackId
-              - Effect: Allow
-                Action:
-                  - cognito-idp:AdminConfirmSignUp
-                  - cognito-idp:ConfirmSignUp
-                  - cognito-idp:AdminCreateUser
-                  - cognito-idp:AdminInitiateAuth
-                  - cognito-idp:AdminRespondToAuthChallenge
-                  - cognito-idp:AdminSetUserPassword
-                  - cognito-idp:ChangePassword
-                  - cognito-idp:InitiateAuth
-                Resource: !Sub ${NLPCognitoUserPool.Arn}
 
     Metadata:
       cfn_nag:

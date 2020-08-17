@@ -22,6 +22,7 @@ phases:
       - pip install -r aws-deployment/requirements.txt
       - python aws-deployment/configure_aws_exports.py --user_pool_id=$USER_POOL_ID --client_id=$WEB_CLIENT_ID --region=$AWS_REGION
       - python aws-deployment/configure_swagger.py --basepath=$BASEPATH
+      - python aws-deployment/add_cognito_user.py --username=$ADMIN_USERNAME --pool-id=$USER_POOL_ID --client-id=$WEB_CLIENT_ID --email=$ADMIN_EMAIL --region=$AWS_REGION
   build:
     commands:
       - npm install
