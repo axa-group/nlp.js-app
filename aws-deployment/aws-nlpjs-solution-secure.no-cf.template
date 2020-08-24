@@ -153,9 +153,9 @@ Resources:
 
 
   # --- Lambda functions and related IAM policies
-  # todo: use codebuild for the server lambda function
   ServerLambdaFunction:
     Type: AWS::Lambda::Function
+    DependsOn: InvokeStartBuildApi
     Properties:
       Description: "nlp.js serverless Lambda function"
       Code:
@@ -240,6 +240,36 @@ Resources:
 #      Region: !Ref AWS::Region
 #      AdminEmail: !Ref AdminEmail
 
+  StartCodebuild:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: CFN Lambda-backed custom resource to start a codebuild project
+      Handler: start_build.lambda_handler
+      Role: !GetAtt LambdaCustomRole.Arn
+      Code:
+        S3Bucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
+        S3Key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"],  "start_build.zip"]]
+      Runtime:  python3.7
+      Timeout: 120
+      Tags:
+        - Key: SolutionId
+          Value: Sxxxxx
+
+  InvokeStartBuildTrainingApp:
+    Type: Custom::Invoke-StartBuild
+    DeletionPolicy: Delete
+    Properties:
+      ServiceToken: !GetAtt StartCodebuild.Arn
+      ProjectName: !Ref CodeBuildProjectTrainingApp
+      Region: !Ref AWS::Region
+
+  InvokeStartBuildApi:
+    Type: Custom::Invoke-StartBuild
+    DeletionPolicy: Delete
+    Properties:
+      ServiceToken: !GetAtt StartCodebuild.Arn
+      ProjectName: !Ref CodeBuildProjectApi
+      Region: !Ref AWS::Region
 
   LambdaCustomRole:
     Type: AWS::IAM::Role
@@ -283,6 +313,10 @@ Resources:
                 Action:
                   - cloudformation:SignalResource
                 Resource: !Ref AWS::StackId
+              - Effect: Allow
+                Action:
+                  - codebuild:StartBuild
+                Resource: "*"
 
     Metadata:
       cfn_nag:
