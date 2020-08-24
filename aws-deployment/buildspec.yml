@@ -13,11 +13,15 @@ phases:
   build:
     commands:
       - npx serverless package
+  post-build
+    commands:
+      - curl -X PUT -H 'Content-Type:' --data-binary '{"Status": "SUCCESS","Reason": "build complete","UniqueId": "ID1234","Data": "Codebuild has completed the API build project."}' $WAIT_CONDITION
+
 
 artifacts:
   EncryptionDisabled: "true"
   location: $TRAINING_APP_BUCKET
-  name: "build-api" # directory name in the S3 bucket
+#  name: "build-api" # directory name in the S3 bucket
   Packaging: "NONE"
   Type: s3
   discard-paths: yes
