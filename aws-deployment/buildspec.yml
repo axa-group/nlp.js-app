@@ -13,7 +13,7 @@ phases:
   build:
     commands:
       - npx serverless package
-  post-build
+  post-build:
     commands:
       - curl -X PUT -H 'Content-Type:' --data-binary '{"Status": "SUCCESS","Reason": "build complete","UniqueId": "ID1234","Data": "Codebuild has completed the API build project."}' $WAIT_CONDITION
 
