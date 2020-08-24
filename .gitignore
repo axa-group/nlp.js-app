@@ -10,3 +10,4 @@ aws-deployment/venv3/
 .idea
 npm-debug.log
 *.zip
+venv3/
