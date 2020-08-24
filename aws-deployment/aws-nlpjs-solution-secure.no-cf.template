@@ -85,6 +85,7 @@ Resources:
             Value: !Ref AdminEmail
 
   CodeBuildProjectApi:
+    DeletionPolicy: "Retain"
     Type: AWS::CodeBuild::Project
     Properties:
       Description: "Project to build the NLP.js backend API"
@@ -151,11 +152,20 @@ Resources:
                 Resource:
                   - !GetAtt NLPCognitoUserPool.Arn
 
+  ApiPackageWaitHandle:
+    Type: AWS::CloudFormation::WaitConditionHandle
+
+  ApiPackageWaitCondition:
+    Type: AWS::CloudFormation::WaitCondition
+    DependsOn: CodeBuildProjectApi
+    Properties:
+      Handle: !Ref ApiPackageWaitHandle
+      Timeout: 120
 
   # --- Lambda functions and related IAM policies
   ServerLambdaFunction:
     Type: AWS::Lambda::Function
-    DependsOn: InvokeStartBuildApi
+    DependsOn: ApiPackageWaitCondition
     Properties:
       Description: "nlp.js serverless Lambda function"
       Code:
@@ -274,11 +284,12 @@ Resources:
       TRAINING_APP_BUCKET: !Ref TrainingAppBucket
 
   InvokeStartBuildApi:
+    DependsOn: CodeBuildProjectApi
     Type: Custom::Invoke-StartBuild
     DeletionPolicy: Delete
     Properties:
       ServiceToken: !GetAtt StartCodebuild.Arn
-      PROJECT_NAME: !Ref CodeBuildProjectTrainingApp
+      PROJECT_NAME: !Ref CodeBuildProjectApi
       AWS_REGION: !Ref AWS::Region
       USER_POOL_ID: !Ref NLPCognitoUserPool
       WEB_CLIENT_ID: !Ref NLPCognitoUserPoolClient
@@ -287,6 +298,7 @@ Resources:
       ADMIN_EMAIL: !Ref AdminEmail
       ADMIN_PASSWORD: !Ref AdminPassword
       TRAINING_APP_BUCKET: !Ref TrainingAppBucket
+      WAIT_CONDITION: ApiPackageWaitHandle
 
   LambdaCustomRole:
     Type: AWS::IAM::Role
