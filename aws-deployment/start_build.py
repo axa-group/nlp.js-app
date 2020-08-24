@@ -18,7 +18,6 @@ def lambda_handler(event, context):
     str_admin_username=event["ResourceProperties"]["ADMIN_USERNAME"]
     str_training_app_bucket=event["ResourceProperties"]["TRAINING_APP_BUCKET"]
     str_project_name = str(event["ResourceProperties"]["PROJECT_NAME"])
-    str_region = str(event["ResourceProperties"]["REGION"])
 
     try:
         if event['RequestType'] == 'Delete':
@@ -30,7 +29,7 @@ def lambda_handler(event, context):
         print('Signaling failure to Cloudformation.')
         send_response_cloudformation(event, "SUCCESS")
 
-    client = boto3.client("codebuild", region_name=str_region)
+    client = boto3.client("codebuild", region_name=str_aws_region)
 
     response=client.start_build(
         projectName=str_project_name,

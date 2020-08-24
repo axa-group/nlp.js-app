@@ -264,7 +264,7 @@ Resources:
 #     Required variables to start the Codebuild project:
 #     $USER_POOL_ID, $WEB_CLIENT_ID, $AWS_REGION, $BASEPATH, $ADMIN_USERNAME, $ADMIN_EMAIL, $TRAINING_APP_BUCKET
       PROJECT_NAME: !Ref CodeBuildProjectTrainingApp
-      REGION: !Ref AWS::Region
+      AWS_REGION: !Ref AWS::Region
       USER_POOL_ID: !Ref NLPCognitoUserPool
       WEB_CLIENT_ID: !Ref NLPCognitoUserPoolClient
       BASEPATH: !Join ["", ["https://", Ref: ApiGatewayRestApi, ".execute-api.", Ref: "AWS::Region", ".amazonaws.com/dev"]]
