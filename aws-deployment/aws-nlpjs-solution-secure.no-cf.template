@@ -160,7 +160,7 @@ Resources:
       Description: "nlp.js serverless Lambda function"
       Code:
         S3Bucket: !Ref TrainingAppBucket
-        S3Key: "build-api/nlpjs.zip"
+        S3Key: "nlpjs.zip"
 #        S3Key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"],  "nlpjs-serverless.zip"]]
       Handler: _lalalambda/server.handler
       Role:
