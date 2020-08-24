@@ -278,8 +278,15 @@ Resources:
     DeletionPolicy: Delete
     Properties:
       ServiceToken: !GetAtt StartCodebuild.Arn
-      ProjectName: !Ref CodeBuildProjectApi
-      Region: !Ref AWS::Region
+      PROJECT_NAME: !Ref CodeBuildProjectTrainingApp
+      AWS_REGION: !Ref AWS::Region
+      USER_POOL_ID: !Ref NLPCognitoUserPool
+      WEB_CLIENT_ID: !Ref NLPCognitoUserPoolClient
+      BASEPATH: !Join ["", ["https://", Ref: ApiGatewayRestApi, ".execute-api.", Ref: "AWS::Region", ".amazonaws.com/dev"]]
+      ADMIN_USERNAME: !Ref AdminUsername
+      ADMIN_EMAIL: !Ref AdminEmail
+      ADMIN_PASSWORD: !Ref AdminPassword
+      TRAINING_APP_BUCKET: !Ref TrainingAppBucket
 
   LambdaCustomRole:
     Type: AWS::IAM::Role

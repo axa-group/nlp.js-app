@@ -11,3 +11,4 @@ aws-deployment/venv3/
 npm-debug.log
 *.zip
 venv3/
+start_build.zip
