@@ -8,13 +8,15 @@ phases:
     runtime-versions:
       nodejs: 12.x
     commands:
-      - npm install
+      - "npm install"
+
   build:
     commands:
       - "npx serverless package"
+
   post_build:
     commands:
-      - "echo '{\"STATUS\": \"SUCCESS\", \"Reason\": \"Build complete\", \"UniqueId\": \"ID1234\", \"Data\": \"API build complete\"}' > wait_condition_response.json"
+      - "echo '{\"Status\": \"SUCCESS\", \"Reason\": \"Build complete\", \"UniqueId\": \"ID1234\", \"Data\": \"API build complete\"}' > wait_condition_response.json"
       - "cat wait_condition_response.json"
       - "echo wait condition url: \"$WAIT_CONDITION\""
       - "curl -T wait_condition_response.json \"$WAIT_CONDITION\""
