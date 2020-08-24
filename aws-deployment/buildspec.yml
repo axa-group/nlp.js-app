@@ -9,28 +9,23 @@ phases:
       nodejs: 12.x
     commands:
       - npm install
-
   pre_build:
     commands:
-      - echo "in pre-build phase"
-
+      - "echo wait condition url: $WAIT_CONDITION"
   build:
     commands:
-      - npx serverless package
-
+      - "npx serverless package"
   post_build:
     commands:
-      - echo "wait condition url: $WAIT_CONDITION"
       - "curl -X PUT -H 'Content-Type:' --data-binary '{\"Status\": \"SUCCESS\",\"Reason\": \"build complete\",\"UniqueId\": \"ID1234\",\"Data\": \"Codebuild has completed the API build project.\"}' $WAIT_CONDITION"
 
 artifacts:
   EncryptionDisabled: "true"
-  location: $TRAINING_APP_BUCKET
-#  name: "build-api" # directory name in the S3 bucket
+  Location: $TRAINING_APP_BUCKET
   Packaging: "NONE"
   Type: s3
-  discard-paths: yes
-  files:
+  Discard-paths: yes
+  Files:
     - .serverless/nlpjs.zip
 
 
