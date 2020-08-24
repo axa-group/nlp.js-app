@@ -20,7 +20,7 @@ phases:
 
   build:
     commands:
-      - python aws-deployment/configure_cognito_user.py --username=$ADMIN_USERNAME --pool-id=$USER_POOL_ID --client-id=$WEB_CLIENT_ID --email=$ADMIN_EMAIL --region=$AWS_REGION
+      - python aws-deployment/configure_cognito_user.py --username=$ADMIN_USERNAME --password $ADMIN_PASSWORD --pool-id=$USER_POOL_ID --client-id=$WEB_CLIENT_ID --email=$ADMIN_EMAIL --region=$AWS_REGION
       - npm install
       - cd client
       - npm install

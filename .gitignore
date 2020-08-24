@@ -9,4 +9,4 @@ aws-deployment/venv3/
 .vscode
 .idea
 npm-debug.log
-
+*.zip
