@@ -1,3 +1,0 @@
-[console_scripts]
-mypy_boto3 = mypy_boto3.main:main
-
