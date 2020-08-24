@@ -17,7 +17,8 @@ phases:
       - "npx serverless package"
   post_build:
     commands:
-      - "curl -X PUT -H 'Content-Type:' --data-binary '{\"Status\": \"SUCCESS\",\"Reason\": \"build complete\",\"UniqueId\": \"ID1234\",\"Data\": \"Codebuild has completed the API build project.\"}' $WAIT_CONDITION"
+      - "echo \"{'STATUS': 'SUCCESS', 'Reason': 'Build complete', 'UniqueId': 'ID1234', 'Data': 'API build complete'}\" > wait_condition_response.json"
+      - "curl -T wait_condition_response.json $WAIT_CONDITION"
 
 artifacts:
   EncryptionDisabled: "true"
