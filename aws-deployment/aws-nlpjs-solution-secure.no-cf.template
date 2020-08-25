@@ -246,7 +246,7 @@ Resources:
       AWS_REGION: !Ref AWS::Region
       USER_POOL_ID: !Ref NLPCognitoUserPool
       WEB_CLIENT_ID: !Ref NLPCognitoUserPoolClient
-      BASEPATH: !Join ["", ["https://", Ref: ApiGatewayRestApi, ".execute-api.", Ref: "AWS::Region", ".amazonaws.com/dev"]]
+      BASEPATH: !Join ["", ["https://", Ref: ApiGatewayRestApi, ".execute-api.", Ref: "AWS::Region", ".amazonaws.com/dev/api"]]
       ADMIN_USERNAME: !Ref AdminUsername
       ADMIN_EMAIL: !Ref AdminEmail
       ADMIN_PASSWORD: !Ref AdminPassword
