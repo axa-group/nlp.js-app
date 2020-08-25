@@ -17,9 +17,10 @@ export default function swaggerMiddleware(opts) {
     return new Swagger({
       ...opts,
       requestInterceptor(request) {
-         console.log("(swaggermiddleware) localstorage username: ", localStorage.getItem('username'));
-         console.log("(swaggermiddleware) localstorage id_token: ", localStorage.getItem('id_token'));
+        // console.log("(swaggermiddleware) localstorage username: ", localStorage.getItem('username'));
+        // console.log("(swaggermiddleware) localstorage id_token: ", localStorage.getItem('id_token'));
 
+        // todo: add the idToken to the Authorization header for requests to API Gateway
         // API Gateway will use the Cognito Authorizer to validate the token
         // API Gateway: use no OAuth scopes, id_token
 
