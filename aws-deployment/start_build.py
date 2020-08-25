@@ -17,7 +17,8 @@ def lambda_handler(event, context):
     str_basepath=event["ResourceProperties"]["BASEPATH"]
     str_admin_username=event["ResourceProperties"]["ADMIN_USERNAME"]
     str_training_app_bucket=event["ResourceProperties"]["TRAINING_APP_BUCKET"]
-    str_project_name = str(event["ResourceProperties"]["PROJECT_NAME"])
+    str_project_name=str(event["ResourceProperties"]["PROJECT_NAME"])
+    str_wait_condition=str(event["ResourceProperties"]["WAIT_CONDITION"])
 
     try:
         if event['RequestType'] == 'Delete':
@@ -64,7 +65,13 @@ def lambda_handler(event, context):
                 'name': 'TRAINING_APP_BUCKET',
                 'value': str_training_app_bucket,
                 'type': 'PLAINTEXT'
+            },
+            {
+                'name': 'WAIT_CONDITION',
+                'value': str_wait_condition,
+                'type': 'PLAINTEXT'
             }
+
         ]
     )
 

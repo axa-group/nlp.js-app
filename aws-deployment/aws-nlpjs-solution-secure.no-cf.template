@@ -1,6 +1,6 @@
 
 AWSTemplateFormatVersion: "2010-09-09"
-Description: (SOxxxx) - The AWS CloudFormation template for deployment of the nlp.js solution. v1.0, May 2020.
+Description: (SOxxxx) - The AWS CloudFormation template for deployment of the nlp.js solution. v1.0, August 2020.
 
 Mappings:
   SourceCode:
@@ -14,7 +14,7 @@ Parameters:
     Type: String
     Default: "admin"
   AdminEmail:
-    Description: Enter a valid email address to receive the initial admin password for the Training Application
+    Description: "Enter a valid email address to receive the initial admin password for the Training Application"
     Type: String
     Default: "jpdixon@gmail.com"
   AdminPassword:
@@ -41,6 +41,7 @@ Parameters:
 Resources:
   # --- CodeBuild resources to download the nlp.js-app from a github repo and build it
   CodeBuildProjectTrainingApp:
+    DeletionPolicy: "Delete"
     Type: AWS::CodeBuild::Project
     Properties:
       Description: "Project to build the NLP.js training and client applications"
@@ -85,7 +86,7 @@ Resources:
             Value: !Ref AdminEmail
 
   CodeBuildProjectApi:
-    DeletionPolicy: "Retain"
+    DeletionPolicy: "Delete"
     Type: AWS::CodeBuild::Project
     Properties:
       Description: "Project to build the NLP.js backend API"
@@ -96,8 +97,8 @@ Resources:
       SourceVersion: !Ref SourceVersionApi
       Artifacts:
         EncryptionDisabled: true
+        Name: "nlpjs"
         Location: !Ref TrainingAppBucket
-        Name: "nlpjs.zip"
         NamespaceType: "none"
         Packaging: "none"
         Type: "s3"
@@ -143,9 +144,9 @@ Resources:
                   - "arn:aws:logs:*:*:*"
               - Effect: Allow
                 Action:
-                  - "s3:*"
+                  - s3:PutObject
                 Resource:
-                  - !GetAtt TrainingAppBucket.Arn
+                  - !Sub ${TrainingAppBucket.Arn}/*
               - Effect: Allow
                 Action:
                   - "cognito-idp:*"
@@ -160,7 +161,7 @@ Resources:
     DependsOn: CodeBuildProjectApi
     Properties:
       Handle: !Ref ApiPackageWaitHandle
-      Timeout: 120
+      Timeout: 600
 
   # --- Lambda functions and related IAM policies
   ServerLambdaFunction:
@@ -170,7 +171,7 @@ Resources:
       Description: "nlp.js serverless Lambda function"
       Code:
         S3Bucket: !Ref TrainingAppBucket
-        S3Key: "nlpjs.zip"
+        S3Key: "nlpjs/nlpjs.zip"
 #        S3Key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"],  "nlpjs-serverless.zip"]]
       Handler: _lalalambda/server.handler
       Role:
@@ -221,35 +222,6 @@ Resources:
                 Resource:
                   - "arn:aws:logs:*:*:*"
 
-
-
-#  CustomResourceAddCognitoUser:
-#    Type: AWS::Lambda::Function
-#    Properties:
-#      Description: CFN Lambda-backed custom resource to create an admin user in Cognito
-#      Handler: add_cognito_user.lambda_handler
-#      Role: !GetAtt LambdaCustomRole.Arn
-#      Code:
-#        S3Bucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
-#        S3Key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"],  "add_cognito_user.zip"]]
-#      Runtime:  python3.7
-#      Timeout: 120
-#      Tags:
-#        - Key: SolutionId
-#          Value: Sxxxxx
-#
-#  InvokeAddCognitoUser:
-#    Type: Custom::Invoke-AddCognitoUser
-#    DeletionPolicy: Delete
-#    Properties:
-#      ServiceToken: !GetAtt CustomResourceAddCognitoUser.Arn
-#      Username: "admin"
-#      Password: !Ref AdminPassword
-#      UserPoolId: !Ref NLPCognitoUserPool
-#      ClientId: !Ref NLPCognitoUserPoolClient
-#      Region: !Ref AWS::Region
-#      AdminEmail: !Ref AdminEmail
-
   StartCodebuild:
     Type: AWS::Lambda::Function
     Properties:
@@ -267,12 +239,9 @@ Resources:
 
   InvokeStartBuildTrainingApp:
     Type: Custom::Invoke-StartBuild
-    DeletionPolicy: Delete
+    DeletionPolicy: "Delete"
     Properties:
       ServiceToken: !GetAtt StartCodebuild.Arn
-
-#     Required variables to start the Codebuild project:
-#     $USER_POOL_ID, $WEB_CLIENT_ID, $AWS_REGION, $BASEPATH, $ADMIN_USERNAME, $ADMIN_EMAIL, $TRAINING_APP_BUCKET
       PROJECT_NAME: !Ref CodeBuildProjectTrainingApp
       AWS_REGION: !Ref AWS::Region
       USER_POOL_ID: !Ref NLPCognitoUserPool
@@ -282,11 +251,12 @@ Resources:
       ADMIN_EMAIL: !Ref AdminEmail
       ADMIN_PASSWORD: !Ref AdminPassword
       TRAINING_APP_BUCKET: !Ref TrainingAppBucket
+      WAIT_CONDITION: !Ref ApiPackageWaitHandle
 
   InvokeStartBuildApi:
     DependsOn: CodeBuildProjectApi
     Type: Custom::Invoke-StartBuild
-    DeletionPolicy: Delete
+    DeletionPolicy: "Delete"
     Properties:
       ServiceToken: !GetAtt StartCodebuild.Arn
       PROJECT_NAME: !Ref CodeBuildProjectApi
@@ -298,7 +268,7 @@ Resources:
       ADMIN_EMAIL: !Ref AdminEmail
       ADMIN_PASSWORD: !Ref AdminPassword
       TRAINING_APP_BUCKET: !Ref TrainingAppBucket
-      WAIT_CONDITION: ApiPackageWaitHandle
+      WAIT_CONDITION: !Ref ApiPackageWaitHandle
 
   LambdaCustomRole:
     Type: AWS::IAM::Role
@@ -567,60 +537,60 @@ Resources:
   # --- Cloudfront resources
 
 # temporarily commented out for quick create stack
-#  CloudFrontOriginAccessIdentity:
-#    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
-#    Properties:
-#      CloudFrontOriginAccessIdentityConfig:
-#        Comment: !Sub 'CloudFront OAI for nlp.js training app hosting bucket'
-#
-#  CloudFrontDistribution:
-##    DependsOn: InvokeDeployTrainingApp
-#    Type: AWS::CloudFront::Distribution
-#    Properties:
-#      DistributionConfig:
-#        DefaultCacheBehavior:
-#          Compress: true
-#          ForwardedValues:
-#            QueryString: false
-#          TargetOriginId: !Ref TrainingAppBucket
-#          ViewerProtocolPolicy: redirect-to-https
-#          CachedMethods:
-#            - GET
-#            - HEAD
-#          AllowedMethods:
-#            - GET
-#            - HEAD
-#            - OPTIONS
-#            - PUT
-#            - POST
-#            - DELETE
-#            - PATCH
-#        DefaultRootObject: index.html
-#        Enabled: true
-#        HttpVersion: http2
-#        Origins:
-#          - DomainName: !Join ['', [!Ref TrainingAppBucket, '.s3.amazonaws.com']]
-#            Id: !Ref TrainingAppBucket
-#            S3OriginConfig:
-#              OriginAccessIdentity:
-#                !Join ['', ['origin-access-identity/cloudfront/', !Ref CloudFrontOriginAccessIdentity]]
-#        PriceClass: PriceClass_All
+  CloudFrontOriginAccessIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Sub 'CloudFront OAI for nlp.js training app hosting bucket'
+
+  CloudFrontDistribution:
+#    DependsOn: InvokeDeployTrainingApp
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        DefaultCacheBehavior:
+          Compress: true
+          ForwardedValues:
+            QueryString: false
+          TargetOriginId: !Ref TrainingAppBucket
+          ViewerProtocolPolicy: redirect-to-https
+          CachedMethods:
+            - GET
+            - HEAD
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+            - PUT
+            - POST
+            - DELETE
+            - PATCH
+        DefaultRootObject: index.html
+        Enabled: true
+        HttpVersion: http2
+        Origins:
+          - DomainName: !Join ['', [!Ref TrainingAppBucket, '.s3.amazonaws.com']]
+            Id: !Ref TrainingAppBucket
+            S3OriginConfig:
+              OriginAccessIdentity:
+                !Join ['', ['origin-access-identity/cloudfront/', !Ref CloudFrontOriginAccessIdentity]]
+        PriceClass: PriceClass_All
 
   # --- S3 resources
 
 # temporarily commented out for quick create stack
-#  BucketPolicy:
-#    Type: AWS::S3::BucketPolicy
-#    Properties:
-#      Bucket: !Ref TrainingAppBucket
-#      PolicyDocument:
-#        Statement:
-#          - Action:
-#              - s3:GetObject
-#            Effect: Allow
-#            Resource: !Join ['', ['arn:aws:s3:::', !Ref TrainingAppBucket, '/*']]
-#            Principal:
-#              CanonicalUser: !GetAtt CloudFrontOriginAccessIdentity.S3CanonicalUserId
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref TrainingAppBucket
+      PolicyDocument:
+        Statement:
+          - Action:
+              - s3:GetObject
+            Effect: Allow
+            Resource: !Join ['', ['arn:aws:s3:::', !Ref TrainingAppBucket, '/*']]
+            Principal:
+              CanonicalUser: !GetAtt CloudFrontOriginAccessIdentity.S3CanonicalUserId
 
   # --- DynamoDB resources
 
@@ -776,10 +746,9 @@ Outputs:
     Description: S3 bucket that hosts the training application
     Value: !Ref TrainingAppBucket
 
-# temporarily commented out for quick create stack
-#  TrainingAppUrl:
-#    Description: Public Cloudfront URL to access the training application
-#    Value: !GetAtt CloudFrontDistribution.DomainName
+  TrainingAppUrl:
+    Description: Public Cloudfront URL to access the training application
+    Value: !GetAtt CloudFrontDistribution.DomainName
 
   APIEndpoint:
     Description: URL of the API Gateway service endpoint
@@ -795,7 +764,7 @@ Outputs:
 
   AdminUsername:
     Description: Username for the training application
-    Value: "admin"
+    Value: !Ref AdminUsername
 
   AdminPassword:
     Description: Password for the training application
