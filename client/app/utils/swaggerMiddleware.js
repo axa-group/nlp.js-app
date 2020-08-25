@@ -21,7 +21,9 @@ export default function swaggerMiddleware(opts) {
          console.log("(swaggermiddleware) localstorage id_token: ", localStorage.getItem('id_token'));
 
         // API Gateway will use the Cognito Authorizer to validate the token
-        // API Gateway: use no OAuth scopes, id_token
+        // API Gateway: use no OAuth scopes; use id_token
+
+        console.log("(swaggermiddleware) request.url: ", request.url);
 
         if (request.url.includes('/api/')) {
             request.headers['Authorization']="Bearer " + localStorage.getItem('id_token');
@@ -40,7 +42,7 @@ export default function swaggerMiddleware(opts) {
         return request;
       }, // requestInterceptor
       responseInterceptor(response) {
-        console.log("responseInterceptor: " + JSON.stringify(response));
+//        console.log("responseInterceptor: " + JSON.stringify(response));
 
         if (response.url.includes(`${process.env.API_URL}/api/`)) {
           if (response.status === 200 && response.status < 400) {
