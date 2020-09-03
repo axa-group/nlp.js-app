@@ -1,0 +1,33 @@
+version: 0.2
+
+env:
+  shell: bash
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 12.x
+    commands:
+      - "npm install"
+
+  build:
+    commands:
+      - "npx serverless package"
+
+  post_build:
+    commands:
+      - "echo '{\"Status\": \"SUCCESS\", \"Reason\": \"Build complete\", \"UniqueId\": \"ID1234\", \"Data\": \"API build complete\"}' > wait_condition_response.json"
+      - "cat wait_condition_response.json"
+      - "echo wait condition url: \"$WAIT_CONDITION\""
+      - "curl -T wait_condition_response.json \"$WAIT_CONDITION\""
+
+artifacts:
+  EncryptionDisabled: "true"
+  Location: $TRAINING_APP_BUCKET
+  Packaging: "NONE"
+  Type: s3
+  Discard-paths: yes
+  Files:
+    - .serverless/nlpjs.zip
+
+
