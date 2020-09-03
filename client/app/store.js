@@ -24,7 +24,7 @@ export default function configureStore(initialState = {}, history) {
   const settingsURL = process.env.SETTINGS_URL || '';
 
   const middlewares = [
-    swaggerMiddleware({ url: `${settingsURL}/swagger2.json` }),
+    swaggerMiddleware({ url: `/swagger2.json` }),
     sagaMiddleware,
     routerMiddleware(history),
   ];

@@ -21,7 +21,6 @@ module.exports = require('./webpack.base.babel')({
   },
 
   plugins: [
-
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
       children: true,

@@ -1,0 +1,39 @@
+version: 0.2
+
+env:
+  shell: bash
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 12.x
+      python: 3.7
+    commands:
+      - python --version
+      - node -v
+      - npm -v
+      - virtualenv -p `which python3` venv3
+      - source venv3/bin/activate
+      - pip install -r aws-deployment/requirements.txt
+      - python aws-deployment/configure_aws_exports.py --user_pool_id=$USER_POOL_ID --client_id=$WEB_CLIENT_ID --region=$AWS_REGION
+      - python aws-deployment/configure_swagger.py --basepath=$BASEPATH
+
+  build:
+    commands:
+      - python aws-deployment/configure_cognito_user.py --username=$ADMIN_USERNAME --password $ADMIN_PASSWORD --pool-id=$USER_POOL_ID --client-id=$WEB_CLIENT_ID --email=$ADMIN_EMAIL --region=$AWS_REGION
+      - npm install
+      - cd client
+      - npm install
+      - npm run build
+
+artifacts:
+  EncryptionDisabled: "true"
+  location: $TRAINING_APP_BUCKET
+#  name: "/"
+  Packaging: "NONE"
+  Type: s3
+  discard-paths: yes
+  files:
+    - client/build/*
+
+

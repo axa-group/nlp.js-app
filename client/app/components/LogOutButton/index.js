@@ -3,6 +3,8 @@ import styled from 'styled-components';
 
 import Logout from '../../img/logout.svg';
 
+import { Auth } from 'aws-amplify';
+
 const Button = styled.button`
   width: 80%;
   margin: 0 auto;
@@ -20,13 +22,15 @@ const Img = styled.img`
 `;
 
 export default function ButtonLogIn(props) {
+    Auth.currentAuthenticatedUser({
+        bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
+    }).then(user => {
+
+        localStorage.setItem('loggedInUser', user);
+    })
+    .catch(err => console.log(err));
+
   return (
-    <Button
-      onClick={() => {
-        props.handleLogOut();
-      }}
-    >
-      {props.text} <Img src={Logout} />
-    </Button>
+    < Button onClick={() => { props.handleLogOut(); }} >{props.text} <Img src={Logout} /></Button>
   );
 }

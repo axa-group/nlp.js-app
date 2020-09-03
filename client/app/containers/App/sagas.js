@@ -27,6 +27,9 @@ export function* getAgents(payload) {
   const { api } = payload;
   try {
     const response = yield call(api.agent.getAgent);
+
+    console.log("sagas loadAgents response: ", response);
+
     yield put(agentsLoaded(response.obj));
   } catch (err) {
     const errObject = { err };
@@ -136,6 +139,9 @@ export function* trainAgent() {
 
 export function* getSettings(payload) {
   const { api, id } = payload;
+
+  console.log("sagas.js: Loading settings with payload: " + JSON.stringify(payload));
+
   try {
     const response = yield call(api.settings.getSettings);
     const settings = response.obj;

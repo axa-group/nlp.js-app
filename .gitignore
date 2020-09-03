@@ -2,9 +2,13 @@
 node_modules
 /client/build
 mongo_data
+aws-deployment/venv/
+aws-deployment/venv3/
 
 .env
 .vscode
 .idea
 npm-debug.log
-
+*.zip
+venv3/
+start_build.zip
