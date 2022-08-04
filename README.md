@@ -1,5 +1,8 @@
 ![NLP Logo](./screenshots/nlplogo.gif)
 
+This repository is no longer maintained.
+
+
 # NLP.js App
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
@@ -158,7 +161,7 @@ You can read the Code of Conduct at [Code of Conduct](https://github.com/axa-gro
 
 This project is developed by AXA Group Operations Spain S.A.
 
-If you need to contact us, you can do it at the email jesus.seijas@axa.com
+If you need to contact us, you can do it at the email opensource@axa.com
 
 ## License
 
